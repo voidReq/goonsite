@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { MantineProvider, Text, Switch, Rating, Image, Tooltip, Notification, Alert, Button } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { IconArrowRight, IconInfoCircle, IconPhoto, IconHeart} from '@tabler/icons-react';
+import { IconArrowRight, IconInfoCircle, IconHeart} from '@tabler/icons-react';
 import Link from 'next/link';
 //import { Link, useLocation, useNavigate, useOutlet } from 'react-router-dom';
 
@@ -97,7 +97,7 @@ export default function Home() {
           <Notification 
             title={
               <>
-                <Text>We notice you aren't gooning very well.<br /></Text>
+                <Text>Perhaps you should goon better.<br /></Text>
                 <Text style={{ color: 'red' }} fw={700} size="lg">Do better.</Text>
               </>
             } 
