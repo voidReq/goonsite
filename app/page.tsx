@@ -1,101 +1,113 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from 'react';
+import { MantineProvider, Text, Switch, Rating, Image, Tooltip, Notification, Alert, Button } from '@mantine/core';
+import '@mantine/core/styles.css';
+import { IconArrowRight, IconInfoCircle, IconPhoto, IconHeart} from '@tabler/icons-react';
+import Link from 'next/link';
+//import { Link, useLocation, useNavigate, useOutlet } from 'react-router-dom';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [isGooning, setIsGooning] = useState(false);
+  const [ratingValue, setRatingValue] = useState(0);
+  const [notificationVisible, setNotificationVisible] = useState(false);
+  const [goodGooner, setGoodGooner] = useState(false);
+  const icon = <IconInfoCircle />;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  return (
+    <MantineProvider forceColorScheme = "dark">
+      
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column'}}>
+
+
+        <Image
+          radius="md"
+          h={400}
+          w="auto"
+          fit="contain"
+          src="/IMG_9856.png"
+          style={{marginBottom: '20px'}}
+        />
+
+        <Switch 
+          label="I am currently gooning" 
+          style={{ marginBottom: '20px' }} 
+          onChange={(event) => setIsGooning(event.currentTarget.checked)}
+        />
+
+        {isGooning && (
+          <div style={{ border: '2px solid purple', padding: '20px', borderRadius: '8px' }}>
+            <Text size="xl" fw={700} style={{ marginBottom: '10px' }}>
+              Hello, Gooner.
+            </Text>
+
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div>Gooning session quality:</div>
+              <Tooltip position="bottom" offset = {20} label="Disclaimer: By giving us a rating, you agree to your information (i.e., the rating)
+                being sold for exorbitant prices">
+                <Rating 
+                  value={ratingValue}
+                  onChange={(value) => {
+                    setRatingValue(value);
+                    if (value <= 4) {
+                      setNotificationVisible(true);
+                      setGoodGooner(false);
+                    } else if (value === 5) {
+                      setGoodGooner(true);
+                      setNotificationVisible(false);
+                    }
+                  }} 
+                  style={{ marginLeft: '10px' }} 
+                />
+              </Tooltip>
+            </div>
+          </div>
+        )}
+
+        {goodGooner && (
+            <Alert 
+              variant="light" 
+              color="grape" 
+              style={{
+                position: 'fixed',
+                top: '30px',
+                right: '30px',
+                zIndex: 1000
+              }}
+              icon={icon} 
+              onClose={() => setGoodGooner(false)} 
+              withCloseButton
+            >
+              <Text style={{ marginRight: "20px", marginBottom: "20px"}}>
+                Good, very very good.
+              </Text>
+
+              <Button
+                component={Link}
+                href="/gooncenter"
+                variant="light"
+                leftSection={<IconHeart size={14} />}
+                rightSection={<IconArrowRight size={14} />}
+              >
+                Visit the goon center
+              </Button>
+            </Alert>
+        )}
+        {notificationVisible && (
+          <Notification 
+            title={
+              <>
+                <Text>We notice you aren't gooning very well.<br /></Text>
+                <Text style={{ color: 'red' }} fw={700} size="lg">Do better.</Text>
+              </>
+            } 
+            onClose={() => setNotificationVisible(false)}
+            style={{ position: 'absolute', bottom: 20, right: 20 }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          </Notification>
+        )}
+
+      </div>
+      </MantineProvider>
   );
 }
