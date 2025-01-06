@@ -5,7 +5,6 @@ import { MantineProvider, Text, Switch, Rating, Image, Tooltip, Notification, Al
 import '@mantine/core/styles.css';
 import { IconArrowRight, IconInfoCircle, IconHeart} from '@tabler/icons-react';
 import Link from 'next/link';
-//import { Link, useLocation, useNavigate, useOutlet } from 'react-router-dom';
 
 export default function Home() {
   const [isGooning, setIsGooning] = useState(false);
