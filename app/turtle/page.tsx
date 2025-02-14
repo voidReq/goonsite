@@ -17,7 +17,7 @@ export default function Turtle() {
         const swirl1 = new window.CanvasSwirl(
           document.getElementById('swirl1_surface'),
           {
-"count": 400,
+				"count": 400,
 				"shape": "random",
 				"radiusInnerMax": "0%",
 				"radiusInnerMin": "0%",

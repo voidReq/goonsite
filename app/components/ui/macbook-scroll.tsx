@@ -2,6 +2,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MotionValue, motion, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Button, Container, Select, Stack, Title } from "@mantine/core";
+import {
+  IconBrandGithub,
+  IconBrandGoogle,
+  IconBrandOnlyfans,
+} from "@tabler/icons-react";
 import {
   IconBrightnessDown,
   IconBrightnessUp,
@@ -24,6 +30,45 @@ import { IconCommand } from "@tabler/icons-react";
 import { IconCaretLeftFilled } from "@tabler/icons-react";
 import { IconCaretDownFilled } from "@tabler/icons-react";
 import Image from "next/image";
+
+const Label = ({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) => {
+  return (
+    <label htmlFor={htmlFor} className="text-neutral-700 dark:text-neutral-400 text-sm">
+      {children}
+    </label>
+  );
+};
+
+const Input = ({ id, placeholder, type = "text" }: { id: string; placeholder?: string; type?: string }) => {
+  return (
+    <input
+      type={type}
+      id={id}
+      placeholder={placeholder}
+      className="rounded-lg border border-neutral-300 dark:border-neutral-800 focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-700 outline-none px-4 py-2 text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-900"
+    />
+  );
+};
+
+const BottomGradient = () => {
+  return (
+    <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-slate-500 to-transparent" />
+  );
+};
+
+const LabelInputContainer = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={cn("flex flex-col space-y-2 w-full", className)}>
+      {children}
+    </div>
+  );
+};
 
 export const MacbookScroll = ({
   src,
@@ -85,7 +130,6 @@ export const MacbookScroll = ({
       </motion.h2>
       {/* Lid */}
       <Lid
-        src={src}
         scaleX={scaleX}
         scaleY={scaleY}
         rotate={rotate}
@@ -124,13 +168,11 @@ export const Lid = ({
   scaleY,
   rotate,
   translate,
-  src,
 }: {
   scaleX: MotionValue<number>;
   scaleY: MotionValue<number>;
   rotate: MotionValue<number>;
   translate: MotionValue<number>;
-  src?: string;
 }) => {
   return (
     <div className="relative [perspective:800px]">
@@ -164,13 +206,54 @@ export const Lid = ({
         }}
         className="h-96 w-[32rem] absolute inset-0 bg-[#010101] rounded-2xl p-2"
       >
-        <div className="absolute inset-0 bg-[#272729] rounded-lg" />
-        <Image
-          src={src as string}
-          alt="aceternity logo"
-          fill
-          className="object-cover object-left-top absolute rounded-lg inset-0 h-full w-full"
-        />
+        <div className="signupformscroll" />
+          <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
+      <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+        Welcome to Aceternity
+      </h2>
+      <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
+        Login to aceternity if you can because we don&apos;t have a login flow
+        yet
+      </p>
+ 
+      <form className="my-8" onSubmit={(e) => e.preventDefault()}>
+        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
+          <LabelInputContainer>
+            <Label htmlFor="firstname">Username</Label>
+            <Input id="firstname" placeholder="xXxGoonxXx" type="text" />
+          </LabelInputContainer>
+                  </div>
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="email">Email Address</Label>
+          <Input id="email" placeholder="projectmayhem@fc.com" type="email" />
+        </LabelInputContainer>
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="password">Password</Label>
+          <Input id="password" placeholder="••••••••" type="password" />
+        </LabelInputContainer>
+        <LabelInputContainer className="mb-8">
+          <Label htmlFor="twitterpassword">Confirm password</Label>
+          <Input
+            id="twitterpassword"
+            placeholder="••••••••"
+            type="twitterpassword"
+          />
+        </LabelInputContainer>
+ 
+        <button
+          className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          type="submit"
+        >
+          Sign up &rarr;
+          <BottomGradient />
+        </button>
+ 
+        <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
+ 
+        <div className="flex flex-col space-y-4">
+        </div>
+      </form>
+    </div>
       </motion.div>
     </div>
   );

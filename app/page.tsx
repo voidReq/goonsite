@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { MantineProvider, Text, Switch, Rating, Image, Tooltip, Notification, Alert, Button } from '@mantine/core';
+import { MantineProvider, Text, Switch, Rating, Image, Tooltip, Notification, Alert, Button, Slider} from '@mantine/core';
 import '@mantine/core/styles.css';
 import { IconArrowRight, IconInfoCircle, IconHeart} from '@tabler/icons-react';
 import Link from 'next/link';
@@ -35,28 +35,35 @@ export default function Home() {
         />
 
         {isGooning && (
-          <div style={{ border: '2px solid purple', padding: '20px', borderRadius: '8px' }}>
+          <div style={{ border: '2px solid purple', padding: '20px', borderRadius: '2px' }}>
             <Text size="xl" fw={700} style={{ marginBottom: '10px' }}>
               Hello, Gooner.
             </Text>
 
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div>Gooning session quality:</div>
+            <div style={{ display: 'flex', alignItems: 'center', padding: '10px'}}>
+              <div style={{marginRight:'20px'}}>Gooning session quality:</div>
               <Tooltip position="bottom" offset = {20} label="Disclaimer: By giving us a rating, you agree to your information (i.e., the rating)
                 being sold for exorbitant prices">
-                <Rating 
+                <Slider 
                   value={ratingValue}
+                  color="blue"
+                  marks={[
+                    { value: 20, label: '20%' },
+                    { value: 50, label: '50%' },
+                    { value: 80, label: '80%' },
+                  ]}
+                  style={{ width: '200px', marginLeft: '40px' }}
                   onChange={(value) => {
                     setRatingValue(value);
-                    if (value <= 4) {
+                    if (value <= 99) {
                       setNotificationVisible(true);
                       setGoodGooner(false);
-                    } else if (value === 5) {
+                    } else if (value === 100) {
                       setGoodGooner(true);
                       setNotificationVisible(false);
                     }
                   }} 
-                  style={{ marginLeft: '10px' }} 
+                  //style={{ marginLeft: '10px' }} 
                 />
               </Tooltip>
             </div>

@@ -18,7 +18,6 @@ export default function MacbookScrollDemo() {
               <Badge className="h-12 w-12 transform hover:scale-110 transition-transform duration-200" />
             </Link>
           }
-          src={`/lebron.png`}
           showGradient={true}
         />
       </div>

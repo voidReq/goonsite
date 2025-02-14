@@ -11,6 +11,7 @@
   "dependencies": {
     "@mantine/core": "7.3.2",
     "@mantine/hooks": "7.3.2",
+    "@radix-ui/react-label": "^2.1.1",
     "@tabler/icons-react": "^2.44.0",
     "clsx": "^2.0.0",
     "framer-motion": "^10.16.16",
