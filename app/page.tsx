@@ -24,7 +24,7 @@ export default function Home() {
           h={400}
           w="auto"
           fit="contain"
-          src="/IMG_9856.png"
+          src={`/${['IMG_9856', 'a', 'b'][Math.floor(Math.random() * 3)].toString()}.png`}
           style={{marginBottom: '20px'}}
         />
 
@@ -83,7 +83,7 @@ export default function Home() {
 
               <Button
                 component={Link}
-                href="/gooncenter"
+                href="macbook"
                 variant="light"
                 leftSection={<IconHeart size={14} />}
                 rightSection={<IconArrowRight size={14} />}
