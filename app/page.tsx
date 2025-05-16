@@ -5,6 +5,7 @@ import { MantineProvider, Text, Switch, Rating, Image, Tooltip, Notification, Al
 import '@mantine/core/styles.css';
 import { IconArrowRight, IconInfoCircle, IconHeart} from '@tabler/icons-react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 
 export default function Home() {
   const [isGooning, setIsGooning] = useState(false);
@@ -12,6 +13,9 @@ export default function Home() {
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [goodGooner, setGoodGooner] = useState(false);
   const icon = <IconInfoCircle />;
+const James = dynamic(() => import('./james/page'), {
+  ssr: false,
+});
 
   return (
     <MantineProvider forceColorScheme = "dark">
