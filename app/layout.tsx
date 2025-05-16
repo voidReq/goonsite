@@ -1,9 +1,11 @@
 // app/layout.tsx
 import type { Metadata } from "next";
 import { GeistSans } from 'geist/font/sans';
-import "./globals.css";
+import "./globals.css"; // Your global styles
+import '@mantine/core/styles.css'; // Mantine core styles
+
 import { MyProvider } from '../src/context/MyContext';
-import { MantineProvider, Text, Image } from '@mantine/core';
+import { MantineProvider, ColorSchemeScript } from '@mantine/core'; // Import ColorSchemeScript
 
 export const metadata: Metadata = {
   title: "The Gooonsite",
@@ -17,8 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={GeistSans.className}>
+      <head>
+                <ColorSchemeScript forceColorScheme="dark" />
+      </head>
       <body>
-        <MantineProvider>
+        <MantineProvider forceColorScheme="dark">
           <MyProvider>
             {children}
           </MyProvider>

@@ -1,7 +1,5 @@
 import React from 'react';
 import { Text, Title, Stack, Blockquote, Box, Anchor, Divider, Paper } from '@mantine/core';
-// If you have a CSS module for custom styles, ensure it's correctly linked.
-// import classes from './James.module.css'; // Assuming this is your CSS module
 
 export default function LiteraryAnalysisDisplay() {
 
@@ -207,75 +205,6 @@ export default function LiteraryAnalysisDisplay() {
           </Text>
         </>
       )
-    },
-    // Remaining placeholder sections from your template
-    {
-      title: "",
-      content: (
-        <>
-          <Blockquote>
-            {``}
-          </Blockquote>
-          <Text>
-            {``}
-          </Text>
-        </>
-      )
-    },
-    {
-      title: "",
-      content: (
-        <>
-          <Blockquote>
-            {``}
-          </Blockquote>
-          <Text>
-            {``}
-          </Text>
-        </>
-      )
-    },
-    {
-      title: "",
-      content: (
-        <>
-          <Blockquote>
-            {``}
-          </Blockquote>
-          <Text>
-            {``}
-          </Text>
-        </>
-      )
-    },
-     {
-      title: "",
-      content: (
-        <>
-          <Blockquote>
-            {``}
-          </Blockquote>
-          <Text>
-            {``}
-          </Text>
-        </>
-      )
-    },
-    {
-      title: "",
-      paragraphs: [
-        ``
-      ]
-    },
-    {
-      title: "",
-      paragraphs: [
-        ``,
-        ``,
-        ``,
-        ``,
-        ``
-      ]
     }
   ];
 
