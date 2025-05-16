@@ -1,9 +1,6 @@
 "use client";
-import styles from "./page.module.css";
-import { Container, Title, Text, Paper, Group, Stack, AppShell, NavLink, MantineProvider, Anchor, Box } from "@mantine/core";
-import Link from "next/link";
+import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider } from "@mantine/core";
 import '@mantine/core/styles.css';
-import { usePathname } from "next/navigation";
 import NavComponent from "../components/navComponent";
 
 // Example blog posts for East of Eden
@@ -29,8 +26,6 @@ const posts = [
 ];
 
 export default function EastOfEdenPage() {
-    const pathname = usePathname();
-
     return (
         <MantineProvider>
             <AppShell>
@@ -39,20 +34,12 @@ export default function EastOfEdenPage() {
                     <Title order={1} mb="md">
                         East of Eden Blog
                     </Title>
-                    <Stack spacing="lg">
+                    <Stack>
                         {posts.map((post) => (
                             <Paper key={post.id} withBorder shadow="sm" p="md" radius="md">
-                                <Group position="apart" mb={4}>
-                                    <Title order={3} mb={0}>
-                                        <Link href={`/jerry/east-of-eden/${post.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-                                            {post.title}
-                                        </Link>
-                                    </Title>
-                                    <Text size="xs" color="dimmed">
-                                        {post.date}
-                                    </Text>
-                                </Group>
-                                <Text size="sm" color="dimmed">
+                                <Title order={3} mb={0}>{post.title}</Title>
+
+                                <Text>
                                     {post.excerpt}
                                 </Text>
                             </Paper>
