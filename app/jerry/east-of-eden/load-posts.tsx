@@ -1,4 +1,4 @@
-import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider, MantineComponent } from "@mantine/core";
+import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider, MantineComponent, Blockquote } from "@mantine/core";
 
 
 import fs from 'fs';
@@ -16,7 +16,11 @@ export const getPosts = () => {
 
 export const getSpecificPost = (slug: string) => {
     const filesPath = path.join(process.cwd(), "app", "jerry", "east-of-eden", "files");
-    const filePath = path.join(filesPath, `${slug}.md`);
+    const filePath = path.join(filesPath, `${slug}`);
+
+    if (!fs.existsSync(filePath)) {
+        throw new Error(`File not found: ${filePath}`);
+    }
 
     const { data, content } = loadMarkdownFile(filePath);
     return {
@@ -27,6 +31,20 @@ export const getSpecificPost = (slug: string) => {
     };
 };
 
+
+// Map HTML tags to Mantine components
+const components = {
+    h1: (props: any) => <Title order={1} {...props} />,
+    h2: (props: any) => <Title order={2} {...props} />,
+    h3: (props: any) => <Title order={3} {...props} />,
+    h4: (props: any) => <Title order={4} {...props} />,
+    h5: (props: any) => <Title order={5} {...props} />,
+    h6: (props: any) => <Title order={6} {...props} />,
+    p: (props: any) => <Text {...props} />,
+    blockquote: (props: any) => <Blockquote mb={30} {...props} />,
+};
+
+
 // Reusable function to load and parse a markdown file
 function loadMarkdownFile(filePath: string) {
     const markdownContent = fs.readFileSync(filePath, 'utf-8');
@@ -34,25 +52,26 @@ function loadMarkdownFile(filePath: string) {
     const converter = new showdown.Converter();
     const html = converter.makeHtml(content);
 
-    // Map HTML tags to Mantine components
-    const components = {
-        h1: (props: any) => <Title order={1} {...props} />,
-        h2: (props: any) => <Title order={2} {...props} />,
-        h3: (props: any) => <Title order={3} {...props} />,
-        h4: (props: any) => <Title order={4} {...props} />,
-        h5: (props: any) => <Title order={5} {...props} />,
-        h6: (props: any) => <Title order={6} {...props} />,
-        p: (props: any) => <Text {...props} />,
-    };
-
     const parsedHtml = parse(html, {
         replace: (domNode: DOMNode) => {
-            if (domNode.type === 'tag' && components[domNode.name as keyof typeof components]) {
-                const Component = components[domNode.name as keyof typeof components];
-                return <Component>{domNode.children.map((child: any) => child.data)}</Component>;
-            }
+            return htmlToMantine(domNode);
         },
     });
 
     return { data: { order: Number(data.order) || Infinity, title: data.title }, content: parsedHtml };
+}
+
+function htmlToMantine(domNode: DOMNode) {
+    if (domNode.type === 'tag' && components[domNode.name as keyof typeof components]) {
+        const Component = components[domNode.name as keyof typeof components];
+        return <Component key={0}>{
+            domNode.children.map((child) => {
+                if (child.type == "tag") {
+                    return htmlToMantine(child as DOMNode);
+                } else if (child.type == "text") {
+                    return child.data;
+                }
+            })
+        }</Component>;
+    }
 }
