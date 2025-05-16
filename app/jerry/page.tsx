@@ -41,10 +41,12 @@ export default function JerryMain() {
             <NavComponent />
             <Container size="sm" py="xl">
                 <Title order={1} ta="center" mb="xs">
-                    Jerry's Blog Home
+                    Jerry's Writing Blog
                 </Title>
                 <Text ta="center" c="dimmed" mb="xl">
-                    Welcome! Explore my writing and thoughts on literature, non-fiction, and documentaries.
+                    Welcome to my website!
+                    This blog contains a collection of essays I wrote for my AP Lang class.
+                    Take a look around at what's here!
                 </Text>
                 <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
                     {links.map(link => (

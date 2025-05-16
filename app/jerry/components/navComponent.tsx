@@ -1,3 +1,5 @@
+"use client";
+
 import { Box } from "@mantine/core";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -8,9 +10,9 @@ import styles from "./navComponent.module.css";
 const navLinks = [
     { label: "Home", href: "/jerry" },
     { label: "East of Eden", href: "/jerry/east-of-eden" },
-    { label: "Non Fiction", href: "/jerry/non-fiction" },
+    { label: "The Cheating Culture", href: "/jerry/cheating-culture" },
     { label: "Short Non Fiction", href: "/jerry/short-non-fiction" },
-    { label: "Documentary Blogs", href: "/jerry/documentary-blogs" },
+    { label: "The Painter and the Thief", href: "/jerry/painter-thief" },
 ];
 
 

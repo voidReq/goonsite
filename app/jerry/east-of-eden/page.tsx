@@ -1,7 +1,9 @@
-"use client";
 import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider } from "@mantine/core";
 import '@mantine/core/styles.css';
 import NavComponent from "../components/navComponent";
+import fs from 'fs';
+import matter from 'gray-matter';
+import showdown from 'showdown';
 
 // Example blog posts for East of Eden
 const posts = [
@@ -25,6 +27,16 @@ const posts = [
     },
 ];
 
+// Reusable function to load and parse a markdown file
+function loadMarkdownFile(filePath: string) {
+    const markdownContent = fs.readFileSync(filePath, 'utf-8');
+    const { data, content } = matter(markdownContent);
+    const converter = new showdown.Converter();
+    const html = converter.makeHtml(content);
+    return { data, html };
+}
+
+
 export default function EastOfEdenPage() {
     return (
         <MantineProvider>
@@ -32,8 +44,12 @@ export default function EastOfEdenPage() {
                 <NavComponent />
                 <Container size="md" py="xl">
                     <Title order={1} mb="md">
-                        East of Eden Blog
+                        East of Eden
                     </Title>
+                    <Text c="gray.7" style={{ margin: "16px 0" }}>
+                        East of Eden is a book written by John Steinbeck. The book explores the intertwining history of two families, the Trasks and the Hamiltons, in California's Salinas Valley.
+                        The book explores themes such as free will, the battle between good and evil, and the mysterious nature of love.
+                    </Text>
                     <Stack>
                         {posts.map((post) => (
                             <Paper key={post.id} withBorder shadow="sm" p="md" radius="md">
