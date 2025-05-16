@@ -1,0 +1,7 @@
+---
+title: The loss of childhood
+order: 20
+---
+> "When a child first catches adults out – when it first walks into his grave little head that adults do not have divine intelligence, that their judgments are not always wise, their thinking true, their sentences just – his world falls into panic desolation. The gods are fallen and all safety gone. And there is one sure thing about the fall of gods: they do not fall a little; they crash and shatter or sink deeply into green muck. It is a tedious job to build them up again; they never quite shine. And the child's world is never quite whole again. It is an aching kind of growing." (20)
+
+This reminds me of a quote by Oscar Wilde, "Children begin by loving their parents. After a time they judge them. Rarely, if ever, do they forgive them." Part of growing up is having your worldview shattered – one day, you will realize you are no longer in the center of the world, and that life is hard, and you can't have things go your way. East of Eden captures this very well, the naivete that parents are these people that know everything and are perfect. Once you find a fallacy, which is inevitable, you lose that foundation, parents are one of the pillars of childhood – where you get that reliable sense of security. With that reliability gone, it's painful because that's when you have to learn to stand up for yourself. Parents can't make decisions for you anymore, because they don't know what's best for you. And you don't know what's best for you either. So it's scary, and it's painful.
