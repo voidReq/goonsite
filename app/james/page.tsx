@@ -1,6 +1,6 @@
-"use client";
 import React from 'react';
-import { MantineProvider, Text, Title, Stack, Blockquote, Box, Anchor, Divider, Paper } from '@mantine/core';
+import { Text, Title, Stack, Blockquote, Box, Anchor, Divider, Paper } from '@mantine/core';
+import classes from './James.module.css';
 
 export default function James() {
   const pdfLink = "https://dn790002.ca.archive.org/0/items/east-of-eden_202007/East%20Of%20Eden.pdf";
@@ -64,49 +64,44 @@ export default function James() {
       ]
     }
   ];
-
-  const paperStyle = {
-    border: '3px solid rgb(119, 13, 168)', // Your specified border color
-    backgroundColor: '#25262B', // Dark background for paper
+const paperStyle = {
+    border: '3px solid rgb(119, 13, 168)',
+    backgroundColor: '#25262B',
   };
 
   return (
-    <MantineProvider forceColorScheme='dark'>
-      <Box style={{ display: 'flex', justifyContent: 'center', width: '100%'}} py="xl" px="md">
-        <Stack gap="xl" style={{ gap: '400px', maxWidth: '900px', width: '100%' }}>
-          {/* Page Title and PDF Link */}
-          <Stack align="center" gap="xl">
-            <Title order={1} ta="center">Literary Analysis<br/><br/></Title>
-            <Anchor href={pdfLink} target="_blank" rel="noopener noreferrer">
-              <Text c="blue.4" td="underline" ta="center">East Of Eden.pdf<br/><br/></Text>
-            </Anchor>
-          </Stack>
-
-          {/* Dynamically generated sections */}
-          {sections.map((section, index) => (
-            <React.Fragment key={index}>
-              <Paper
-                shadow="sm"
-                p="xl" // Increased padding
-                radius="md"
-                style={paperStyle}
-              >
-                <Stack gap="md" style ={{gap:'40px'}}> {/* Reduced gap within each Paper */}
-                  <Title order={2}>{section.title}</Title>
-                  {section.paragraphs ? (
-                    section.paragraphs.map((paragraph, pIndex) => (
-                      <Text key={pIndex}>{paragraph}</Text>
-                    ))
-                  ) : (
-                    section.content // For section 6 with Blockquote
-                  )}
-                </Stack>
-              </Paper>
-              {index < sections.length - 1 && <Divider my={48} />} {/* Increased inter-section spacing */}
-            </React.Fragment>
-          ))}
+    <Box style={{ display: 'flex', justifyContent: 'center', width: '100%'}} py="xl" px="md">
+      <Stack gap="xl" style={{ maxWidth: '900px', width: '100%', gap: '60px' }}> {/* Explicit pixel gap on outer Stack */}
+        {/* Page Title and PDF Link */}
+        <Stack align="center" gap="xl" style={{ gap: '30px' }}> {/* Explicit pixel gap on this Stack */}
+          <Title order={1} ta="center">Literary Analysis<br/><br/></Title>
+          <Anchor href={pdfLink} target="_blank" rel="noopener noreferrer">
+            <Text c="blue.4" td="underline" ta="center">East Of Eden.pdf<br/><br/></Text>
+          </Anchor>
         </Stack>
-      </Box>
-    </MantineProvider>
+
+        {/* Dynamically generated sections */}
+        {sections.map((section, index) => (
+          <React.Fragment key={index}>
+            <Paper
+              shadow="sm"
+              p="xl"
+              radius="md"
+              style={paperStyle}
+            >
+                <Title order={2}>{section.title}</Title>
+                {section.paragraphs ? (
+                  section.paragraphs.map((paragraph, pIndex) => (
+                    <Text key={pIndex}>{paragraph}</Text>
+                  ))
+                ) : (
+                  section.content 
+                )}
+            </Paper>
+            {index < sections.length - 1 && <Divider my={48} />}
+          </React.Fragment>
+        ))}
+      </Stack>
+    </Box>
   );
 }

@@ -1,8 +1,9 @@
+// app/layout.tsx
 import type { Metadata } from "next";
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
+import { GeistSans } from 'geist/font/sans';
 import "./globals.css";
 import { MyProvider } from '../src/context/MyContext';
+import { MantineProvider, Text, Image } from '@mantine/core';
 
 export const metadata: Metadata = {
   title: "The Gooonsite",
@@ -15,10 +16,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <MyProvider>
-      <html lang="en" className={GeistSans.className}>
-        <body>{children}</body>
-      </html>
-    </MyProvider>
+    <html lang="en" className={GeistSans.className}>
+      <body>
+        <MantineProvider>
+          <MyProvider>
+            {children}
+          </MyProvider>
+        </MantineProvider>
+      </body>
+    </html>
   );
 }
