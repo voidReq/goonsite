@@ -1,7 +1,0 @@
-.outerStack {
-  gap: 80px !important; /* Using !important to try and override other styles */
-}
-
-.innerStack {
-  gap: 120px !important; /* Using !important here as well */
-}
