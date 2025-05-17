@@ -7,15 +7,15 @@ import showdown from 'showdown';
 import parse, { DOMNode } from 'html-react-parser';
 import path from "path";
 
-export const getPosts = () => {
-    const filesPath = path.join(process.cwd(), "app", "jerry", "east-of-eden", "files");
+export const getPosts = (folder: string) => {
+    const filesPath = path.join(process.cwd(), "app", "jerry", folder, "files");
     return fs.readdirSync(filesPath).map((fileName) => {
-        return getSpecificPost(fileName);
+        return getSpecificPost(folder, fileName);
     }).sort((a, b) => a.order - b.order);
 };
 
-export const getSpecificPost = (slug: string) => {
-    const filesPath = path.join(process.cwd(), "app", "jerry", "east-of-eden", "files");
+export const getSpecificPost = (folder: string, slug: string) => {
+    const filesPath = path.join(process.cwd(), "app", "jerry", folder, "files");
     const filePath = path.join(filesPath, `${slug}`);
 
     if (!fs.existsSync(filePath)) {

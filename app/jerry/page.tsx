@@ -37,7 +37,6 @@ const links = [
 export default function JerryMain() {
     return (
         <MantineProvider>
-
             <NavComponent />
             <Container size="sm" py="xl">
                 <Title order={1} ta="center" mb="xs">
@@ -83,7 +82,7 @@ export default function JerryMain() {
                             />
 
                             <div style={{ padding: 16 }}>
-                                <Title order={3} className={styles.cardTitle} mb={4}>
+                                <Title order={3} className={styles.cardTitle} mb={4} c="black">
                                     {link.label}
                                 </Title>
                                 <Text size="sm" c="dimmed">
