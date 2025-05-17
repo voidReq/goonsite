@@ -15,7 +15,7 @@ export default function JamesCenter() {
         <Stack align="center" gap="md">
           <Button
             component={Link}
-            href="jamesEastOfEden"
+            href="james/EastOfEden"
             variant="light"
             leftSection={<IconInfoCircle size={14} />}
             rightSection={<IconArrowRight size={14} />}
@@ -25,7 +25,7 @@ export default function JamesCenter() {
 
           <Button
             component={Link}
-            href="jamesNF"
+            href="james/Articles"
             variant="light"
             leftSection={<IconInfoCircle size={14} />}
             rightSection={<IconArrowRight size={14} />}
@@ -35,7 +35,7 @@ export default function JamesCenter() {
 
           <Button
             component={Link}
-            href="jamesSenseOfWonder"
+            href="james/SenseOfWonder"
             variant="light"
             leftSection={<IconInfoCircle size={14} />}
             rightSection={<IconArrowRight size={14} />}
@@ -45,7 +45,7 @@ export default function JamesCenter() {
           
           <Button
             component={Link}
-            href="jamesDocumentary"
+            href="james/Documentary"
             variant="light"
             leftSection={<IconInfoCircle size={14} />}
             rightSection={<IconArrowRight size={14} />}

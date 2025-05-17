@@ -13,7 +13,7 @@ export default function Home() {
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [goodGooner, setGoodGooner] = useState(false);
   const icon = <IconInfoCircle />;
-const James = dynamic(() => import('./jamesEastOfEden/page'), {
+const James = dynamic(() => import('./james/EastOfEden/page'), {
   ssr: false,
 });
 
