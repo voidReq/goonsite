@@ -1,9 +1,0 @@
-.paperHover {
-    transition: box-shadow 0.2s, border 0.2s;
-}
-
-.paperHover:hover {
-    box-shadow: 0 0 16px rgba(0, 0, 0, 0.15);
-    background-color: #f8fafc;
-    border: 1px solid #888c92;
-}

@@ -10,7 +10,7 @@ import styles from "./navComponent.module.css";
 const navLinks = [
     { label: "Home", href: "/jerry" },
     { label: "East of Eden", href: "/jerry/east-of-eden" },
-    { label: "The Cheating Culture", href: "/jerry/cheating-culture" },
+    { label: "The Cheating Culture", href: "/jerry/non-fiction" },
     { label: "Short Non Fiction", href: "/jerry/short-non-fiction" },
     { label: "The Painter and the Thief", href: "/jerry/painter-thief" },
 ];
