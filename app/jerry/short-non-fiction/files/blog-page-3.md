@@ -2,6 +2,7 @@
 title: Neon Rattlesnakes
 order: 2
 ---
+## [Pink squirrels and green sharks—why do so many animals ‘glow’ in UV light?](https://www.nationalgeographic.com/animals/article/why-animals-glow-uv-ultraviolet-light)
 
 > "Likewise, prairie rattlesnakes may have evolved to get rid of their UV colorations on a landscape where reflecting UV would make them stand out like a neon sign in a diner window"
 

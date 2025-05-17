@@ -1,4 +1,4 @@
-import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider, MantineComponent, Blockquote } from "@mantine/core";
+import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider, MantineComponent, Blockquote, Anchor } from "@mantine/core";
 
 
 import fs from 'fs';
@@ -42,6 +42,7 @@ const components = {
     h6: (props: any) => <Title order={6} {...props} />,
     p: (props: any) => <Text {...props} />,
     blockquote: (props: any) => <Blockquote mb={30} {...props} />,
+    a: (props: any) => <Anchor {...props} />,
 };
 
 
@@ -61,13 +62,13 @@ function loadMarkdownFile(filePath: string) {
     return { data: { order: Number(data.order) + 1 || Infinity, title: data.title }, content: parsedHtml };
 }
 
-function htmlToMantine(domNode: DOMNode) {
+function htmlToMantine(domNode: DOMNode, attrs: any = {}) {
     if (domNode.type === 'tag' && components[domNode.name as keyof typeof components]) {
         const Component = components[domNode.name as keyof typeof components];
-        return <Component key={0}>{
+        return <Component key={0} {...attrs}>{
             domNode.children.map((child) => {
                 if (child.type == "tag") {
-                    return htmlToMantine(child as DOMNode);
+                    return htmlToMantine(child as DOMNode, child.attribs);
                 } else if (child.type == "text") {
                     return child.data;
                 }
