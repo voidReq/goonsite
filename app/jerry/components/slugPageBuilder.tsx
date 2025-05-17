@@ -7,12 +7,14 @@ import '@mantine/core/styles.css';
 import Link from "next/link";
 
 
-export default (folder: string) => async function Page({
+export default (folder: string, defaultSlug = "") => async function Page({
     params,
 }: {
     params: Promise<{ slug: string }>
 }) {
-    const { slug } = await params;
+    let { slug } = await params;
+
+    slug = slug || defaultSlug;
 
     const posts = getPosts(folder);
 
@@ -58,7 +60,7 @@ export default (folder: string) => async function Page({
                     <Flex justify="space-between" align="center">
                         <div>
                             {prevId && (
-                                <Link href={`/jerry/east-of-eden/${prevId}`}>
+                                <Link href={`/jerry/${folder}/${prevId}`}>
                                     <Button
                                         size="lg"
                                         radius="md"
@@ -76,7 +78,7 @@ export default (folder: string) => async function Page({
                         </div>
                         <div>
                             {nextId && (
-                                <Link href={`/jerry/east-of-eden/${nextId}`}>
+                                <Link href={`/jerry/${folder}/${nextId}`}>
                                     <Button
                                         size="lg"
                                         radius="md"

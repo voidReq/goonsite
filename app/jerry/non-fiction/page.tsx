@@ -1,20 +1,16 @@
-import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider, MantineComponent, ColorSchemeScript } from "@mantine/core";
 import '@mantine/core/styles.css';
-import NavComponent from "../components/navComponent";
-import Link from "next/link";
-import styles from "./page.module.css";
-import { getPosts } from "../util/load-posts";
 import LandingPageComponent from "../components/landingPageComponent";
 
-const posts = getPosts("east-of-eden");
-
-export default function EastOfEdenPage() {
+export default function ShortNonFiction() {
     return (
         <LandingPageComponent
-            folder="east-of-eden"
-            title="East of Eden"
-            desc={`East of Eden is a book written by John Steinbeck. The book explores the intertwining history of two families, the Trasks and the Hamiltons, in California's Salinas Valley.
-                        The book explores themes such as free will, the battle between good and evil, and the mysterious nature of love.`}
+            folder="non-fiction"
+            title="The Cheating Culture"
+            desc={`
+                Where did America's morales go? In the Cheating Culture, David Callahan details the many ways ordinary Americans cheat.
+                Even as conventional street crime go down, the rate of fraud has been higher than ever before. Ordinary people are becoming more and more cynical, as they are being left behind in society by the "Winning Class".
+                Callahan takes us on a tour of cheating in America, and makes us reconsider the ideals that American society is built upon. 
+                `}
         />
 
     );
