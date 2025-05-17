@@ -4,6 +4,7 @@ import LandingPageComponent from "../components/landingPageComponent";
 export default function ShortNonFiction() {
     return (
         <LandingPageComponent
+            imgSrc='https://m.media-amazon.com/images/I/61zwec5kIIL.jpg'
             folder="non-fiction"
             title="The Cheating Culture"
             desc={`

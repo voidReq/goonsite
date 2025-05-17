@@ -1,4 +1,4 @@
-import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider } from "@mantine/core";
+import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider, Image } from "@mantine/core";
 import '@mantine/core/styles.css';
 import NavComponent from "../components/navComponent";
 import Link from "next/link";
@@ -7,11 +7,12 @@ import { getPosts } from "../util/load-posts";
 
 
 export default function LandingPageComponent({
-    folder, title, desc
+    folder, title, desc, imgSrc
 }: {
     folder: string,
     title: string,
     desc: string,
+    imgSrc?: string,
 }) {
     const posts = getPosts(folder);
     return (
@@ -19,6 +20,11 @@ export default function LandingPageComponent({
             <AppShell>
                 <NavComponent />
                 <Container size="sm" py="xl">
+                    {imgSrc ? <Image
+                        src={imgSrc}
+                        radius="md"
+                        mb="50"
+                        h={400} /> : ""}
                     <Title order={1} mb="md">
                         {title}
                     </Title>

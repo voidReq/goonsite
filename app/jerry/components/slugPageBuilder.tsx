@@ -7,7 +7,7 @@ import '@mantine/core/styles.css';
 import Link from "next/link";
 
 
-export default (folder: string, defaultSlug = "") => async function Page({
+export default (folder: string, defaultSlug = "", children: React.ReactNode = null) => async function Page({
     params,
 }: {
     params: Promise<{ slug: string }>
@@ -43,6 +43,7 @@ export default (folder: string, defaultSlug = "") => async function Page({
             <AppShell>
                 <NavComponent />
                 <Container size="sm" py="xl">
+                    {children}
                     <Stack>
                         {
                             <Group>
