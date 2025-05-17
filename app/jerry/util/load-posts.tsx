@@ -58,7 +58,7 @@ function loadMarkdownFile(filePath: string) {
         },
     });
 
-    return { data: { order: Number(data.order) || Infinity, title: data.title }, content: parsedHtml };
+    return { data: { order: Number(data.order) + 1 || Infinity, title: data.title }, content: parsedHtml };
 }
 
 function htmlToMantine(domNode: DOMNode) {

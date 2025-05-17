@@ -1,5 +1,5 @@
 ---
-title: 
+title: A violent act
 order: 5
 ---
 
