@@ -1,0 +1,18 @@
+.nav {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    background-color: #0a58b3;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navLink {
+    color: #cccccc;
+    display: block;
+    transition: color 0.2s;
+}
+
+.navLink:hover {
+    color: rgb(255, 255, 255);
+}

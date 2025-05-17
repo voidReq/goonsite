@@ -1,17 +1,11 @@
+// app/layout.tsx
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { GeistSans } from 'geist/font/sans';
+import "./globals.css"; // Your global styles
+import '@mantine/core/styles.css'; // Mantine core styles
+
 import { MyProvider } from '../src/context/MyContext';
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { MantineProvider, ColorSchemeScript } from '@mantine/core'; // Import ColorSchemeScript
 
 export const metadata: Metadata = {
   title: "The Gooonsite",
@@ -24,14 +18,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <MyProvider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
-        </body>
-      </html>
-    </MyProvider>
+    <html lang="en" className={GeistSans.className}>
+      <head>
+                <ColorSchemeScript forceColorScheme="dark" />
+      </head>
+      <body>
+        <MantineProvider forceColorScheme="dark">
+          <MyProvider>
+            {children}
+          </MyProvider>
+        </MantineProvider>
+      </body>
+    </html>
   );
 }
