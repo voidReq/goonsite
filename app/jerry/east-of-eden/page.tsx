@@ -1,8 +1,4 @@
-import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider, MantineComponent, ColorSchemeScript } from "@mantine/core";
 import '@mantine/core/styles.css';
-import NavComponent from "../components/navComponent";
-import Link from "next/link";
-import styles from "./page.module.css";
 import { getPosts } from "../util/load-posts";
 import LandingPageComponent from "../components/landingPageComponent";
 

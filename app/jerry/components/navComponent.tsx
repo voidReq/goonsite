@@ -17,7 +17,11 @@ const navLinks = [
 
 
 export default function NavComponent() {
-    const pathname = usePathname();
+    const realPath = usePathname();
+
+    const isLinkMatch = (matchPath: string) => matchPath == "/jerry"
+        ? realPath == "/jerry"
+        : realPath == matchPath || realPath.startsWith(matchPath + "/");
 
     return (<header>
         <Box className={styles.nav}>
@@ -28,8 +32,8 @@ export default function NavComponent() {
                     className={styles.navLink}
                     style={{
                         textDecoration: "none",
-                        fontWeight: pathname === link.href ? "bold" : "normal",
-                        color: pathname === link.href ? "white" : "",
+                        fontWeight: isLinkMatch(link.href) ? "bold" : "normal",
+                        color: isLinkMatch(link.href) ? "white" : "",
                     }}
                 >
                     {link.label}
