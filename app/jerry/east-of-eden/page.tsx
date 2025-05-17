@@ -1,4 +1,4 @@
-import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider, MantineComponent } from "@mantine/core";
+import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider, MantineComponent, ColorSchemeScript } from "@mantine/core";
 import '@mantine/core/styles.css';
 import NavComponent from "../components/navComponent";
 import Link from "next/link";
