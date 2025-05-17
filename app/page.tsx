@@ -5,6 +5,7 @@ import { MantineProvider, Text, Switch, Rating, Image, Tooltip, Notification, Al
 import '@mantine/core/styles.css';
 import { IconArrowRight, IconInfoCircle, IconHeart} from '@tabler/icons-react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 
 export default function Home() {
   const [isGooning, setIsGooning] = useState(false);
@@ -12,6 +13,9 @@ export default function Home() {
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [goodGooner, setGoodGooner] = useState(false);
   const icon = <IconInfoCircle />;
+const James = dynamic(() => import('./james/EastOfEden/page'), {
+  ssr: false,
+});
 
   return (
     <MantineProvider forceColorScheme = "dark">
@@ -24,7 +28,7 @@ export default function Home() {
           h={400}
           w="auto"
           fit="contain"
-          src="/IMG_9856.png"
+          src={`/${['IMG_9856', 'a', 'b'][Math.floor(Math.random() * 3)].toString()}.png`}
           style={{marginBottom: '20px'}}
         />
 
@@ -83,7 +87,7 @@ export default function Home() {
 
               <Button
                 component={Link}
-                href="/gooncenter"
+                href="macbook"
                 variant="light"
                 leftSection={<IconHeart size={14} />}
                 rightSection={<IconArrowRight size={14} />}
