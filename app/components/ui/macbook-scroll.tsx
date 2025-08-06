@@ -227,13 +227,15 @@ export const Keypad = () => {
           <IconPlayerTrackPrev className="h-[6px] w-[6px]" />
           <span className="inline-block mt-1">F7</span>
         </KBtn>
-        <KBtn>
-          <IconPlayerSkipForward className="h-[6px] w-[6px]" />
-          <span className="inline-block mt-1">F8</span>
-        </KBtn>
+        <a href="https://www.youtube.com/watch?v=xY_gx1jU2LI&feature=youtu.be" target="_blank" rel="noopener noreferrer">
+          <KBtn>
+            <IconPlayerSkipForward className="h-[6px] w-[6px]" />
+            <span className="inline-block mt-1">F8</span>
+          </KBtn>
+        </a>
         <KBtn>
           <IconPlayerTrackNext className="h-[6px] w-[6px]" />
-          <span className="inline-block mt-1">F8</span>
+          <span className="inline-block mt-1">F9</span>
         </KBtn>
         <KBtn>
           <IconVolume3 className="h-[6px] w-[6px]" />
