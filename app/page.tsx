@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from 'react';
-import { MantineProvider, Text, Switch, Rating, Image, Tooltip, Notification, Alert, Button } from '@mantine/core';
+import { useState, useEffect } from 'react';
+import { MantineProvider, Text, Switch, Rating, Image, Tooltip, Notification, Alert, Button, Progress } from '@mantine/core';
 import '@mantine/core/styles.css';
 import { IconArrowRight, IconInfoCircle, IconHeart} from '@tabler/icons-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { Terminal } from './components/ui/Terminal';
 
 export default function Home() {
   const [isGooning, setIsGooning] = useState(false);
@@ -13,30 +14,28 @@ export default function Home() {
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [goodGooner, setGoodGooner] = useState(false);
   const icon = <IconInfoCircle />;
-const James = dynamic(() => import('./james/EastOfEden/page'), {
-  ssr: false,
-});
 
   return (
     <MantineProvider forceColorScheme = "dark">
       
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column'}}>
 
+        <Terminal />
 
-        <Image
-          radius="md"
-          h={400}
-          w="auto"
-          fit="contain"
-          src={`/${['IMG_9856', 'a', 'b'][Math.floor(Math.random() * 3)].toString()}.png`}
-          style={{marginBottom: '20px'}}
-        />
+        <div style={{marginTop: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <div style={{display: 'flex', gap: '20px'}}>
+            <Button component={Link} href="/goon-hub">Goon Hub</Button>
+            <Button component={Link} href="/goon-sploit">Goon-sploit</Button>
+          </div>
+        </div>
 
-        <Switch 
-          label="I am currently gooning" 
-          style={{ marginBottom: '20px' }} 
-          onChange={(event) => setIsGooning(event.currentTarget.checked)}
-        />
+        <div style={{marginTop: '40px'}}>
+          <Switch 
+            label="I am currently gooning" 
+            style={{ marginBottom: '20px' }} 
+            onChange={(event) => setIsGooning(event.currentTarget.checked)}
+          />
+        </div>
 
         {isGooning && (
           <div style={{ border: '2px solid purple', padding: '20px', borderRadius: '8px' }}>
