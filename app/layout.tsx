@@ -12,7 +12,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [colorScheme, setColorScheme] = useState('dark');
+  const [colorScheme, setColorScheme] = useState<'light' | 'dark'>('dark');
 
   const toggleColorScheme = () => {
     setColorScheme(colorScheme === 'dark' ? 'light' : 'dark');
@@ -26,7 +26,7 @@ export default function RootLayout({
         </head>
         <body>
           <MantineProvider forceColorScheme={colorScheme}>
-            <Group position="right" p="md">
+            <Group justify="flex-end" p="md">
               <Switch
                 checked={colorScheme === 'dark'}
                 onChange={toggleColorScheme}
