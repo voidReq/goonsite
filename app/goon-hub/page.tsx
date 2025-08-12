@@ -4,7 +4,13 @@ import { MantineProvider, Text, Paper, Title, Code } from '@mantine/core';
 import '@mantine/core/styles.css';
 import Link from 'next/link';
 
-const treeData = [
+interface TreeDataItem {
+  value: string;
+  label: React.ReactNode;
+  children?: TreeDataItem[];
+}
+
+const treeData: TreeDataItem[] = [
   { value: 'home', label: <Link href="/">Home</Link> },
   {
     value: 'goon-hub',
@@ -37,7 +43,7 @@ const treeData = [
   { value: 'turtle', label: <Link href="/turtle">Turtle</Link> },
 ];
 
-const renderTree = (nodes) => (
+const renderTree = (nodes: TreeDataItem[]) => (
   <ul style={{ listStyleType: 'none', paddingLeft: '20px' }}>
     {nodes.map((node) => (
       <li key={node.value}>
