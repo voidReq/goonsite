@@ -65,10 +65,35 @@ export const MacbookScroll = ({
   const textTransform = useTransform(scrollYProgress, [0, 0.3], [0, 100]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
+  if (isMobile) {
+    return (
+      <div
+        ref={ref}
+        className="flex flex-col items-center justify-center w-full py-10"
+      >
+        {title && (
+          <h2 className="dark:text-white text-neutral-800 text-2xl font-bold mb-6 text-center">
+            {title}
+          </h2>
+        )}
+        {src && (
+          <Image
+            src={src}
+            alt="preview"
+            width={320}
+            height={240}
+            className="rounded-lg"
+          />
+        )}
+        {badge && <div className="mt-4">{badge}</div>}
+      </div>
+    );
+  }
+
   return (
     <div
       ref={ref}
-      className="min-h-[200vh]  flex flex-col items-center py-0 md:py-80 justify-start flex-shrink-0 [perspective:800px] transform md:scale-100  scale-[0.35] sm:scale-50"
+      className="min-h-[200vh] flex flex-col items-center py-0 md:py-80 justify-start flex-shrink-0 [perspective:800px] transform md:scale-100 scale-[0.35] sm:scale-50"
     >
       <motion.h2
         style={{

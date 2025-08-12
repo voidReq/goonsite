@@ -22,6 +22,7 @@ export default function RootLayout({
     <MyProvider>
       <html lang="en" className={GeistSans.className}>
         <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
           <ColorSchemeScript />
         </head>
         <body>
