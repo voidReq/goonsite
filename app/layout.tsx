@@ -1,26 +1,43 @@
-// app/layout.tsx
-import type { Metadata } from "next";
+"use client";
+
 import { GeistSans } from 'geist/font/sans';
 import "./globals.css"; // Your global styles
 import '@mantine/core/styles.css'; // Mantine core styles
-
 import { MyProvider } from '../src/context/MyContext';
-import { MantineProvider, ColorSchemeScript } from '@mantine/core'; // Import ColorSchemeScript
-
-export const metadata: Metadata = {
-  title: "The Gooonsite",
-  description: "For all your gooning needs",
-};
+import { MantineProvider, ColorSchemeScript, Switch, Group } from '@mantine/core'; // Import ColorSchemeScript
+import { useState } from "react";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [colorScheme, setColorScheme] = useState('dark');
+
+  const toggleColorScheme = () => {
+    setColorScheme(colorScheme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
     <MyProvider>
       <html lang="en" className={GeistSans.className}>
-        <body>{children}</body>
+        <head>
+          <ColorSchemeScript />
+        </head>
+        <body>
+          <MantineProvider forceColorScheme={colorScheme}>
+            <Group position="right" p="md">
+              <Switch
+                checked={colorScheme === 'dark'}
+                onChange={toggleColorScheme}
+                size="lg"
+                onLabel="Goon Mode"
+                offLabel="Normal Mode"
+              />
+            </Group>
+            {children}
+          </MantineProvider>
+        </body>
       </html>
     </MyProvider>
   );
