@@ -1,4 +1,4 @@
-import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider, MantineComponent, Blockquote } from "@mantine/core";
+import { Container, Title, Text, Paper, Stack, AppShell, MantineProvider, MantineComponent, Blockquote, Anchor } from "@mantine/core";
 
 
 import fs from 'fs';
@@ -7,15 +7,15 @@ import showdown from 'showdown';
 import parse, { DOMNode } from 'html-react-parser';
 import path from "path";
 
-export const getPosts = () => {
-    const filesPath = path.join(process.cwd(), "app", "jerry", "east-of-eden", "files");
+export const getPosts = (folder: string) => {
+    const filesPath = path.join(process.cwd(), "app", "jerry", folder, "files");
     return fs.readdirSync(filesPath).map((fileName) => {
-        return getSpecificPost(fileName);
+        return getSpecificPost(folder, fileName);
     }).sort((a, b) => a.order - b.order);
 };
 
-export const getSpecificPost = (slug: string) => {
-    const filesPath = path.join(process.cwd(), "app", "jerry", "east-of-eden", "files");
+export const getSpecificPost = (folder: string, slug: string) => {
+    const filesPath = path.join(process.cwd(), "app", "jerry", folder, "files");
     const filePath = path.join(filesPath, `${slug}`);
 
     if (!fs.existsSync(filePath)) {
@@ -42,6 +42,7 @@ const components = {
     h6: (props: any) => <Title order={6} {...props} />,
     p: (props: any) => <Text {...props} />,
     blockquote: (props: any) => <Blockquote mb={30} {...props} />,
+    a: (props: any) => <Anchor {...props} />,
 };
 
 
@@ -58,16 +59,16 @@ function loadMarkdownFile(filePath: string) {
         },
     });
 
-    return { data: { order: Number(data.order) || Infinity, title: data.title }, content: parsedHtml };
+    return { data: { order: Number(data.order) + 1 || Infinity, title: data.title }, content: parsedHtml };
 }
 
-function htmlToMantine(domNode: DOMNode) {
+function htmlToMantine(domNode: DOMNode, attrs: any = {}) {
     if (domNode.type === 'tag' && components[domNode.name as keyof typeof components]) {
         const Component = components[domNode.name as keyof typeof components];
-        return <Component key={0}>{
+        return <Component key={0} {...attrs}>{
             domNode.children.map((child) => {
                 if (child.type == "tag") {
-                    return htmlToMantine(child as DOMNode);
+                    return htmlToMantine(child as DOMNode, child.attribs);
                 } else if (child.type == "text") {
                     return child.data;
                 }
