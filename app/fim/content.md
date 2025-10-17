@@ -1,0 +1,41 @@
+# Game-like
+- Sims/Tycoon/Bitlife style game, simulating an adult's finances
+	- Oblique/Isometric Perspective
+	- Income (Job, promotions, raises, etc.)
+	- General spending (new phones/small things, cars, houses, loans, weddings, dates, etc.)
+		- Can occur semi-randomly (i.e., car breaks down) or at user's request (wants to buy a new car)
+	- Credit score
+		- Managing credit score with large purchases
+	- Investment
+		- Adds real time tracking off the stock market, and tracks growth of investments in-game, including real-time delays to stock/crypto purchases and sales
+	- Global changes
+		- Location of simulated character affected
+		- Inflation, prices of select goods track and vary per large events
+- Would require both finance-oriented & development-oriented people, as opposed to other ideas
+- Relatively unique (relative to other ideas)
+- What we need:
+	- Programmers
+	- Finance People
+	- People who know about, or are willing to learn, user-oriented design
+	- (Eventually)
+		- Advertisement/marketing
+	- API Keys
+		- Stock Market
+		- Chatbot (worry about later)
+- Logistics:
+	- Platform?
+		-  **Windows**
+	- Tech stack (liable to change)
+	- Main application stack
+		- C#
+		- Unity
+	- Authentication/DB Stack
+		- FastAPI
+		- PostGres
+	- Other
+		- Model designer (somebody)
+		- Internal hosting
+- Funding necessary for:
+	- API Keys
+	- 3rd party hosting
+	- 3rd party model design?
