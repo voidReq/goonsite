@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <MyProvider>
-      <html lang="en" className={GeistSans.className} style={{ colorScheme: 'dark' }}>
+      <html lang="en" className={GeistSans.className} style={{ colorScheme: 'dark', backgroundColor: '#0a0a0a' }}>
         <head>
           <ColorSchemeScript defaultColorScheme="dark" />
         </head>

@@ -18,27 +18,8 @@ const treeData: TreeDataItem[] = [
     children: [
       { value: 'goon-sploit', label: <Link href="/goon-sploit">Goon-sploit</Link> }]
   },
-  {
-    value: 'james',
-    label: <Link href="/james">James</Link>,
-    children: [
-      { value: 'james-articles', label: <Link href="/james/Articles">Articles</Link> },
-      { value: 'james-documentary', label: <Link href="/james/Documentary">Documentary</Link> },
-      { value: 'james-eastofeden', label: <Link href="/james/EastOfEden">East of Eden</Link> },
-      { value: 'james-senseofwonder', label: <Link href="/james/SenseOfWonder">Sense of Wonder</Link> }
-    ]
-  },
-  {
-    value: 'jerry',
-    label: <Link href="/jerry">Jerry</Link>,
-    children: [
-      { value: 'jerry-east-of-eden', label: <Link href="/jerry/east-of-eden">East of Eden</Link> },
-      { value: 'jerry-non-fiction', label: <Link href="/jerry/non-fiction">Non-Fiction</Link> },
-      { value: 'jerry-painter-thief', label: <Link href="/jerry/painter-thief">The Painter and the Thief</Link> },
-      { value: 'jerry-short-non-fiction', label: <Link href="/jerry/short-non-fiction">Short Non-Fiction</Link> }
-    ]
-  },
   { value: 'macbook', label: <Link href="/macbook">Macbook</Link> },
+  { value: 'notes', label: <Link href="/notes">Notes</Link> },
   { value: 'revolutions', label: <Link href="/revolutions">Revolutions</Link> },
   { value: 'turtle', label: <Link href="/turtle">Turtle</Link> },
 ];
