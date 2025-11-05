@@ -23,6 +23,12 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
     <div 
       className={`prose prose-invert max-w-none ${className}`}
       dangerouslySetInnerHTML={{ __html: html }}
+      style={{
+        // Style links
+        // @ts-ignore
+        '--tw-prose-links': '#3b82f6',
+        '--tw-prose-invert-links': '#60a5fa',
+      }}
     />
   );
 }
