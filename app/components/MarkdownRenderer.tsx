@@ -18,7 +18,9 @@ const converter = new Showdown.Converter({
 });
 
 export default function MarkdownRenderer({ content, className = '' }: MarkdownRendererProps) {
-  const html = converter.makeHtml(content);
+  // Convert tabs to spaces for proper nested list rendering
+  const processedContent = content.replace(/\t/g, '    ');
+  const html = converter.makeHtml(processedContent);
   
   return (
     <div 

@@ -7,10 +7,19 @@ import './markdown.css';
 export default function FimPage() {
   // Read the markdown file at build time
   const filePath = path.join(process.cwd(), 'app', 'fim', 'content.md');
-  const markdownContent = fs.readFileSync(filePath, 'utf-8');
+  let markdownContent = fs.readFileSync(filePath, 'utf-8');
+  
+  // Convert tabs to spaces (4 spaces per tab) for proper nested list rendering
+  markdownContent = markdownContent.replace(/\t/g, '    ');
   
   // Convert markdown to HTML
-  const converter = new showdown.Converter();
+  const converter = new showdown.Converter({
+    tables: true,
+    tasklists: true,
+    simpleLineBreaks: false,
+    openLinksInNewWindow: false,
+    backslashEscapesHTMLTags: true,
+  });
   const html = converter.makeHtml(markdownContent);
 
   return (
