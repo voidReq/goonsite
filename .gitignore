@@ -52,3 +52,6 @@ next-env.d.ts
 # build artifacts
 dist/
 build/
+
+# data folder (notes repository)
+/data/
