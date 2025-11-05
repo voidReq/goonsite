@@ -38,11 +38,11 @@ const renderTree = (nodes: TreeDataItem[]) => (
 export default function GoonHub() {
   return (
     <MantineProvider forceColorScheme="dark">
-      <div style={{ padding: '20px' }}>
+      <div style={{ padding: '20px', minHeight: '100vh' }}>
         <Title order={1} style={{ marginBottom: '20px' }}>Goon Hub</Title>
-        <Paper withBorder p="md" radius="md" style={{ backgroundColor: '#1a1b26' }}>
-          <Title order={3} style={{ color: '#a9b1d6' }}>Site Navigation</Title>
-          <Code block style={{ backgroundColor: '#1a1b26', color: '#a9b1d6', fontFamily: 'monospace' }}>
+        <Paper withBorder p="md" radius="md">
+          <Title order={3}>Site Navigation</Title>
+          <Code block style={{ fontFamily: 'monospace' }}>
             <div>
               <span style={{ color: '#bb9af7' }}>user@goonsite</span>
               <span style={{ color: '#7dcfff' }}>:</span>

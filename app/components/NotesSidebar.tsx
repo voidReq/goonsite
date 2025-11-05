@@ -37,7 +37,6 @@ function TreeNode({ item, level = 0 }: { item: NoteTreeItem; level?: number }) {
           className="flex items-center py-1 px-2 hover:bg-gray-800 rounded transition-colors"
           style={{ paddingLeft: `${level * 1.5 + 0.5}rem` }}
         >
-          <span className="mr-2 text-gray-500 text-xs">📄</span>
           <span className="text-gray-200 hover:text-white text-sm">{item.name}</span>
         </Link>
       )}
@@ -53,7 +52,7 @@ export default function NotesSidebar({ tree }: { tree: NoteTreeItem[] }) {
           ← Home
         </Link>
         <Link href="/notes" className="text-xl font-bold text-white hover:text-blue-400 transition-colors">
-          📚 Notes
+          Notes
         </Link>
       </div>
       <div className="space-y-1">

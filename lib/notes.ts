@@ -136,9 +136,11 @@ export function buildNoteTree(): NoteTreeItem[] {
       }
     }
     
-    // Sort: directories first, then files, both alphabetically
+    // Sort: directories first, then files, both alphabetically (with natural number sorting)
     return items.sort((a, b) => {
-      if (a.type === b.type) return a.name.localeCompare(b.name);
+      if (a.type === b.type) {
+        return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+      }
       return a.type === 'directory' ? -1 : 1;
     });
   }
