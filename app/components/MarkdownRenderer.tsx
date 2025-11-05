@@ -14,6 +14,7 @@ const converter = new Showdown.Converter({
   tasklists: true,
   ghCodeBlocks: true,
   simplifiedAutoLink: true,
+  simpleLineBreaks: true,
 });
 
 export default function MarkdownRenderer({ content, className = '' }: MarkdownRendererProps) {
