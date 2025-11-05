@@ -4,37 +4,21 @@ import { GeistSans } from 'geist/font/sans';
 import "./globals.css"; // Your global styles
 import '@mantine/core/styles.css'; // Mantine core styles
 import { MyProvider } from '../src/context/MyContext';
-import { MantineProvider, ColorSchemeScript, Switch, Group } from '@mantine/core'; // Import ColorSchemeScript
-import { useState } from "react";
+import { MantineProvider, ColorSchemeScript } from '@mantine/core'; // Import ColorSchemeScript
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [colorScheme, setColorScheme] = useState<'light' | 'dark'>('dark');
-
-  const toggleColorScheme = () => {
-    setColorScheme(colorScheme === 'dark' ? 'light' : 'dark');
-  };
-
   return (
     <MyProvider>
-      <html lang="en" className={GeistSans.className}>
+      <html lang="en" className={GeistSans.className} style={{ colorScheme: 'dark' }}>
         <head>
-          <ColorSchemeScript />
+          <ColorSchemeScript defaultColorScheme="dark" />
         </head>
         <body>
-          <MantineProvider forceColorScheme={colorScheme}>
-            <Group justify="flex-end" p="md">
-              <Switch
-                checked={colorScheme === 'dark'}
-                onChange={toggleColorScheme}
-                size="lg"
-                onLabel="Goon Mode"
-                offLabel="Normal Mode"
-              />
-            </Group>
+          <MantineProvider forceColorScheme="dark">
             {children}
           </MantineProvider>
         </body>
