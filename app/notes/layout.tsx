@@ -9,7 +9,7 @@ export default function NotesLayout({
   const tree = buildNoteTree();
   
   return (
-    <div className="flex min-h-screen bg-black text-white">
+    <div className="flex min-h-screen text-white">
       <NotesSidebar tree={tree} />
       <main className="flex-1">
         {children}
