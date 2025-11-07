@@ -25,7 +25,7 @@ export default function GoonSploit() {
 
   return (
     <MantineProvider forceColorScheme="dark">
-      <div style={{ padding: '20px' }}>
+      <div style={{ padding: '20px', minHeight: '100vh', backgroundColor: '#1a1a1a' }}>
         <Title order={1} style={{ marginBottom: '20px' }}>Goon-sploit</Title>
         <Group grow>
           <Paper withBorder p="md" radius="md" style={{ flex: 1 }}>
@@ -41,9 +41,27 @@ export default function GoonSploit() {
           <Title order={3}>Goon-sploit Articles</Title>
           <Text size="sm" c="dimmed">Latest goon-telligence from the field.</Text>
           <ul style={{ listStyleType: 'none', paddingLeft: 0, marginTop: '20px' }}>
-            <li><Link href="/goon-sploit/how-to-goon-responsibly"><Text style={{ color: 'blue', textDecoration: 'underline' }}>How to Goon Responsibly: A Guide for the Modern Gooner</Text></Link></li>
-            <li><Link href="/goon-sploit/the-rise-of-goon-somware"><Text style={{ color: 'blue', textDecoration: 'underline' }}>The Rise of Goon-somware: Protecting Your Digital Assets</Text></Link></li>
-            <li><Link href="/goon-sploit/zero-day-goon-sploits"><Text style={{ color: 'blue', textDecoration: 'underline' }}>Zero-Day Goon-sploits: Are You at Risk?</Text></Link></li>
+            <li>
+              <Link href="/goon-sploit/how-to-goon-responsibly">
+                <Text style={{ color: '#7dcfff', textDecoration: 'underline' }}>
+                  How to Goon Responsibly: A Guide for the Modern Gooner
+                </Text>
+              </Link>
+            </li>
+            <li>
+              <Link href="/goon-sploit/the-rise-of-goon-somware">
+                <Text style={{ color: '#7dcfff', textDecoration: 'underline' }}>
+                  The Rise of Goon-somware: Protecting Your Digital Assets
+                </Text>
+              </Link>
+            </li>
+            <li>
+              <Link href="/goon-sploit/zero-day-goon-sploits">
+                <Text style={{ color: '#7dcfff', textDecoration: 'underline' }}>
+                  Zero-Day Goon-sploits: Are You at Risk?
+                </Text>
+              </Link>
+            </li>
           </ul>
         </Paper>
         <Modal
