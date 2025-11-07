@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistSans } from 'geist/font/sans';
 import "./globals.css"; // Your global styles
 import '@mantine/core/styles.css'; // Mantine core styles
@@ -40,10 +40,11 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
   },
   themeColor: "#1a1a1a",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
