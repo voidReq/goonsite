@@ -8,7 +8,7 @@ import { MyProvider } from '../../src/context/MyContext';
 import { MantineProvider, ColorSchemeScript } from '@mantine/core'; // Import ColorSchemeScript
 
 export const metadata: Metadata = {
-  title: "The Gooonsite",
+  title: "The Goonsite",
   description: "For all your gooning needs",
 };
 

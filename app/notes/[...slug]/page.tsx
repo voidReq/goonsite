@@ -65,14 +65,14 @@ export async function generateMetadata(
   const url = `https://goonsite.org/notes/${encodedSlug}`;
   
   return {
-    title: `${note.title} | The Gooonsite Notes`,
+    title: `${note.title} | The Goonsite Notes`,
     description,
     openGraph: {
       title: note.title,
       description,
       type: 'article',
       url,
-      siteName: 'The Gooonsite',
+      siteName: 'The Goonsite',
       images: [
         {
           url: '/og-image.png',

@@ -6,7 +6,7 @@ import { ColorSchemeScript } from '@mantine/core';
 import { Providers } from './components/Providers';
 
 export const metadata: Metadata = {
-  title: "The Gooonsite",
+  title: "The Goonsite",
   description: "For all your gooning needs - Goon Hub, Goon-sploit, and more",
   keywords: ["goon", "goonsite", "goon hub", "goon-sploit"],
   authors: [{ name: "Goonsite Team" }],
@@ -14,21 +14,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://goonsite.org", // Update this with your actual domain
-    siteName: "The Gooonsite",
-    title: "The Gooonsite",
+    siteName: "The Goonsite",
+    title: "The Goonsite",
     description: "For all your gooning needs - Goon Hub, Goon-sploit, and more",
     images: [
       {
         url: "/og-image.png", // We'll create this next
         width: 1200,
         height: 630,
-        alt: "The Gooonsite",
+        alt: "The Goonsite",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Gooonsite",
+    title: "The Goonsite",
     description: "For all your gooning needs - Goon Hub, Goon-sploit, and more",
     images: ["/og-image.png"],
   },
