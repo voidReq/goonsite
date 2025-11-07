@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OG Image Generator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a1a;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        #canvas {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border: 2px solid #3a3a3a;
+            display: block;
+            margin: 20px auto;
+        }
+        .controls {
+            text-align: center;
+            color: #ededed;
+        }
+        button {
+            background: #7dcfff;
+            color: #1a1a1a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+        }
+        button:hover {
+            background: #93c5fd;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #3a3a3a;
+            background: #2a2a2a;
+            color: #ededed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <h2 style="color: #ededed;">OG Image Generator for The Gooonsite</h2>
+            <input type="text" id="title" value="The Gooonsite" placeholder="Title">
+            <input type="text" id="subtitle" value="For all your gooning needs" placeholder="Subtitle">
+            <br>
+            <button onclick="generateImage()">Generate & Download OG Image</button>
+        </div>
+        <canvas id="canvas" width="1200" height="630"></canvas>
+    </div>
+
+    <script>
+        function generateImage() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, 1200, 630);
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 1200, 630);
+            gradient.addColorStop(0, '#1a1a1a');
+            gradient.addColorStop(1, '#2a2a2a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1200, 630);
+            
+            // Title
+            const title = document.getElementById('title').value || 'The Gooonsite';
+            ctx.fillStyle = '#7dcfff';
+            ctx.font = 'bold 72px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(title, 600, 250);
+            
+            // Subtitle
+            const subtitle = document.getElementById('subtitle').value || 'For all your gooning needs';
+            ctx.fillStyle = '#ededed';
+            ctx.font = '36px Arial';
+            ctx.fillText(subtitle, 600, 350);
+            
+            // Decorative elements
+            ctx.strokeStyle = '#7dcfff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(200, 200);
+            ctx.lineTo(1000, 200);
+            ctx.moveTo(200, 430);
+            ctx.lineTo(1000, 430);
+            ctx.stroke();
+            
+            // Download
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'og-image.png';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+        
+        // Generate on load
+        window.onload = function() {
+            generateImage();
+        };
+    </script>
+</body>
+</html>
+
