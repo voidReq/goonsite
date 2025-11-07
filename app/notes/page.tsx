@@ -24,6 +24,7 @@ export default function NotesIndexPage() {
           <div style={{ marginBottom: '5px' }}><span style={{ color: '#bb9af7' }}>├──</span> Web vulnerabilities (expanded)</div>
           <div style={{ marginBottom: '5px' }}><span style={{ color: '#bb9af7' }}>├──</span> Computer networking (graduate level)</div>
           <div style={{ marginBottom: '5px' }}><span style={{ color: '#bb9af7' }}>├──</span> Python deep dive</div>
+          <div style={{ marginBottom: '5px' }}><span style={{ color: '#bb9af7' }}>├──</span> "Tools" section cleanup</div>
           <div style={{ marginBottom: '15px' }}><span style={{ color: '#bb9af7' }}>└──</span> Developing real-time systems</div>
           
           <div style={{ color: '#f7768e', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #414868' }}>
