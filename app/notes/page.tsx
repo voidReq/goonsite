@@ -18,7 +18,7 @@ export default function NotesIndexPage() {
           <div style={{ color: '#7aa2f7', marginBottom: '15px' }}># Notes Repository</div>
           
           <div style={{ color: '#9ece6a', marginBottom: '10px' }}>## Status</div>
-          <div style={{ marginBottom: '15px' }}>Continuously updated • Mostly handwritten • Self-taught concepts</div>
+          <div style={{ marginBottom: '15px' }}>Continuously updated • Mostly self-written • Self-taught concepts</div>
           
           <div style={{ color: '#9ece6a', marginBottom: '10px' }}>## Planned Additions</div>
           <div style={{ marginBottom: '5px' }}><span style={{ color: '#bb9af7' }}>├──</span> Web vulnerabilities (expanded)</div>
