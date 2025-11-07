@@ -25,7 +25,7 @@ export default function Home() {
         <div style={{marginTop: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           <div style={{display: 'flex', gap: '20px'}}>
             <Button component={Link} href="/goon-hub">Goon Hub</Button>
-            <Button component={Link} href="/goon-sploit">Goon-sploit</Button>
+            <Button component={Link} href="/notes">My Personal notes</Button>
           </div>
         </div>
 
