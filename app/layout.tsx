@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/lebron.png", // Replace with your actual logo filename
   },
   themeColor: "#1a1a1a",
 };
