@@ -31,7 +31,7 @@ export default function Home() {
 
         <div style={{marginTop: '40px'}}>
           <Switch 
-            label="I am currently gooning" 
+            label="I am locked in." 
             style={{ marginBottom: '20px' }} 
             onChange={(event) => setIsGooning(event.currentTarget.checked)}
           />
@@ -44,7 +44,7 @@ export default function Home() {
             </Text>
 
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div>Gooning session quality:</div>
+              <div>How locked in?</div>
               <Tooltip position="bottom" offset = {20} label="Disclaimer: By giving us a rating, you agree to your information (i.e., the rating)
                 being sold for exorbitant prices">
                 <Rating 
