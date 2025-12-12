@@ -49,25 +49,23 @@ export default function JerryMain() {
                 </Text>
                 <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
                     {links.map(link => (
-                        <Paper
-                            key={link.href}
-                            withBorder
-                            shadow="md"
-                            p={0} // Remove padding from Paper
-                            radius="md"
-                            component={Link}
-                            href={link.href}
-                            style={{
-                                textDecoration: "none",
-                                transition: "box-shadow 0.2s",
-                                cursor: "pointer",
-                                overflow: "hidden", // Ensures image corners are rounded
-                                display: "flex",
-                                flexDirection: "column",
-                                height: "100%",
-                            }}
-                            className={styles.paperHighlight}
-                        >
+                        <Link key={link.href} href={link.href} style={{ textDecoration: "none" }}>
+                            <Paper
+                                withBorder
+                                shadow="md"
+                                p={0} // Remove padding from Paper
+                                radius="md"
+                                style={{
+                                    textDecoration: "none",
+                                    transition: "box-shadow 0.2s",
+                                    cursor: "pointer",
+                                    overflow: "hidden", // Ensures image corners are rounded
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    height: "100%",
+                                }}
+                                className={styles.paperHighlight}
+                            >
                             <img
                                 src={link.img}
                                 alt={link.label}
@@ -89,7 +87,8 @@ export default function JerryMain() {
                                     {link.description}
                                 </Text>
                             </div>
-                        </Paper>
+                            </Paper>
+                        </Link>
                     ))}
                 </SimpleGrid>
             </Container>

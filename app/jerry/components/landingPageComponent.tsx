@@ -22,6 +22,7 @@ export default function LandingPageComponent({
                 <Container size="sm" py="xl">
                     {imgSrc ? <Image
                         src={imgSrc}
+                        alt={title}
                         radius="md"
                         mb="50"
                         h={400} /> : ""}
@@ -33,8 +34,8 @@ export default function LandingPageComponent({
                     </Text>
                     <Stack>
                         {posts.map((post) => (
-                            <Link href={`/jerry/${folder}/${post.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                <Paper key={post.id} withBorder shadow="sm" p="md" radius="md" className={styles.paperHover}>
+                            <Link key={post.id} href={`/jerry/${folder}/${post.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <Paper withBorder shadow="sm" p="md" radius="md" className={styles.paperHover}>
                                     <Title order={2} mb={"30"}>
                                         {post.title}
                                     </Title>

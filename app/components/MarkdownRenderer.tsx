@@ -46,7 +46,7 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
       try {
         const prismLang = Prism.languages[normalizedLang] || Prism.languages.text;
         highlightedCode = Prism.highlight(codeContent, prismLang, normalizedLang);
-      } catch (e) {
+      } catch {
         // Fallback to plain text if language not supported - escape HTML
         highlightedCode = codeContent
           .replace(/&/g, '&amp;')
@@ -99,7 +99,7 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
       dangerouslySetInnerHTML={{ __html: processedContent }}
       style={{
         // Style links
-        // @ts-ignore
+        // @ts-expect-error - CSS custom properties not in CSSProperties type
         '--tw-prose-links': '#3b82f6',
         '--tw-prose-invert-links': '#60a5fa',
       }}

@@ -24,8 +24,8 @@ export default function Home() {
 
         <div style={{marginTop: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           <div style={{display: 'flex', gap: '20px'}}>
-            <Button component={Link} href="/goon-hub">Goon Hub</Button>
-            <Button component={Link} href="/notes">My Personal notes</Button>
+            <Link href="/goon-hub" style={{ textDecoration: 'none' }}><Button>Goon Hub</Button></Link>
+            <Link href="/notes" style={{ textDecoration: 'none' }}><Button>My Personal notes</Button></Link>
           </div>
         </div>
 
@@ -84,15 +84,15 @@ export default function Home() {
                 Good, very very good.
               </Text>
 
-              <Button
-                component={Link}
-                href="macbook"
-                variant="light"
-                leftSection={<IconHeart size={14} />}
-                rightSection={<IconArrowRight size={14} />}
-              >
-                Visit the goon center
-              </Button>
+              <Link href="macbook" style={{ textDecoration: 'none' }}>
+                <Button
+                  variant="light"
+                  leftSection={<IconHeart size={14} />}
+                  rightSection={<IconArrowRight size={14} />}
+                >
+                  Visit the goon center
+                </Button>
+              </Link>
             </Alert>
         )}
         {notificationVisible && (

@@ -47,10 +47,11 @@ function extractDescription(content: string): string {
 }
 
 export async function generateMetadata(
-  { params }: { params: { slug: string[] } }
+  { params }: { params: Promise<{ slug: string[] }> }
 ): Promise<Metadata> {
+  const { slug } = await params;
   // Decode URL-encoded slug parts
-  const decodedSlug = params.slug.map(part => decodeURIComponent(part));
+  const decodedSlug = slug.map(part => decodeURIComponent(part));
   const note = getNoteBySlug(decodedSlug);
   
   if (!note) {
@@ -91,9 +92,10 @@ export async function generateMetadata(
   };
 }
 
-export default function NotePage({ params }: { params: { slug: string[] } }) {
+export default async function NotePage({ params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug } = await params;
   // Decode URL-encoded slug parts
-  const decodedSlug = params.slug.map(part => decodeURIComponent(part));
+  const decodedSlug = slug.map(part => decodeURIComponent(part));
   
   const note = getNoteBySlug(decodedSlug);
   

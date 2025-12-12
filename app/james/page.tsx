@@ -13,45 +13,45 @@ export default function JamesCenter() {
       <Center style={{ height: '100vh' }}>
         
         <Stack align="center" gap="md">
-          <Button
-            component={Link}
-            href="james/EastOfEden"
-            variant="light"
-            leftSection={<IconInfoCircle size={14} />}
-            rightSection={<IconArrowRight size={14} />}
-          >
-            Visit my East of Eden entries
-          </Button>
+          <Link href="james/EastOfEden" style={{ textDecoration: 'none' }}>
+            <Button
+              variant="light"
+              leftSection={<IconInfoCircle size={14} />}
+              rightSection={<IconArrowRight size={14} />}
+            >
+              Visit my East of Eden entries
+            </Button>
+          </Link>
 
-          <Button
-            component={Link}
-            href="james/Articles"
-            variant="light"
-            leftSection={<IconInfoCircle size={14} />}
-            rightSection={<IconArrowRight size={14} />}
-          >
-            Visit my nonfiction article entries
-          </Button>
+          <Link href="james/Articles" style={{ textDecoration: 'none' }}>
+            <Button
+              variant="light"
+              leftSection={<IconInfoCircle size={14} />}
+              rightSection={<IconArrowRight size={14} />}
+            >
+              Visit my nonfiction article entries
+            </Button>
+          </Link>
 
-          <Button
-            component={Link}
-            href="james/SenseOfWonder"
-            variant="light"
-            leftSection={<IconInfoCircle size={14} />}
-            rightSection={<IconArrowRight size={14} />}
-          >
-            Visit my nonfiction book entries
-          </Button>
+          <Link href="james/SenseOfWonder" style={{ textDecoration: 'none' }}>
+            <Button
+              variant="light"
+              leftSection={<IconInfoCircle size={14} />}
+              rightSection={<IconArrowRight size={14} />}
+            >
+              Visit my nonfiction book entries
+            </Button>
+          </Link>
           
-          <Button
-            component={Link}
-            href="james/Documentary"
-            variant="light"
-            leftSection={<IconInfoCircle size={14} />}
-            rightSection={<IconArrowRight size={14} />}
-          >
-            Visit my documentary write-up
-          </Button>
+          <Link href="james/Documentary" style={{ textDecoration: 'none' }}>
+            <Button
+              variant="light"
+              leftSection={<IconInfoCircle size={14} />}
+              rightSection={<IconArrowRight size={14} />}
+            >
+              Visit my documentary write-up
+            </Button>
+          </Link>
 
         </Stack>
       </Center>
