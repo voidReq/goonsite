@@ -40,7 +40,7 @@ export default function Home() {
         {isGooning && (
           <div style={{ border: '2px solid purple', padding: '20px', borderRadius: '8px' }}>
             <Text size="xl" fw={700} style={{ marginBottom: '10px' }}>
-              Hello, Gooner.
+              Hello, Goon.
             </Text>
 
             <div style={{ display: 'flex', alignItems: 'center' }}>
