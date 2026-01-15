@@ -37,33 +37,6 @@ export default function GoonSploit() {
             {scanning && <Progress value={scanProgress} striped animated style={{ marginTop: '20px' }} />}
           </Paper>
         </Group>
-        <Paper withBorder p="md" radius="md" style={{ marginTop: '20px' }}>
-          <Title order={3}>Goon-sploit Articles</Title>
-          <Text size="sm" c="dimmed">Latest goon-telligence from the field.</Text>
-          <ul style={{ listStyleType: 'none', paddingLeft: 0, marginTop: '20px' }}>
-            <li>
-              <Link href="/goon-sploit/how-to-goon-responsibly">
-                <Text style={{ color: '#7dcfff', textDecoration: 'underline' }}>
-                  How to Goon Responsibly: A Guide for the Modern Gooner
-                </Text>
-              </Link>
-            </li>
-            <li>
-              <Link href="/goon-sploit/the-rise-of-goon-somware">
-                <Text style={{ color: '#7dcfff', textDecoration: 'underline' }}>
-                  The Rise of Goon-somware: Protecting Your Digital Assets
-                </Text>
-              </Link>
-            </li>
-            <li>
-              <Link href="/goon-sploit/zero-day-goon-sploits">
-                <Text style={{ color: '#7dcfff', textDecoration: 'underline' }}>
-                  Zero-Day Goon-sploits: Are You at Risk?
-                </Text>
-              </Link>
-            </li>
-          </ul>
-        </Paper>
         <Modal
           opened={modalOpened}
           onClose={() => setModalOpened(false)}
