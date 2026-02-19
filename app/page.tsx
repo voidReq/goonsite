@@ -18,12 +18,12 @@ export default function Home() {
   return (
     <MantineProvider forceColorScheme = "dark">
       
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column'}}>
+      <div className="flex justify-center items-center min-h-screen flex-col px-4 py-8">
 
         <Terminal />
 
-        <div style={{marginTop: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-          <div style={{display: 'flex', gap: '20px'}}>
+        <div className="mt-10 flex flex-col items-center">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-center">
             <Link href="/goon-hub" style={{ textDecoration: 'none' }}><Button>Goon Hub</Button></Link>
             <Link href="/notes" style={{ textDecoration: 'none' }}><Button>My Personal notes</Button></Link>
           </div>
@@ -38,7 +38,7 @@ export default function Home() {
         </div>
 
         {isGooning && (
-          <div style={{ border: '2px solid purple', padding: '20px', borderRadius: '8px' }}>
+          <div className="border-2 border-purple-600 p-4 sm:p-5 rounded-lg mx-4">
             <Text size="xl" fw={700} style={{ marginBottom: '10px' }}>
               Hello, Goon.
             </Text>

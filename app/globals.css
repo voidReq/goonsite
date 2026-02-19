@@ -12,12 +12,32 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+* {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 /* Markdown styling */
+.prose {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  max-width: 100% !important;
+}
+
+.prose * {
+  max-width: 100% !important;
+}
+
 .prose a {
   color: #60a5fa !important;
   text-decoration: underline !important;
+  word-break: break-word !important;
 }
 
 .prose a:hover {
@@ -34,6 +54,8 @@ body {
   padding: 0.2em 0.4em !important;
   border-radius: 3px !important;
   font-size: 0.9em !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
 }
 
 .prose pre code {
@@ -44,8 +66,8 @@ body {
 /* List styling */
 .prose ul,
 .prose ol {
-  list-style-position: outside !important;
-  padding-left: 1.5em !important;
+  list-style-position: inside !important;
+  padding-left: 0 !important;
   margin-left: 0 !important;
 }
 
@@ -61,6 +83,8 @@ body {
   display: list-item !important;
   margin-top: 0.5em !important;
   margin-bottom: 0.5em !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
 }
 
 .prose ul ul,
@@ -70,6 +94,7 @@ body {
   margin-top: 0.25em !important;
   margin-bottom: 0.25em !important;
   padding-left: 1.5em !important;
+  list-style-position: inside !important;
 }
 
 /* Header styling */
@@ -124,16 +149,65 @@ body {
   padding: 1rem !important;
   overflow-x: auto !important;
   margin: 1.5em 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  white-space: pre !important;
 }
 
 .prose code[class*="language-"] {
-  background-color: transparent !important;
+  background-color: #1a1a1a !important;
   padding: 0 !important;
   font-size: 0.9em !important;
   line-height: 1.5 !important;
+  display: block !important;
+  width: max-content !important;
+  min-width: 100% !important;
+  white-space: pre !important;
 }
 
 .prose pre[class*="language-"] code {
   color: #e6e6e6 !important;
   font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace !important;
+  background-color: #1a1a1a !important;
+}
+
+/* Override ALL Prism theme backgrounds to ensure grey extends with scroll */
+.prose pre[class*="language-"] *,
+.prose code[class*="language-"] *,
+.prose pre[class*="language-"] code *,
+.prose pre[class*="language-"] code span,
+.token {
+  background-color: transparent !important;
+}
+
+/* Ensure pre itself maintains the background */
+.prose pre[class*="language-"],
+.prose pre[class*="language-"] code {
+  background: #1a1a1a !important;
+}
+
+/* Ensure all text content wraps properly */
+.prose p,
+.prose li,
+.prose td,
+.prose th,
+.prose div {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 640px) {
+  .prose ul,
+  .prose ol {
+    padding-left: 0 !important;
+  }
+  
+  .prose ul ul,
+  .prose ol ol,
+  .prose ul ol,
+  .prose ol ul {
+    padding-left: 1em !important;
+  }
 }

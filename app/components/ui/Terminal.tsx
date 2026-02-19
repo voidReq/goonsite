@@ -4,7 +4,7 @@ import { Typewriter } from 'react-simple-typewriter'
 
 export function Terminal() {
   return (
-    <div style={{ backgroundColor: '#1a1b26', borderRadius: '8px', padding: '20px', color: '#a9b1d6', width: '600px' }}>
+    <div style={{ backgroundColor: '#1a1b26', borderRadius: '8px', padding: '20px', color: '#a9b1d6', width: '100%', maxWidth: '600px' }}>
       <div style={{ marginBottom: '10px' }}>
         <span style={{ color: '#bb9af7' }}>user@goonsite</span>
         <span style={{ color: '#7dcfff' }}>:</span>
