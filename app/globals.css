@@ -13,6 +13,14 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+* {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 /* Markdown styling */
@@ -139,10 +147,14 @@ body {
   border: 1px solid #2a2a2a !important;
   border-radius: 0.5rem !important;
   padding: 1rem !important;
-  overflow-x: auto !important;
+  overflow-x: hidden !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
   margin: 1.5em 0 !important;
   max-width: 100% !important;
   width: 100% !important;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
 }
 
 .prose code[class*="language-"] {
@@ -150,15 +162,34 @@ body {
   padding: 0 !important;
   font-size: 0.9em !important;
   line-height: 1.5 !important;
-  display: inline-block !important;
+  display: block !important;
+  width: 100% !important;
   max-width: 100% !important;
-  white-space: pre !important;
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
 }
 
 .prose pre[class*="language-"] code {
   color: #e6e6e6 !important;
   font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace !important;
   background-color: #1a1a1a !important;
+}
+
+/* Override ALL Prism theme backgrounds to ensure grey extends with scroll */
+.prose pre[class*="language-"] *,
+.prose code[class*="language-"] *,
+.prose pre[class*="language-"] code *,
+.prose pre[class*="language-"] code span,
+.token {
+  background-color: transparent !important;
+}
+
+/* Ensure pre itself maintains the background */
+.prose pre[class*="language-"],
+.prose pre[class*="language-"] code {
+  background: #1a1a1a !important;
 }
 
 /* Ensure all text content wraps properly */

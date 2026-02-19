@@ -104,7 +104,8 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
         '--tw-prose-invert-links': '#60a5fa',
         maxWidth: '100%',
         width: '100%',
-        overflowX: 'hidden',
+        wordWrap: 'break-word',
+        overflowWrap: 'break-word',
       }}
     />
   );
