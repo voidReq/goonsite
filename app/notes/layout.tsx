@@ -11,7 +11,7 @@ export default function NotesLayout({
   return (
     <div className="flex min-h-screen text-white">
       <NotesSidebar tree={tree} />
-      <main className="flex-1">
+      <main className="flex-1 pt-16 md:pt-0 md:ml-0">
         {children}
       </main>
     </div>

@@ -95,13 +95,16 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
 
   return (
     <div 
-      className={`prose prose-invert max-w-none ${className}`}
+      className={`prose prose-invert max-w-full w-full ${className}`}
       dangerouslySetInnerHTML={{ __html: processedContent }}
       style={{
         // Style links
         // @ts-expect-error - CSS custom properties not in CSSProperties type
         '--tw-prose-links': '#3b82f6',
         '--tw-prose-invert-links': '#60a5fa',
+        maxWidth: '100%',
+        width: '100%',
+        overflowX: 'hidden',
       }}
     />
   );

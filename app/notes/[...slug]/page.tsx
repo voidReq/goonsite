@@ -108,8 +108,8 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
   const contentWithLinks = convertWikiLinks(note.content, allNotes);
   
   return (
-    <div className="p-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="p-4 sm:p-8 w-full">
+      <div className="max-w-4xl mx-auto w-full">
         <h1 className="text-4xl font-bold mb-8">{note.title}</h1>
         
         <MarkdownRenderer content={contentWithLinks} />
