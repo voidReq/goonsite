@@ -197,6 +197,15 @@ body {
   hyphens: auto !important;
 }
 
+/* Image styling for markdown content */
+.prose img {
+  max-width: 100% !important;
+  height: auto !important;
+  border-radius: 0.5rem !important;
+  margin: 1.5em 0 !important;
+  border: 1px solid #2a2a2a !important;
+}
+
 /* Mobile-specific adjustments */
 @media (max-width: 640px) {
   .prose ul,
