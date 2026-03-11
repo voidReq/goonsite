@@ -47,6 +47,8 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+import { VisitorBeacon } from './components/VisitorBeacon';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -59,6 +61,7 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
+          <VisitorBeacon />
           {children}
         </Providers>
       </body>

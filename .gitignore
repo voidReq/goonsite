@@ -56,3 +56,6 @@ build/
 # data folder (notes are per-server, projects are shared)
 /data/*
 !/data/projects/
+
+# visitor logs (never commit)
+/data/visitors/
