@@ -53,5 +53,6 @@ next-env.d.ts
 dist/
 build/
 
-# data folder (notes repository)
-/data/
+# data folder (notes are per-server, projects are shared)
+/data/*
+!/data/projects/
