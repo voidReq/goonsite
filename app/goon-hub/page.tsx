@@ -20,6 +20,7 @@ const treeData: TreeDataItem[] = [
   },
   { value: 'macbook', label: <Link href="/macbook">Macbook</Link> },
   { value: 'notes', label: <Link href="/notes">Notes</Link> },
+  { value: 'projects', label: <Link href="/projects">Projects/Vuln Writeups</Link> },
   { value: 'revolutions', label: <Link href="/revolutions">Revolutions</Link> },
   { value: 'turtle', label: <Link href="/turtle">Turtle</Link> },
 ];
