@@ -7,7 +7,7 @@ export default function ProjectsLayout({
   children: React.ReactNode;
 }) {
   const tree = buildProjectTree();
-  
+
   return (
     <div className="flex min-h-screen text-white">
       <ProjectsSidebar tree={tree} />

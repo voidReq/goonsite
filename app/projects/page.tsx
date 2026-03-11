@@ -11,23 +11,26 @@ export default function ProjectsIndexPage() {
           <span style={{ color: '#7dcfff' }}>$</span>
           <span style={{ color: '#a9b1d6', marginLeft: '10px' }}>cat README.md</span>
         </div>
-        
+
         <div style={{ marginTop: '20px', lineHeight: '1.8', fontFamily: 'monospace' }}>
-          <div style={{ color: '#7aa2f7', marginBottom: '15px' }}># Personal Projects</div>
-          
+          <div style={{ color: '#7aa2f7', marginBottom: '15px' }}># Projects and Writeups</div>
+
           <div style={{ color: '#9ece6a', marginBottom: '10px' }}>## Overview</div>
-          <div style={{ marginBottom: '15px' }}>A collection of personal and collaborative projects spanning cybersecurity, IoT, math visualization, and robotics.</div>
-          
-          <div style={{ color: '#9ece6a', marginBottom: '10px' }}>## security/</div>
+          <div style={{ marginBottom: '15px' }}>A collection of personal projects spanning cybersecurity, IoT, and math visualization. I'm also in the process of publishing writeups on various vulnerabilities I've found.</div>
+
+          <div style={{ color: '#9ece6a', marginBottom: '10px' }}>## Projects/security/</div>
           <div style={{ marginBottom: '5px' }}><span style={{ color: '#bb9af7' }}>├──</span> <span style={{ color: '#7dcfff' }}>discord-remote-access</span> — Discord-based remote access tool (C)</div>
           <div style={{ marginBottom: '15px' }}><span style={{ color: '#bb9af7' }}>└──</span> <span style={{ color: '#7dcfff' }}>t-watch-evil-portal</span> — Evil portal for LILYGO T-Watch S3 (HTML/C++)</div>
-          
-          <div style={{ color: '#9ece6a', marginBottom: '10px' }}>## other/</div>
+
+          <div style={{ color: '#9ece6a', marginBottom: '10px' }}>## Projects/other/</div>
           <div style={{ marginBottom: '5px' }}><span style={{ color: '#bb9af7' }}>├──</span> <span style={{ color: '#7dcfff' }}>revolutions</span> — 3D revolution surface visualizer (Python)</div>
           <div style={{ marginBottom: '15px' }}><span style={{ color: '#bb9af7' }}>└──</span> <span style={{ color: '#7dcfff' }}>smartgrid-iot</span> — Smart grid cybersecurity testbed (C++)</div>
-          
+
+          <div style={{ color: '#9ece6a', marginBottom: '10px' }}>## Writeups/</div>
+          <div style={{ marginBottom: '15px' }}><span style={{ color: '#bb9af7' }}>└──</span> <span style={{ color: '#7dcfff' }}>One</span> — Coming soon...</div>
+
           <div style={{ color: '#f7768e', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #414868' }}>
-            → Select a project from the sidebar to begin
+            → Select a folder from the sidebar to begin
           </div>
         </div>
       </div>

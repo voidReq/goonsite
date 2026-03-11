@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { MantineProvider, Text, Switch, Rating, Image, Tooltip, Notification, Alert, Button, Progress } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { IconArrowRight, IconInfoCircle, IconHeart} from '@tabler/icons-react';
+import { IconArrowRight, IconInfoCircle, IconHeart } from '@tabler/icons-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Terminal } from './components/ui/Terminal';
@@ -16,8 +16,8 @@ export default function Home() {
   const icon = <IconInfoCircle />;
 
   return (
-    <MantineProvider forceColorScheme = "dark">
-      
+    <MantineProvider forceColorScheme="dark">
+
       <div className="flex justify-center items-center min-h-screen flex-col px-4 py-8">
 
         <Terminal />
@@ -26,14 +26,14 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-center">
             <Link href="/goon-hub" style={{ textDecoration: 'none' }}><Button>Goon Hub</Button></Link>
             <Link href="/notes" style={{ textDecoration: 'none' }}><Button>My Personal notes</Button></Link>
-            <Link href="/projects" style={{ textDecoration: 'none' }}><Button>My Projects</Button></Link>
+            <Link href="/projects" style={{ textDecoration: 'none' }}><Button>Projects/Vuln Writeups</Button></Link>
           </div>
         </div>
 
-        <div style={{marginTop: '40px'}}>
-          <Switch 
-            label="I am locked in." 
-            style={{ marginBottom: '20px' }} 
+        <div style={{ marginTop: '40px' }}>
+          <Switch
+            label="I am locked in."
+            style={{ marginBottom: '20px' }}
             onChange={(event) => setIsGooning(event.currentTarget.checked)}
           />
         </div>
@@ -41,14 +41,14 @@ export default function Home() {
         {isGooning && (
           <div className="border-2 border-purple-600 p-4 sm:p-5 rounded-lg mx-4">
             <Text size="xl" fw={700} style={{ marginBottom: '10px' }}>
-              Hello, Goon.
+              Hello, Goon and writeups.
             </Text>
 
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div>How locked in?</div>
-              <Tooltip position="bottom" offset = {20} label="Disclaimer: By giving us a rating, you agree to your information (i.e., the rating)
+              <Tooltip position="bottom" offset={20} label="Disclaimer: By giving us a rating, you agree to your information (i.e., the rating)
                 being sold for exorbitant prices">
-                <Rating 
+                <Rating
                   value={ratingValue}
                   onChange={(value) => {
                     setRatingValue(value);
@@ -59,8 +59,8 @@ export default function Home() {
                       setGoodGooner(true);
                       setNotificationVisible(false);
                     }
-                  }} 
-                  style={{ marginLeft: '10px' }} 
+                  }}
+                  style={{ marginLeft: '10px' }}
                 />
               </Tooltip>
             </div>
@@ -68,42 +68,42 @@ export default function Home() {
         )}
 
         {goodGooner && (
-            <Alert 
-              variant="light" 
-              color="grape" 
-              style={{
-                position: 'fixed',
-                top: '30px',
-                right: '30px',
-                zIndex: 1000
-              }}
-              icon={icon} 
-              onClose={() => setGoodGooner(false)} 
-              withCloseButton
-            >
-              <Text style={{ marginRight: "20px", marginBottom: "20px"}}>
-                Good, very very good.
-              </Text>
+          <Alert
+            variant="light"
+            color="grape"
+            style={{
+              position: 'fixed',
+              top: '30px',
+              right: '30px',
+              zIndex: 1000
+            }}
+            icon={icon}
+            onClose={() => setGoodGooner(false)}
+            withCloseButton
+          >
+            <Text style={{ marginRight: "20px", marginBottom: "20px" }}>
+              Good, very very good.
+            </Text>
 
-              <Link href="macbook" style={{ textDecoration: 'none' }}>
-                <Button
-                  variant="light"
-                  leftSection={<IconHeart size={14} />}
-                  rightSection={<IconArrowRight size={14} />}
-                >
-                  Visit the goon center
-                </Button>
-              </Link>
-            </Alert>
+            <Link href="macbook" style={{ textDecoration: 'none' }}>
+              <Button
+                variant="light"
+                leftSection={<IconHeart size={14} />}
+                rightSection={<IconArrowRight size={14} />}
+              >
+                Visit the goon center
+              </Button>
+            </Link>
+          </Alert>
         )}
         {notificationVisible && (
-          <Notification 
+          <Notification
             title={
               <>
                 <Text>Perhaps you should goon better.<br /></Text>
                 <Text style={{ color: 'red' }} fw={700} size="lg">Do better.</Text>
               </>
-            } 
+            }
             onClose={() => setNotificationVisible(false)}
             style={{ position: 'absolute', bottom: 20, right: 20 }}
           >
@@ -111,6 +111,6 @@ export default function Home() {
         )}
 
       </div>
-      </MantineProvider>
+    </MantineProvider>
   );
 }

@@ -4,19 +4,19 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import type { ProjectTreeItem } from '@/lib/projects';
 
-function TreeNode({ 
-  item, 
-  level = 0, 
-  onProjectClick 
-}: { 
-  item: ProjectTreeItem; 
+function TreeNode({
+  item,
+  level = 0,
+  onProjectClick
+}: {
+  item: ProjectTreeItem;
   level?: number;
   onProjectClick?: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const hasChildren = item.type === 'directory' && item.children && item.children.length > 0;
-  
+
   return (
     <div className="select-none">
       {item.type === 'directory' ? (
@@ -40,7 +40,7 @@ function TreeNode({
           )}
         </div>
       ) : (
-        <Link 
+        <Link
           href={`/projects/${item.path.split('/').map(s => encodeURIComponent(s)).join('/')}`}
           className="flex items-center py-1 px-2 hover:bg-gray-800 rounded transition-colors"
           style={{ paddingLeft: `${level * 1.5 + 0.5}rem` }}
@@ -55,9 +55,9 @@ function TreeNode({
 
 export default function ProjectsSidebar({ tree }: { tree: ProjectTreeItem[] }) {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   const closeSidebar = () => setIsOpen(false);
-  
+
   return (
     <>
       {/* Mobile menu button */}
@@ -66,10 +66,10 @@ export default function ProjectsSidebar({ tree }: { tree: ProjectTreeItem[] }) {
         className="md:hidden fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-lg border border-gray-700 hover:bg-gray-700 transition-colors"
         aria-label="Toggle navigation"
       >
-        <svg 
-          className="w-6 h-6 text-white" 
-          fill="none" 
-          stroke="currentColor" 
+        <svg
+          className="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
           viewBox="0 0 24 24"
         >
           {isOpen ? (
@@ -79,15 +79,15 @@ export default function ProjectsSidebar({ tree }: { tree: ProjectTreeItem[] }) {
           )}
         </svg>
       </button>
-      
+
       {/* Overlay for mobile */}
       {isOpen && (
-        <div 
+        <div
           className="md:hidden fixed inset-0 bg-black/50 z-30"
           onClick={closeSidebar}
         />
       )}
-      
+
       {/* Sidebar */}
       <div className={`
         w-64 bg-gray-900 border-r border-gray-800 h-screen overflow-y-auto p-4
@@ -96,19 +96,19 @@ export default function ProjectsSidebar({ tree }: { tree: ProjectTreeItem[] }) {
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         <div className="mb-4 pb-4 border-b border-gray-800 mt-12 md:mt-0">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="block text-gray-400 hover:text-white transition-colors text-sm mb-3"
             onClick={closeSidebar}
           >
             ← Home
           </Link>
-          <Link 
-            href="/projects" 
+          <Link
+            href="/projects"
             className="text-xl font-bold text-white hover:text-blue-400 transition-colors"
             onClick={closeSidebar}
           >
-            Projects
+            Projects and Writeups
           </Link>
         </div>
         <div className="space-y-1">
