@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { appendFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
+import { rateLimit } from '@/lib/rate-limit';
 
 const VISITORS_DIR = join(process.cwd(), 'data', 'visitors');
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 30 requests per 10 seconds per IP
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+               request.headers.get('x-real-ip') || 'unknown';
+    const { limited } = rateLimit('log-visit', ip, 30, 10_000);
+    if (limited) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    }
     // sendBeacon sends as text/plain, regular fetch sends as application/json
     const contentType = request.headers.get('content-type') || '';
     let entry: Record<string, unknown>;

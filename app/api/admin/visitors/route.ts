@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
+import { rateLimit } from '@/lib/rate-limit';
 
 const VISITORS_DIR = join(process.cwd(), 'data', 'visitors');
 
@@ -12,7 +13,15 @@ function isAuthorized(request: NextRequest): boolean {
 }
 
 export async function GET(request: NextRequest) {
+  // Rate limit: 5 requests per 60 seconds per IP (for unauthenticated attempts)
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+             request.headers.get('x-real-ip') || 'unknown';
+
   if (!isAuthorized(request)) {
+    const { limited } = rateLimit('admin-login', ip, 5, 60_000);
+    if (limited) {
+      return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
+    }
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
