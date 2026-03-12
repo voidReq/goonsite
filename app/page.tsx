@@ -24,9 +24,9 @@ export default function Home() {
 
         <div className="mt-10 flex flex-col items-center">
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-center">
-            <Link href="/goon-hub" style={{ textDecoration: 'none' }}><Button>Goon Hub</Button></Link>
             <Link href="/notes" style={{ textDecoration: 'none' }}><Button>My Personal notes</Button></Link>
             <Link href="/projects" style={{ textDecoration: 'none' }}><Button>Projects/Vuln Writeups</Button></Link>
+            <Link href="/goon-hub" style={{ textDecoration: 'none' }}><Button>Sitemap</Button></Link>
           </div>
         </div>
 
