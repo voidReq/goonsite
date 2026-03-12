@@ -3,6 +3,7 @@ import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { rateLimit } from '@/lib/rate-limit';
 import { getGeoCache } from '@/lib/geo-cache';
+import { sendAdminAlert } from '@/lib/notify';
 
 const VISITORS_DIR = join(process.cwd(), 'data', 'visitors');
 
@@ -18,17 +19,24 @@ export async function GET(request: NextRequest) {
   const ip = request.headers.get('cf-connecting-ip') ||
              request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
              request.headers.get('x-real-ip') || 'unknown';
+  const userAgent = request.headers.get('user-agent') || 'Unknown';
 
   if (!isAuthorized(request)) {
     const { limited } = rateLimit('admin-insights', ip, 5, 60_000);
     if (limited) {
       return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
     }
+    await sendAdminAlert({ ip, status: 'FAILED', userAgent, path: '/api/admin/insights' });
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
   const range = searchParams.get('range') || 'all'; // 1h, 24h, 3d, 7d, 30d, all
+
+  // Treat 'all' as the initial load request for alert purposes, to avoid spam
+  if (range === 'all') {
+    await sendAdminAlert({ ip, status: 'SUCCESS', userAgent, path: '/api/admin/insights' });
+  }
   
   const now = new Date();
   let cutoff: Date | null = null;

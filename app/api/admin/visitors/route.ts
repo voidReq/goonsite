@@ -3,6 +3,7 @@ import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { rateLimit } from '@/lib/rate-limit';
 import { getGeoCache, getGeoErrors } from '@/lib/geo-cache';
+import { sendAdminAlert } from '@/lib/notify';
 
 const VISITORS_DIR = join(process.cwd(), 'data', 'visitors');
 
@@ -18,19 +19,23 @@ export async function GET(request: NextRequest) {
   const ip = request.headers.get('cf-connecting-ip') ||
              request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
              request.headers.get('x-real-ip') || 'unknown';
+  const userAgent = request.headers.get('user-agent') || 'Unknown';
 
   if (!isAuthorized(request)) {
     const { limited } = rateLimit('admin-login', ip, 5, 60_000);
     if (limited) {
       return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
     }
+    await sendAdminAlert({ ip, status: 'FAILED', userAgent, path: '/api/admin/visitors' });
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
 
-  // List available log dates
+  // If requesting dates list, treat as successful login attempt
   if (searchParams.get('dates') === 'list') {
+    // We only alert on the initial login check to prevent spamming on subsequent data requests
+    await sendAdminAlert({ ip, status: 'SUCCESS', userAgent, path: '/api/admin/visitors' });
     try {
       if (!existsSync(VISITORS_DIR)) {
         return NextResponse.json({ dates: [] });
