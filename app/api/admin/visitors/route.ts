@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { rateLimit } from '@/lib/rate-limit';
+import { getGeoCache, getGeoErrors } from '@/lib/geo-cache';
 
 const VISITORS_DIR = join(process.cwd(), 'data', 'visitors');
 
@@ -43,6 +44,14 @@ export async function GET(request: NextRequest) {
     } catch {
       return NextResponse.json({ dates: [] });
     }
+  }
+
+  // Return the geo cache and any recent API errors
+  if (searchParams.get('geo') === 'cache') {
+    return NextResponse.json({
+      geo: getGeoCache(),
+      errors: getGeoErrors()
+    });
   }
 
   // Get logs for a specific date (default: today)

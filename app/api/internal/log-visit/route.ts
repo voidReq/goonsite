@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { appendFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { rateLimit } from '@/lib/rate-limit';
+import { getGeoForIp } from '@/lib/geo-cache';
 
 const VISITORS_DIR = join(process.cwd(), 'data', 'visitors');
 
@@ -49,6 +50,11 @@ export async function POST(request: NextRequest) {
 
     const filePath = join(VISITORS_DIR, `${today}.jsonl`);
     appendFileSync(filePath, JSON.stringify(entry) + '\n');
+
+    // Fire-and-forget geo lookup on view events (caches automatically)
+    if (entry.type === 'view' && ip !== 'unknown') {
+      getGeoForIp(ip).catch(() => {});
+    }
 
     return NextResponse.json({ ok: true });
   } catch (error) {

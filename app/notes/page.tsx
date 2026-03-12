@@ -13,19 +13,18 @@ export default function NotesIndexPage() {
           <span style={{ color: '#7dcfff' }}>$</span>
           <span style={{ color: '#a9b1d6', marginLeft: '10px' }}>cat README.md</span>
         </div>
-        
+
         <div style={{ marginTop: '20px', lineHeight: '1.8', fontFamily: 'monospace' }}>
           <div style={{ color: '#7aa2f7', marginBottom: '15px' }}># Notes Repository</div>
-          
+
           <div style={{ color: '#9ece6a', marginBottom: '10px' }}>## Status</div>
           <div style={{ marginBottom: '15px' }}>Continuously updated • Self-taught • Self-written (AI slop is not tolerated)</div>
-          
+
           <div style={{ color: '#9ece6a', marginBottom: '10px' }}>## Planned Additions</div>
-          <div style={{ marginBottom: '5px' }}><span style={{ color: '#bb9af7' }}>├──</span> Mobile support :(</div>
           <div style={{ marginBottom: '5px' }}><span style={{ color: '#bb9af7' }}>├──</span> Web vulnerabilities (expanded)</div>
           <div style={{ marginBottom: '5px' }}><span style={{ color: '#bb9af7' }}>├──</span> Computer architecture/OS notes (expanded)</div>
           <div style={{ marginBottom: '15px' }}><span style={{ color: '#bb9af7' }}>└──</span> Developing real-time systems</div>
-          
+
           <div style={{ color: '#f7768e', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #414868' }}>
             → Select a note from the sidebar to begin
           </div>
