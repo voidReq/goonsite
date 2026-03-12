@@ -239,9 +239,14 @@ export default function AdminVisitorsPage() {
       <Container size="lg" py="xl" style={{ minHeight: '100vh', backgroundColor: '#0a0a0a' }}>
         <Stack gap="lg">
           <Group justify="space-between" align="center">
-            <Title order={2} style={{ color: '#ededed' }}>
-              Visitor Logs
-            </Title>
+            <Group>
+              <Title order={2} style={{ color: '#ededed' }}>
+                Visitor Logs
+              </Title>
+              <Button ml="md" variant="light" color="violet" onClick={() => window.location.href = '/admin/insights'}>
+                View Map Insights
+              </Button>
+            </Group>
             <Group gap="xs">
               <Select
                 placeholder="Select date"
