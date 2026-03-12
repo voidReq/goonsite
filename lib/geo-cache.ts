@@ -20,6 +20,7 @@ export interface GeoInfo {
   latitude: number;
   longitude: number;
   timezone: string;
+  zip?: string;
   cached_at: string;
 }
 
@@ -135,6 +136,7 @@ export async function getGeoForIp(ip: string): Promise<GeoInfo | null> {
       latitude: data.lat || 0,
       longitude: data.lon || 0,
       timezone: data.timezone || 'Unknown',
+      zip: data.zip || 'Unknown',
       cached_at: new Date().toISOString(),
     };
 
