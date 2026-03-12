@@ -41,7 +41,7 @@ export default function Home() {
         {isGooning && (
           <div className="border-2 border-purple-600 p-4 sm:p-5 rounded-lg mx-4">
             <Text size="xl" fw={700} style={{ marginBottom: '10px' }}>
-              Hello, Goon and writeups.
+              Hello, Goon.
             </Text>
 
             <div style={{ display: 'flex', alignItems: 'center' }}>
