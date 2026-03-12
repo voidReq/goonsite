@@ -240,7 +240,7 @@ export default function AdminVisitorsPage() {
         <Stack gap="lg">
           <Group justify="space-between" align="center">
             <Title order={2} style={{ color: '#ededed' }}>
-              📊 Visitor Logs
+              Visitor Logs
             </Title>
             <Group gap="xs">
               <Select
