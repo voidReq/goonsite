@@ -168,7 +168,7 @@ export default function AdminVisitorsPage() {
   // Dashboard
   return (
     <MantineProvider forceColorScheme="dark">
-      <Container size="lg" py="xl">
+      <Container size="lg" py="xl" style={{ minHeight: '100vh', backgroundColor: '#0a0a0a' }}>
         <Stack gap="lg">
           <Group justify="space-between" align="center">
             <Title order={2} style={{ color: '#ededed' }}>

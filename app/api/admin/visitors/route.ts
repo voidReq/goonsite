@@ -14,7 +14,8 @@ function isAuthorized(request: NextRequest): boolean {
 
 export async function GET(request: NextRequest) {
   // Rate limit: 5 requests per 60 seconds per IP (for unauthenticated attempts)
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+  const ip = request.headers.get('cf-connecting-ip') ||
+             request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
              request.headers.get('x-real-ip') || 'unknown';
 
   if (!isAuthorized(request)) {
