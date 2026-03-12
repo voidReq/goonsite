@@ -101,39 +101,39 @@ export async function getGeoForIp(ip: string): Promise<GeoInfo | null> {
     return cache[ip];
   }
 
-  // Fetch from ipapi.co
+  // Fetch from ip-api.com (ipapi.co blocks Vercel IPs with Cloudflare)
   try {
-    const res = await fetch(`https://ipapi.co/${ip}/json/`, {
+    const res = await fetch(`http://ip-api.com/json/${ip}`, {
       headers: { 'User-Agent': 'goonsite-visitor-log/1.0' },
       cache: 'no-store',
     });
 
     if (!res.ok) {
       const reason = res.status === 429
-        ? 'Rate limit exceeded — you may need to upgrade your ipapi.co plan'
+        ? 'Rate limit exceeded — you may need to upgrade your ip-api.com plan'
         : `HTTP ${res.status}`;
-      console.error(`[geo-cache] ipapi.co returned ${res.status} for ${ip}`);
+      console.error(`[geo-cache] ip-api.com returned ${res.status} for ${ip}`);
       logError(ip, res.status, reason);
       return null;
     }
 
     const data = await res.json();
 
-    // ipapi.co returns { error: true } on invalid IPs or rate limits
-    if (data.error) {
-      console.error(`[geo-cache] ipapi.co error for ${ip}:`, data.reason);
-      logError(ip, 0, data.reason || 'Unknown API error');
+    // ip-api.com returns status: 'fail' on invalid IPs or rate limits
+    if (data.status === 'fail') {
+      console.error(`[geo-cache] ip-api.com error for ${ip}:`, data.message);
+      logError(ip, 0, data.message || 'Unknown API error');
       return null;
     }
 
     const geo: GeoInfo = {
       city: data.city || 'Unknown',
-      region: data.region || 'Unknown',
-      country_name: data.country_name || 'Unknown',
-      country_code: data.country_code || '??',
-      org: data.org || 'Unknown',
-      latitude: data.latitude || 0,
-      longitude: data.longitude || 0,
+      region: data.regionName || data.region || 'Unknown',
+      country_name: data.country || 'Unknown',
+      country_code: data.countryCode || '??',
+      org: data.isp || data.org || 'Unknown',
+      latitude: data.lat || 0,
+      longitude: data.lon || 0,
       timezone: data.timezone || 'Unknown',
       cached_at: new Date().toISOString(),
     };
