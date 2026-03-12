@@ -33,6 +33,12 @@ interface VisitorEntry {
   language?: string;
 }
 
+const formatDuration = (seconds?: number) => {
+  if (typeof seconds !== 'number' || isNaN(seconds)) return '—';
+  if (seconds >= 360) return `${Math.round(seconds / 60)}m`;
+  return `${seconds}s`;
+};
+
 export default function AdminVisitorsPage() {
   const [password, setPassword] = useState('');
   const [authed, setAuthed] = useState(false);
@@ -276,7 +282,7 @@ export default function AdminVisitorsPage() {
                 <IconClock size={20} style={{ color: '#d97706' }} />
                 <Text size="sm" c="dimmed">Avg Duration</Text>
               </Group>
-              <Text size="xl" fw={700} mt={4}>{stats.avgDuration}s</Text>
+              <Text size="xl" fw={700} mt={4}>{formatDuration(stats.avgDuration)}</Text>
             </Paper>
           </Group>
 
@@ -376,7 +382,7 @@ export default function AdminVisitorsPage() {
                           </Tooltip>
                         </Table.Td>
                         <Table.Td>
-                          {entry.duration_seconds ? `${entry.duration_seconds}s` : '—'}
+                          {formatDuration(entry.duration_seconds)}
                         </Table.Td>
                         <Table.Td>
                           <Text size="xs">{entry.screen || '—'}</Text>
