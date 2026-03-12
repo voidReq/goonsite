@@ -27,7 +27,8 @@ export default function ProjectsIndexPage() {
           <div style={{ marginBottom: '15px' }}><span style={{ color: '#bb9af7' }}>└──</span> <span style={{ color: '#7dcfff' }}>smartgrid-iot</span> — Smart grid cybersecurity testbed (C++)</div>
 
           <div style={{ color: '#9ece6a', marginBottom: '10px' }}>## Writeups/</div>
-          <div style={{ marginBottom: '15px' }}><span style={{ color: '#bb9af7' }}>└──</span> <span style={{ color: '#7dcfff' }}>One</span> — Coming soon...</div>
+          <div style={{ marginBottom: '5px' }}><span style={{ color: '#bb9af7' }}>├──</span> <span style={{ color: '#7dcfff' }}>march_5_2026</span> — Critical IDOR PII Exposure</div>
+          <div style={{ marginBottom: '15px' }}><span style={{ color: '#bb9af7' }}>└──</span> <span style={{ color: '#7dcfff' }}>other-vulnerabilities</span> — Coming soon...</div>
 
           <div style={{ color: '#f7768e', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #414868' }}>
             → Select a folder from the sidebar to begin

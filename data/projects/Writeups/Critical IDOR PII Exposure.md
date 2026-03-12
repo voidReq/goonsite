@@ -1,4 +1,3 @@
-# Critical IDOR PII Exposure
 ### March 5, 2026 - Undisclosed Company (~100k accounts, few thousand paying)
 
 I recently discovered a critical IDOR vulnerability that allowed me to access unique stripe links of customers on the webpage. I chained this with an exposure of the backend user_id's of users, and reported it.
