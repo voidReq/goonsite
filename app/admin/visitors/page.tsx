@@ -455,7 +455,7 @@ export default function AdminVisitorsPage() {
                                         <Group gap="xs"><Text size="xs" c="dimmed" w={80}>Coordinates:</Text><Text size="xs">{geoCache[entry.ip].latitude}, {geoCache[entry.ip].longitude}</Text></Group>
                                         <Group gap="xs"><Text size="xs" c="dimmed" w={80}>Timezone:</Text><Text size="xs">{geoCache[entry.ip].timezone}</Text></Group>
                                         <Group gap="xs"><Text size="xs" c="dimmed" w={80}>ISP/Org:</Text><Text size="xs">{geoCache[entry.ip].org}</Text></Group>
-                                    {geoCache[entry.ip].asn && <Group gap="xs"><Text size="xs" c="dimmed" w={80}>ASN:</Text><Text size="xs">{geoCache[entry.ip].asn}</Text></Group>}
+                                        {geoCache[entry.ip].asn && <Group gap="xs"><Text size="xs" c="dimmed" w={80}>ASN:</Text><Text size="xs">{geoCache[entry.ip].asn}</Text></Group>}
                                       </Stack>
                                     )}
                                   </Group>
