@@ -89,7 +89,7 @@ function logError(ip: string, status: number, reason: string) {
  */
 export async function getGeoForIp(ip: string): Promise<GeoInfo | null> {
   // Skip private/localhost IPs
-  if (!ip || ip === 'unknown' || ip === '::1' || ip.startsWith('127.') ||
+  if (!ip || ip === 'unknown' || ip === '::1' || ip.startsWith('127.') || ip.startsWith('::ffff:127.') ||
       ip.startsWith('10.') || ip.startsWith('192.168.') || ip.startsWith('172.')) {
     return null;
   }

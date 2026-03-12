@@ -91,6 +91,17 @@ export default function AdminVisitorsPage() {
         const data = await res.json();
         const availableDates = data.dates || [];
         setDates(availableDates);
+        
+        // Also fetch the geo cache on initial login
+        const geoRes = await fetch('/api/admin/visitors?geo=cache', {
+          headers: { Authorization: `Bearer ${password}` },
+        });
+        if (geoRes.ok) {
+          const geoData = await geoRes.json();
+          setGeoCache(geoData.geo || {});
+          setGeoErrors(geoData.errors || []);
+        }
+
         if (availableDates.length > 0) {
           const latest = availableDates[0];
           setSelectedDate(latest);
