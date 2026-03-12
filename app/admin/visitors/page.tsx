@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import {
   MantineProvider,
   Text,
@@ -48,8 +48,9 @@ export default function AdminVisitorsPage() {
   const [dates, setDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [pageSize, setPageSize] = useState<string>('50');
-  const [geoCache, setGeoCache] = useState<Record<string, { city: string; country_name: string; country_code: string; org: string }>>({});
+  const [geoCache, setGeoCache] = useState<Record<string, { city: string; region: string; country_name: string; country_code: string; org: string; timezone: string }>>({});
   const [geoErrors, setGeoErrors] = useState<Array<{ ip: string; status: number; reason: string; timestamp: string }>>([]);
+  const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
   const fetchDates = async (pwd: string) => {
     const res = await fetch('/api/admin/visitors?dates=list', {
@@ -377,9 +378,6 @@ export default function AdminVisitorsPage() {
                       <Table.Th>Location</Table.Th>
                       <Table.Th>Path</Table.Th>
                       <Table.Th>Duration</Table.Th>
-                      <Table.Th>Screen</Table.Th>
-                      <Table.Th>User Agent</Table.Th>
-                      <Table.Th>Referer</Table.Th>
                       <Table.Th style={{ width: 40 }}></Table.Th>
                     </Table.Tr>
                   </Table.Thead>
@@ -387,7 +385,8 @@ export default function AdminVisitorsPage() {
                     {displayEntries
                       .slice(0, pageSize === 'all' ? undefined : parseInt(pageSize))
                       .map((entry, i) => (
-                      <Table.Tr key={i}>
+                      <React.Fragment key={i}>
+                      <Table.Tr onClick={() => setExpandedRow(expandedRow === i ? null : i)} style={{ cursor: 'pointer' }}>
                         <Table.Td style={{ minWidth: 80 }}>
                           <Badge size="sm" color={entry.type === 'duration' ? 'orange' : 'blue'} variant="light" w={65} style={{ textAlign: 'center' }}>
                             {entry.type === 'duration' ? 'LEAVE' : 'VIEW'}
@@ -420,29 +419,13 @@ export default function AdminVisitorsPage() {
                           {formatDuration(entry.duration_seconds)}
                         </Table.Td>
                         <Table.Td>
-                          <Text size="xs">{entry.screen || '—'}</Text>
-                        </Table.Td>
-                        <Table.Td>
-                          <Tooltip label={entry.user_agent || '—'} multiline maw={500}>
-                            <Text size="xs" lineClamp={1} style={{ maxWidth: 250, cursor: 'help' }}>
-                              {entry.user_agent || '—'}
-                            </Text>
-                          </Tooltip>
-                        </Table.Td>
-                        <Table.Td>
-                          <Tooltip label={entry.referer || '—'} multiline maw={400}>
-                            <Text size="xs" c="dimmed" lineClamp={1} style={{ maxWidth: 180, cursor: 'help' }}>
-                              {entry.referer || '—'}
-                            </Text>
-                          </Tooltip>
-                        </Table.Td>
-                        <Table.Td>
                           <Tooltip label="Copy entry">
                             <ActionIcon
                               variant="subtle"
                               color="gray"
                               size="sm"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 navigator.clipboard.writeText(JSON.stringify(entry, null, 2));
                               }}
                             >
@@ -451,6 +434,33 @@ export default function AdminVisitorsPage() {
                           </Tooltip>
                         </Table.Td>
                       </Table.Tr>
+                      {expandedRow === i && (
+                        <Table.Tr style={{ backgroundColor: '#111111' }}>
+                          <Table.Td colSpan={7} style={{ padding: 'xs' }}>
+                            <Paper p="sm" radius="sm" style={{ backgroundColor: '#0a0a0a', border: '1px solid #2a2a2a' }}>
+                              <Group align="flex-start" gap="xl">
+                                <Stack gap="xs" style={{ minWidth: 300 }}>
+                                  <Text size="sm" fw={600} c="dimmed">Device Information</Text>
+                                  <Group gap="xs"><Text size="xs" c="dimmed" w={80}>Screen:</Text><Text size="xs">{entry.screen || '—'}</Text></Group>
+                                  <Group gap="xs"><Text size="xs" c="dimmed" w={80}>Language:</Text><Text size="xs">{entry.language || '—'}</Text></Group>
+                                  <Group gap="xs"><Text size="xs" c="dimmed" w={80}>Referer:</Text><Text size="xs" style={{ wordBreak: 'break-all' }}>{entry.referer || '—'}</Text></Group>
+                                  <Group gap="xs"><Text size="xs" c="dimmed" w={80}>User Agent:</Text><Text size="xs" style={{ wordBreak: 'break-all' }}>{entry.user_agent || '—'}</Text></Group>
+                                </Stack>
+                                {entry.ip && geoCache[entry.ip] && (
+                                  <Stack gap="xs" style={{ minWidth: 250 }}>
+                                    <Text size="sm" fw={600} c="dimmed">Geolocation</Text>
+                                    <Group gap="xs"><Text size="xs" c="dimmed" w={80}>Location:</Text><Text size="xs">{geoCache[entry.ip].city}, {geoCache[entry.ip].region}</Text></Group>
+                                    <Group gap="xs"><Text size="xs" c="dimmed" w={80}>Country:</Text><Text size="xs">{geoCache[entry.ip].country_name}</Text></Group>
+                                    <Group gap="xs"><Text size="xs" c="dimmed" w={80}>Timezone:</Text><Text size="xs">{geoCache[entry.ip].timezone}</Text></Group>
+                                    <Group gap="xs"><Text size="xs" c="dimmed" w={80}>ISP/Org:</Text><Text size="xs">{geoCache[entry.ip].org}</Text></Group>
+                                  </Stack>
+                                )}
+                              </Group>
+                            </Paper>
+                          </Table.Td>
+                        </Table.Tr>
+                      )}
+                      </React.Fragment>
                     ))}
                   </Table.Tbody>
                 </Table>
