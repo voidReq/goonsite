@@ -134,6 +134,42 @@ export default function AdminVisitorsPage() {
   const pageViews = useMemo(() => entries.filter((e) => !e.type || e.type !== 'duration'), [entries]);
   const durations = useMemo(() => entries.filter((e) => e.type === 'duration'), [entries]);
 
+  // Combine views and durations for a cleaner table UI
+  const displayEntries = useMemo(() => {
+    const sorted = [...entries].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    const processed: VisitorEntry[] = [];
+    const pendingViews = new Map<string, VisitorEntry>();
+
+    for (const entry of sorted) {
+      if (entry.type === 'view' || !entry.type) {
+        const key = `${entry.ip}|${entry.path}`;
+        if (pendingViews.has(key)) {
+          processed.push(pendingViews.get(key)!);
+        }
+        pendingViews.set(key, { ...entry, type: 'view' });
+      } else if (entry.type === 'duration') {
+        const key = `${entry.ip}|${entry.path}`;
+        if (pendingViews.has(key)) {
+          const view = pendingViews.get(key)!;
+          // Apply the duration to the matching view
+          view.duration_seconds = entry.duration_seconds;
+          processed.push(view);
+          pendingViews.delete(key);
+        }
+        // If orphaned duration (view was likely yesterday), we just ignore it for cleanliness
+      } else {
+        processed.push(entry);
+      }
+    }
+
+    // Add remaining views that haven't received a leave event yet
+    for (const view of pendingViews.values()) {
+      processed.push(view);
+    }
+
+    return processed.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [entries]);
+
   // Summary stats
   const stats = useMemo(() => {
     const uniqueIps = new Set(pageViews.filter((e) => e.ip).map((e) => e.ip)).size;
@@ -348,14 +384,13 @@ export default function AdminVisitorsPage() {
                     </Table.Tr>
                   </Table.Thead>
                   <Table.Tbody>
-                    {[...entries]
-                      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+                    {displayEntries
                       .slice(0, pageSize === 'all' ? undefined : parseInt(pageSize))
                       .map((entry, i) => (
                       <Table.Tr key={i}>
-                        <Table.Td style={{ minWidth: 60 }}>
-                          <Badge size="sm" color={entry.type === 'duration' ? 'orange' : 'blue'} variant="light" style={{ minWidth: 50, textAlign: 'center' }}>
-                            {entry.type === 'duration' ? 'leave' : 'view'}
+                        <Table.Td style={{ minWidth: 80 }}>
+                          <Badge size="sm" color={entry.type === 'duration' ? 'orange' : 'blue'} variant="light" w={65} style={{ textAlign: 'center' }}>
+                            {entry.type === 'duration' ? 'LEAVE' : 'VIEW'}
                           </Badge>
                         </Table.Td>
                         <Table.Td style={{ whiteSpace: 'nowrap' }}>
