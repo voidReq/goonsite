@@ -20,6 +20,7 @@ export function Terminal() {
             'Welcome to the Gooniverse.',
             'Accessing goon-hub...',
             'Injecting goon-sploits...',
+            'Hacking the goon-frame...',
             'Compiling goon-code...',
             'Running diagnostics...',
             'Establishing secure connection...',
