@@ -30,40 +30,33 @@ export interface GeoError {
   timestamp: string;
 }
 
-// In-memory copy of the disk cache
-let memoryCache: Record<string, GeoInfo> = {};
-let errorLog: GeoError[] = [];
-let loaded = false;
-
 function loadCache(): Record<string, GeoInfo> {
-  if (loaded) return memoryCache;
   try {
     if (existsSync(CACHE_FILE)) {
-      memoryCache = JSON.parse(readFileSync(CACHE_FILE, 'utf-8'));
+      return JSON.parse(readFileSync(CACHE_FILE, 'utf-8'));
     }
-  } catch {
-    memoryCache = {};
-  }
-  try {
-    if (existsSync(ERRORS_FILE)) {
-      errorLog = JSON.parse(readFileSync(ERRORS_FILE, 'utf-8'));
-    }
-  } catch {
-    errorLog = [];
-  }
-  loaded = true;
-  return memoryCache;
+  } catch {}
+  return {};
 }
 
-function saveCache() {
+function saveCache(cache: Record<string, GeoInfo>) {
   try {
     if (!existsSync(CACHE_DIR)) {
       mkdirSync(CACHE_DIR, { recursive: true });
     }
-    writeFileSync(CACHE_FILE, JSON.stringify(memoryCache, null, 2));
+    writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
   } catch (error) {
     console.error('[geo-cache] Failed to save cache:', error);
   }
+}
+
+function loadErrors(): GeoError[] {
+  try {
+    if (existsSync(ERRORS_FILE)) {
+      return JSON.parse(readFileSync(ERRORS_FILE, 'utf-8'));
+    }
+  } catch {}
+  return [];
 }
 
 function logError(ip: string, status: number, reason: string) {
@@ -73,6 +66,7 @@ function logError(ip: string, status: number, reason: string) {
     reason,
     timestamp: new Date().toISOString(),
   };
+  let errorLog = loadErrors();
   errorLog.push(entry);
   // Keep last 100 errors
   if (errorLog.length > 100) {
@@ -144,9 +138,9 @@ export async function getGeoForIp(ip: string): Promise<GeoInfo | null> {
       cached_at: new Date().toISOString(),
     };
 
-    // Cache to memory and disk
-    memoryCache[ip] = geo;
-    saveCache();
+    // Cache to disk
+    cache[ip] = geo;
+    saveCache(cache);
 
     return geo;
   } catch (error) {
@@ -167,6 +161,5 @@ export function getGeoCache(): Record<string, GeoInfo> {
  * Get recent geo lookup errors (for the admin dashboard alert).
  */
 export function getGeoErrors(): GeoError[] {
-  loadCache(); // Ensures errors are loaded
-  return errorLog;
+  return loadErrors();
 }
