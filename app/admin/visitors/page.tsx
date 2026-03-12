@@ -50,6 +50,9 @@ export default function AdminVisitorsPage() {
   const [pageSize, setPageSize] = useState<string>('50');
   const [geoCache, setGeoCache] = useState<Record<string, { city: string; region: string; country_name: string; country_code: string; org: string; asn?: string; timezone: string; latitude: number; longitude: number; zip?: string }>>({});
   const [geoErrors, setGeoErrors] = useState<Array<{ ip: string; status: number; reason: string; timestamp: string }>>([]);
+  const [filterIp, setFilterIp] = useState('');
+  const [filterLocation, setFilterLocation] = useState('');
+  const [filterPath, setFilterPath] = useState('');
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
   const fetchDates = async (pwd: string) => {
@@ -168,8 +171,26 @@ export default function AdminVisitorsPage() {
       processed.push(view);
     }
 
-    return processed.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }, [entries]);
+    let result = processed.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    if (filterIp) {
+      result = result.filter((e) => e.ip && e.ip.includes(filterIp));
+    }
+    if (filterPath) {
+      result = result.filter((e) => e.path.toLowerCase().includes(filterPath.toLowerCase()));
+    }
+    if (filterLocation) {
+      const locLower = filterLocation.toLowerCase();
+      result = result.filter((e) => {
+        if (!e.ip || !geoCache[e.ip]) return false;
+        const geo = geoCache[e.ip];
+        const matchStr = `${geo.city} ${geo.region} ${geo.country_name} ${geo.country_code}`.toLowerCase();
+        return matchStr.includes(locLower);
+      });
+    }
+
+    return result;
+  }, [entries, filterIp, filterPath, filterLocation, geoCache]);
 
   // Summary stats
   const stats = useMemo(() => {
@@ -341,6 +362,27 @@ export default function AdminVisitorsPage() {
               </Group>
             </Paper>
           )}
+
+          {/* Filters */}
+          <Paper p="md" radius="md" style={{ backgroundColor: '#141414', border: '1px solid #2a2a2a' }}>
+            <Group grow>
+              <TextInput
+                placeholder="Filter by IP..."
+                value={filterIp}
+                onChange={(e) => setFilterIp(e.currentTarget.value)}
+              />
+              <TextInput
+                placeholder="Filter by Location..."
+                value={filterLocation}
+                onChange={(e) => setFilterLocation(e.currentTarget.value)}
+              />
+              <TextInput
+                placeholder="Filter by Path..."
+                value={filterPath}
+                onChange={(e) => setFilterPath(e.currentTarget.value)}
+              />
+            </Group>
+          </Paper>
 
           {/* Log table */}
           <Paper p="md" radius="md" style={{ backgroundColor: '#141414', border: '1px solid #2a2a2a' }}>
