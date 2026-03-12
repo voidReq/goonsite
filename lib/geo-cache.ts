@@ -17,6 +17,7 @@ export interface GeoInfo {
   country_name: string;
   country_code: string;
   org: string;
+  asn?: string;
   latitude: number;
   longitude: number;
   timezone: string;
@@ -133,6 +134,7 @@ export async function getGeoForIp(ip: string): Promise<GeoInfo | null> {
       country_name: data.country || 'Unknown',
       country_code: data.countryCode || '??',
       org: data.isp || data.org || 'Unknown',
+      asn: data.as || undefined,
       latitude: data.lat || 0,
       longitude: data.lon || 0,
       timezone: data.timezone || 'Unknown',
