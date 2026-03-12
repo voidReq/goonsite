@@ -42,7 +42,12 @@ export async function POST(request: NextRequest) {
     // Attach real IP from server-side headers (client can't know its own public IP)
     entry.ip = ip;
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Los_Angeles',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(new Date());
 
     if (!existsSync(VISITORS_DIR)) {
       mkdirSync(VISITORS_DIR, { recursive: true });

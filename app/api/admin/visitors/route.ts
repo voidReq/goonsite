@@ -55,7 +55,12 @@ export async function GET(request: NextRequest) {
   }
 
   // Get logs for a specific date (default: today)
-  const date = searchParams.get('date') || new Date().toISOString().split('T')[0];
+  const date = searchParams.get('date') || new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Los_Angeles',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date());
 
   // Validate date format
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
