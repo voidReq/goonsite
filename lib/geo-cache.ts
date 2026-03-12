@@ -111,6 +111,7 @@ export async function getGeoForIp(ip: string): Promise<GeoInfo | null> {
   try {
     const res = await fetch(`https://ipapi.co/${ip}/json/`, {
       headers: { 'User-Agent': 'goonsite-visitor-log/1.0' },
+      cache: 'no-store',
     });
 
     if (!res.ok) {

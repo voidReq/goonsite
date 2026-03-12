@@ -51,9 +51,16 @@ export async function POST(request: NextRequest) {
     const filePath = join(VISITORS_DIR, `${today}.jsonl`);
     appendFileSync(filePath, JSON.stringify(entry) + '\n');
 
-    // Fire-and-forget geo lookup on view events (caches automatically)
+    // Fetch geo on view events (await it so Next.js doesn't kill the fetch when the response completes)
     if (entry.type === 'view' && ip !== 'unknown') {
-      getGeoForIp(ip).catch(() => {});
+      try {
+        await Promise.race([
+          getGeoForIp(ip),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Geo IP timeout')), 3000))
+        ]);
+      } catch (e) {
+        console.error('[log-visit] Geo lookup failed or timed out:', e);
+      }
     }
 
     return NextResponse.json({ ok: true });
