@@ -9,7 +9,7 @@ import { MantineProvider, ColorSchemeScript } from '@mantine/core'; // Import Co
 
 export const metadata: Metadata = {
   title: "The Goonsite",
-  description: "For all your gooning needs",
+  description: "Personal projects, security notes, and more!",
 };
 
 export default function RootLayout({

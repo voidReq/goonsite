@@ -7,7 +7,7 @@ import { Providers } from './components/Providers';
 
 export const metadata: Metadata = {
   title: "The Goonsite",
-  description: "For all your gooning needs - Goon Hub, Goon-sploit, and more",
+  description: "Personal projects, security notes, and more!",
   keywords: ["goon", "goonsite", "goon hub", "goon-sploit"],
   authors: [{ name: "Goonsite Team" }],
   openGraph: {
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     url: "https://goonsite.org", // Update this with your actual domain
     siteName: "The Goonsite",
     title: "The Goonsite",
-    description: "For all your gooning needs - Goon Hub, Goon-sploit, and more",
+    description: "Personal projects, security notes, and more!",
     images: [
       {
         url: "/og-image.png", // We'll create this next
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "The Goonsite",
-    description: "For all your gooning needs - Goon Hub, Goon-sploit, and more",
+    description: "Personal projects, security notes, and more!",
     images: ["/og-image.png"],
   },
   robots: {
