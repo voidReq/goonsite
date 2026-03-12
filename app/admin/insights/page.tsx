@@ -37,13 +37,13 @@ export default function AdminInsightsPage() {
   const [authed, setAuthed] = useState(false);
   const [authError, setAuthError] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   const [timeRange, setTimeRange] = useState<string>('all');
   const [locations, setLocations] = useState<LocationStat[]>([]);
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
 
   const handleZoomIn = () => {
-    if (position.zoom >= 8) return;
+    if (position.zoom >= 100) return;
     setPosition((pos) => ({ ...pos, zoom: pos.zoom * 1.5 }));
   };
 
