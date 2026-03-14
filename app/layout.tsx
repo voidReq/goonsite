@@ -6,6 +6,7 @@ import { ColorSchemeScript } from '@mantine/core';
 import { Providers } from './components/Providers';
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://goonsite.org"),
   title: "The Goonsite",
   description: "Personal projects, security notes, and more!",
   keywords: ["goon", "goonsite", "goon hub", "goon-sploit"],

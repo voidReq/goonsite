@@ -37,11 +37,10 @@ export function getAllNotes(): Note[] {
         traverseDirectory(filePath, baseDir);
       } else if (file.endsWith('.md')) {
         const relativePath = path.relative(baseDir, filePath);
-        const slug = relativePath
-          .replace(/\.md$/, '')
-          .split(path.sep);
+        const originalParts = relativePath.replace(/\.md$/, '').split(path.sep);
+        const slug = originalParts.map(part => part.toLowerCase().replace(/\s+/g, '-'));
         
-        const title = slug[slug.length - 1];
+        const title = originalParts[originalParts.length - 1];
         
         notes.push({
           slug,
@@ -61,20 +60,20 @@ export function getAllNotes(): Note[] {
  * Get a single note by its slug
  */
 export function getNoteBySlug(slug: string[]): Note | null {
-  const filePath = path.join(NOTES_DIR, ...slug) + '.md';
+  const allNotes = getAllNotes();
+  const slugStr = slug.join('/');
+  const match = allNotes.find(n => n.slug.join('/') === slugStr);
   
-  if (!fs.existsSync(filePath)) {
-    return null;
-  }
+  if (!match) return null;
   
+  const filePath = path.join(NOTES_DIR, match.path);
   const fileContents = fs.readFileSync(filePath, 'utf8');
   const { content, data } = matter(fileContents);
   
   return {
-    slug,
-    title: data.title || slug[slug.length - 1],
+    ...match,
+    title: data.title || match.title,
     content,
-    path: slug.join('/'),
   };
 }
 
@@ -82,19 +81,16 @@ export function getNoteBySlug(slug: string[]): Note | null {
  * Convert wiki-style links [[Link]] to Next.js links
  */
 export function convertWikiLinks(content: string, allNotes: Note[]): string {
-  // Create a map of note titles to their slugs for quick lookup
-  const titleToSlug = new Map<string, string>();
+  // Create a map of note titles to their URLs for quick lookup
+  const titleToUrl = new Map<string, string>();
   
   allNotes.forEach(note => {
-    const title = note.slug[note.slug.length - 1];
-    // Encode each segment for proper URL handling
-    const encodedPath = note.slug.map(s => encodeURIComponent(s)).join('/');
-    titleToSlug.set(title, `/notes/${encodedPath}`);
+    titleToUrl.set(note.title, `/notes/${note.slug.join('/')}`);
   });
   
   // Replace [[Link]] with [Link](/notes/path)
   return content.replace(/\[\[([^\]]+)\]\]/g, (match, linkText) => {
-    const targetPath = titleToSlug.get(linkText);
+    const targetPath = titleToUrl.get(linkText);
     if (targetPath) {
       return `[${linkText}](${targetPath})`;
     }
@@ -130,7 +126,7 @@ export function buildNoteTree(): NoteTreeItem[] {
         const nameWithoutExt = file.replace(/\.md$/, '');
         items.push({
           name: nameWithoutExt,
-          path: itemRelativePath.replace(/\.md$/, ''),
+          path: itemRelativePath.replace(/\.md$/, '').split('/').map(p => p.toLowerCase().replace(/\s+/g, '-')).join('/'),
           type: 'file',
         });
       }

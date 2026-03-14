@@ -37,11 +37,10 @@ export function getAllProjects(): Project[] {
         traverseDirectory(filePath, baseDir);
       } else if (file.endsWith('.md')) {
         const relativePath = path.relative(baseDir, filePath);
-        const slug = relativePath
-          .replace(/\.md$/, '')
-          .split(path.sep);
+        const originalParts = relativePath.replace(/\.md$/, '').split(path.sep);
+        const slug = originalParts.map(part => part.toLowerCase().replace(/\s+/g, '-'));
         
-        const title = slug[slug.length - 1];
+        const title = originalParts[originalParts.length - 1];
         
         projects.push({
           slug,
@@ -62,21 +61,21 @@ export function getAllProjects(): Project[] {
  * Get a single project by its slug
  */
 export function getProjectBySlug(slug: string[]): Project | null {
-  const filePath = path.join(PROJECTS_DIR, ...slug) + '.md';
+  const allProjects = getAllProjects();
+  const slugStr = slug.join('/');
+  const match = allProjects.find(n => n.slug.join('/') === slugStr);
   
-  if (!fs.existsSync(filePath)) {
-    return null;
-  }
+  if (!match) return null;
   
+  const filePath = path.join(PROJECTS_DIR, match.path);
   const fileContents = fs.readFileSync(filePath, 'utf8');
   const { content, data } = matter(fileContents);
   
   return {
-    slug,
-    title: data.title || slug[slug.length - 1],
+    ...match,
+    title: data.title || match.title,
     description: data.description || '',
     content,
-    path: slug.join('/'),
   };
 }
 
@@ -106,7 +105,7 @@ export function buildProjectTree(): ProjectTreeItem[] {
         const nameWithoutExt = file.replace(/\.md$/, '');
         items.push({
           name: nameWithoutExt,
-          path: itemRelativePath.replace(/\.md$/, ''),
+          path: itemRelativePath.replace(/\.md$/, '').split('/').map(p => p.toLowerCase().replace(/\s+/g, '-')).join('/'),
           type: 'file',
         });
       }

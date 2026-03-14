@@ -49,8 +49,7 @@ export async function generateMetadata(
   }
   
   const description = project.description || extractDescription(project.content);
-  const encodedSlug = decodedSlug.map(s => encodeURIComponent(s)).join('/');
-  const url = `https://goonsite.org/projects/${encodedSlug}`;
+  const url = `https://goonsite.org/projects/${decodedSlug.join('/')}`;
   
   return {
     title: `${project.title} | The Goonsite Projects`,

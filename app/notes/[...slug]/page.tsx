@@ -61,9 +61,8 @@ export async function generateMetadata(
   }
   
   const description = extractDescription(note.content);
-  // Use the decoded slug and encode it properly for the URL
-  const encodedSlug = decodedSlug.map(s => encodeURIComponent(s)).join('/');
-  const url = `https://goonsite.org/notes/${encodedSlug}`;
+  // Slugs are natively URL-safe now
+  const url = `https://goonsite.org/notes/${decodedSlug.join('/')}`;
   
   return {
     title: `${note.title} | The Goonsite Notes`,

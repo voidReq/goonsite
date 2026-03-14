@@ -41,7 +41,7 @@ function TreeNode({
         </div>
       ) : (
         <Link
-          href={`/projects/${item.path.split('/').map(s => encodeURIComponent(s)).join('/')}`}
+          href={`/projects/${item.path}`}
           className="flex items-center py-1 px-2 hover:bg-gray-800 rounded transition-colors"
           style={{ paddingLeft: `${level * 1.5 + 0.5}rem` }}
           onClick={onProjectClick}
