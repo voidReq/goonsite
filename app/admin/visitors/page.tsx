@@ -53,6 +53,7 @@ export default function AdminVisitorsPage() {
   const [filterIp, setFilterIp] = useState('');
   const [filterLocation, setFilterLocation] = useState('');
   const [filterPath, setFilterPath] = useState('');
+  const [filterReferrer, setFilterReferrer] = useState('');
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
   const fetchDates = async (pwd: string) => {
@@ -179,6 +180,9 @@ export default function AdminVisitorsPage() {
     if (filterPath) {
       result = result.filter((e) => e.path.toLowerCase().includes(filterPath.toLowerCase()));
     }
+    if (filterReferrer) {
+      result = result.filter((e) => e.referer && e.referer.toLowerCase().includes(filterReferrer.toLowerCase()));
+    }
     if (filterLocation) {
       const locLower = filterLocation.toLowerCase();
       result = result.filter((e) => {
@@ -190,7 +194,7 @@ export default function AdminVisitorsPage() {
     }
 
     return result;
-  }, [entries, filterIp, filterPath, filterLocation, geoCache]);
+  }, [entries, filterIp, filterPath, filterLocation, filterReferrer, geoCache]);
 
   // Summary stats
   const stats = useMemo(() => {
@@ -380,6 +384,11 @@ export default function AdminVisitorsPage() {
                 placeholder="Filter by Path..."
                 value={filterPath}
                 onChange={(e) => setFilterPath(e.currentTarget.value)}
+              />
+              <TextInput
+                placeholder="Filter by Referrer..."
+                value={filterReferrer}
+                onChange={(e) => setFilterReferrer(e.currentTarget.value)}
               />
             </Group>
           </Paper>
