@@ -1,9 +1,16 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
 const MESSAGES_DIR = join(process.cwd(), 'data', 'messages');
 const PENDING_FILE = join(MESSAGES_DIR, 'pending.json');
 const APPROVED_FILE = join(MESSAGES_DIR, 'approved.json');
+
+/** Ensure the data/messages directory exists */
+function ensureDir() {
+  if (!existsSync(MESSAGES_DIR)) {
+    mkdirSync(MESSAGES_DIR, { recursive: true });
+  }
+}
 
 export interface Message {
   id: string;
@@ -23,6 +30,7 @@ function readJson(filePath: string): Message[] {
 }
 
 function writeJson(filePath: string, data: Message[]) {
+  ensureDir();
   writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
 }
 
