@@ -6,7 +6,7 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
   return (
     <div style={{ backgroundColor: '#1a1b26', borderRadius: '8px', padding: '20px', color: '#a9b1d6', width: '100%', height: '100%', maxWidth: fullWidth ? 'none' : '600px' }}>
       <div style={{ marginBottom: '10px' }}>
-        <span style={{ color: '#bb9af7' }}>user@goonsite</span>
+        <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
         <span style={{ color: '#7dcfff' }}>:</span>
         <span style={{ color: '#c0caf5' }}>~</span>
         <span style={{ color: '#7dcfff' }}>$</span>

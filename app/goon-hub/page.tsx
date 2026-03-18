@@ -45,7 +45,7 @@ export default function GoonHub() {
           <Title order={3}>Site Navigation</Title>
           <Code block style={{ fontFamily: 'monospace' }}>
             <div>
-              <span style={{ color: '#bb9af7' }}>user@goonsite</span>
+              <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
               <span style={{ color: '#7dcfff' }}>:</span>
               <span style={{ color: '#c0caf5' }}>~</span>
               <span style={{ color: '#7dcfff' }}>$</span>

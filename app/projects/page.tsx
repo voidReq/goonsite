@@ -5,7 +5,7 @@ export default function ProjectsIndexPage() {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', flexDirection: 'column', padding: '20px' }}>
       <div style={{ backgroundColor: '#1a1b26', borderRadius: '8px', padding: '30px', color: '#a9b1d6', maxWidth: '800px', width: '100%' }}>
         <div style={{ marginBottom: '20px' }}>
-          <span style={{ color: '#bb9af7' }}>user@goonsite</span>
+          <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
           <span style={{ color: '#7dcfff' }}>:</span>
           <span style={{ color: '#c0caf5' }}>~/projects</span>
           <span style={{ color: '#7dcfff' }}>$</span>
