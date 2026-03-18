@@ -382,8 +382,8 @@ export default function Chess_Game({ onWin }: ChessProps) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-      {/* Bot speech bubble — fixed height to prevent board shifting */}
-      <div style={{ minHeight: '72px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {/* Bot speech bubble + check badge — fixed height to prevent board shifting */}
+      <div style={{ height: '90px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={taunt}
@@ -417,10 +417,6 @@ export default function Chess_Game({ onWin }: ChessProps) {
           </Text>
           </motion.div>
         </AnimatePresence>
-      </div>
-
-      {/* Check badge — fixed height to prevent board shifting */}
-      <div style={{ height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {gameStatus === 'check' && !isGameOver && (
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
             <Text
