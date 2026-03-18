@@ -3,21 +3,22 @@
 import React, { Suspense } from "react";
 import { MacbookScroll } from "../components/ui/macbook-scroll";
 import Link from "next/link";
-import { MantineProvider } from '@mantine/core';
-import { useEffect, useState } from "react";
+import { MantineProvider, Progress } from '@mantine/core';
+import '@mantine/core/styles.css';
+import { useEffect, useState, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { useLoader } from "@react-three/fiber";
-import { useRef } from "react";
 import * as THREE from "three";
 
-function LeBronModel() {
+function LeBronModel({ onLoaded }: { onLoaded?: () => void }) {
   const obj = useLoader(OBJLoader, "/lebron.obj");
   const ref = useRef<THREE.Group>(null);
 
   // Center and scale the model
   useEffect(() => {
     if (obj) {
+      onLoaded?.();
       const box = new THREE.Box3().setFromObject(obj);
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
@@ -52,16 +53,52 @@ function LeBronModel() {
   );
 }
 
+function LoadingScreen({ progress }: { progress: number }) {
+  return (
+    <div className="absolute inset-0 bg-black flex flex-col items-center justify-center z-20 gap-4 px-10">
+      <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
+        Loading your experience...
+      </span>
+      <Progress
+        value={progress}
+        color="grape"
+        size="sm"
+        radius="xl"
+        className="w-full max-w-xs"
+        animated
+      />
+      <span className="text-white/30 text-xs font-mono">{Math.round(progress)}%</span>
+    </div>
+  );
+}
+
 function MobileView() {
+  const [loaded, setLoaded] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (loaded) return;
+    // Animate the progress bar while loading
+    const interval = setInterval(() => {
+      setProgress((p) => {
+        if (p >= 90) return 90; // cap at 90 until actually loaded
+        return p + Math.random() * 8;
+      });
+    }, 200);
+    return () => clearInterval(interval);
+  }, [loaded]);
+
   return (
     <div className="h-screen bg-black flex flex-col items-center justify-center relative">
+      {!loaded && <LoadingScreen progress={progress} />}
+
       <div className="w-full h-full">
         <Canvas camera={{ position: [0, 2, 12], fov: 50 }}>
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
           <directionalLight position={[-5, -5, -5]} intensity={0.3} />
           <Suspense fallback={null}>
-            <LeBronModel />
+            <LeBronModel onLoaded={() => { setProgress(100); setTimeout(() => setLoaded(true), 300); }} />
           </Suspense>
         </Canvas>
       </div>
