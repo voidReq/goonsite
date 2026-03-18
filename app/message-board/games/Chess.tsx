@@ -383,7 +383,7 @@ export default function Chess_Game({ onWin }: ChessProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
       {/* Bot speech bubble — fixed height to prevent board shifting */}
-      <div style={{ minHeight: '58px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '72px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={taunt}
@@ -419,23 +419,25 @@ export default function Chess_Game({ onWin }: ChessProps) {
         </AnimatePresence>
       </div>
 
-      {/* Check badge */}
-      {gameStatus === 'check' && !isGameOver && (
-        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
-          <Text
-            size="sm"
-            fw={700}
-            style={{
-              color: '#fff',
-              background: '#ef4444',
-              borderRadius: '6px',
-              padding: '2px 10px',
-            }}
-          >
-            Check!
-          </Text>
-        </motion.div>
-      )}
+      {/* Check badge — fixed height to prevent board shifting */}
+      <div style={{ height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {gameStatus === 'check' && !isGameOver && (
+          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+            <Text
+              size="sm"
+              fw={700}
+              style={{
+                color: '#fff',
+                background: '#ef4444',
+                borderRadius: '6px',
+                padding: '2px 10px',
+              }}
+            >
+              Check!
+            </Text>
+          </motion.div>
+        )}
+      </div>
 
       {/* Black captured pieces (pieces white has captured) */}
       <div
