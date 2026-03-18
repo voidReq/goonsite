@@ -1,116 +1,169 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { MantineProvider, Text, Switch, Rating, Image, Tooltip, Notification, Alert, Button, Progress } from '@mantine/core';
+import { useState } from 'react';
+import { MantineProvider, Switch, Rating, Text, Tooltip, Notification, Alert, Button } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { IconArrowRight, IconInfoCircle, IconHeart } from '@tabler/icons-react';
+import { IconArrowRight, IconInfoCircle, IconHeart, IconNotes, IconCode, IconMap, IconMessageCircle, IconChevronRight } from '@tabler/icons-react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import { Terminal } from './components/ui/Terminal';
+
+interface NavCardProps {
+  href: string;
+  accent: string;
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}
+
+function NavCard({ href, accent, icon, title, desc }: NavCardProps) {
+  return (
+    <Link href={href} style={{ textDecoration: 'none' }}>
+      <div
+        className="group h-full rounded-xl border border-white/10 bg-white/5 p-4 md:p-5 cursor-pointer transition-all duration-200 hover:bg-white/8 hover:border-white/20"
+        style={{ minHeight: '100px' }}
+      >
+        <div className="flex flex-col h-full justify-between gap-2">
+          <div>
+            <div style={{ color: accent }} className="mb-2">{icon}</div>
+            <div className="font-mono font-bold text-white text-base leading-tight">{title}</div>
+            <div className="text-white/40 text-xs mt-0.5">{desc}</div>
+          </div>
+          <IconChevronRight size={13} className="text-white/20 group-hover:text-white/50 transition-colors" />
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export default function Home() {
   const [isGooning, setIsGooning] = useState(false);
   const [ratingValue, setRatingValue] = useState(0);
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [goodGooner, setGoodGooner] = useState(false);
-  const icon = <IconInfoCircle />;
 
   return (
     <MantineProvider forceColorScheme="dark">
+      <div className="min-h-screen flex items-center justify-center p-4 md:p-8">
+        <div className="w-full max-w-3xl grid grid-cols-2 md:grid-cols-3 gap-3">
 
-      <div className="flex justify-center items-center min-h-screen flex-col px-4 py-8">
-
-        <Terminal />
-
-        <div className="mt-10 flex flex-col items-center">
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-center">
-            <Link href="/notes" style={{ textDecoration: 'none' }}><Button>My Personal notes</Button></Link>
-            <Link href="/projects" style={{ textDecoration: 'none' }}><Button>Projects/Vuln Writeups</Button></Link>
-            <Link href="/goon-hub" style={{ textDecoration: 'none' }}><Button>Sitemap</Button></Link>
+          {/* Terminal — hero, spans 2 cols on mobile, 2 of 3 on desktop */}
+          <div className="col-span-2 rounded-xl overflow-hidden border border-white/10 h-full">
+            <Terminal fullWidth />
           </div>
-        </div>
 
-        <div style={{ marginTop: '40px' }}>
-          <Switch
-            label="I am locked in."
-            style={{ marginBottom: '20px' }}
-            onChange={(event) => setIsGooning(event.currentTarget.checked)}
+          {/* Notes — sits to the right of terminal on desktop, wraps to next row on mobile */}
+          <NavCard
+            href="/notes"
+            accent="#bb9af7"
+            icon={<IconNotes size={18} />}
+            title="Notes"
+            desc="Personal brain dump"
           />
-        </div>
 
-        {isGooning && (
-          <div className="border-2 border-purple-600 p-4 sm:p-5 rounded-lg mx-4">
-            <Text size="xl" fw={700} style={{ marginBottom: '10px' }}>
-              Hello, Goon.
-            </Text>
+          {/* Projects */}
+          <NavCard
+            href="/projects"
+            accent="#7dcfff"
+            icon={<IconCode size={18} />}
+            title="Projects"
+            desc="Vuln writeups & builds"
+          />
 
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div>How locked in?</div>
-              <Tooltip position="bottom" offset={20} label="Disclaimer: By giving us a rating, you agree to your information (i.e., the rating)
-                being sold for exorbitant prices">
-                <Rating
-                  value={ratingValue}
-                  onChange={(value) => {
-                    setRatingValue(value);
-                    if (value <= 4) {
-                      setNotificationVisible(true);
-                      setGoodGooner(false);
-                    } else if (value === 5) {
-                      setGoodGooner(true);
-                      setNotificationVisible(false);
-                    }
-                  }}
-                  style={{ marginLeft: '10px' }}
-                />
-              </Tooltip>
-            </div>
+          {/* Sitemap */}
+          <NavCard
+            href="/goon-hub"
+            accent="#9ece6a"
+            icon={<IconMap size={18} />}
+            title="Sitemap"
+            desc="Everything, mapped"
+          />
+
+          {/* Message Board */}
+          <NavCard
+            href="/message-board"
+            accent="#e0af68"
+            icon={<IconMessageCircle size={18} />}
+            title="Messages"
+            desc="Leave a trace"
+          />
+
+          {/* Easter egg toggle */}
+          <div className="col-span-2 md:col-span-3 flex justify-center pt-1">
+            <Switch
+              label="I am locked in."
+              size="sm"
+              onChange={(event) => {
+                setIsGooning(event.currentTarget.checked);
+                if (!event.currentTarget.checked) {
+                  setRatingValue(0);
+                  setNotificationVisible(false);
+                  setGoodGooner(false);
+                }
+              }}
+            />
           </div>
-        )}
 
-        {goodGooner && (
-          <Alert
-            variant="light"
-            color="grape"
-            style={{
-              position: 'fixed',
-              top: '30px',
-              right: '30px',
-              zIndex: 1000
-            }}
-            icon={icon}
-            onClose={() => setGoodGooner(false)}
-            withCloseButton
-          >
-            <Text style={{ marginRight: "20px", marginBottom: "20px" }}>
-              Good, very very good.
-            </Text>
+          {/* Locked in expansion */}
+          {isGooning && (
+            <div className="col-span-2 md:col-span-3 rounded-xl border border-purple-600/40 bg-purple-950/20 p-4">
+              <Text size="md" fw={700} mb={8}>Hello, Goon.</Text>
+              <div className="flex items-center gap-3">
+                <Text size="sm" c="dimmed">How locked in?</Text>
+                <Tooltip
+                  position="top"
+                  label="Disclaimer: By giving us a rating, you agree to your information (i.e., the rating) being sold for exorbitant prices"
+                >
+                  <Rating
+                    value={ratingValue}
+                    onChange={(value) => {
+                      setRatingValue(value);
+                      if (value <= 4) {
+                        setNotificationVisible(true);
+                        setGoodGooner(false);
+                      } else {
+                        setGoodGooner(true);
+                        setNotificationVisible(false);
+                      }
+                    }}
+                  />
+                </Tooltip>
+              </div>
+            </div>
+          )}
 
-            <Link href="macbook" style={{ textDecoration: 'none' }}>
-              <Button
-                variant="light"
-                leftSection={<IconHeart size={14} />}
-                rightSection={<IconArrowRight size={14} />}
-              >
-                Visit the goon center
-              </Button>
-            </Link>
-          </Alert>
-        )}
-        {notificationVisible && (
-          <Notification
-            title={
-              <>
-                <Text>Perhaps you should goon better.<br /></Text>
-                <Text style={{ color: 'red' }} fw={700} size="lg">Do better.</Text>
-              </>
-            }
-            onClose={() => setNotificationVisible(false)}
-            style={{ position: 'absolute', bottom: 20, right: 20 }}
-          >
-          </Notification>
-        )}
-
+        </div>
       </div>
+
+      {goodGooner && (
+        <Alert
+          variant="light"
+          color="grape"
+          style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 1000, maxWidth: '280px' }}
+          icon={<IconInfoCircle />}
+          onClose={() => setGoodGooner(false)}
+          withCloseButton
+        >
+          <Text size="sm" mb={10}>Good, very very good.</Text>
+          <Link href="macbook" style={{ textDecoration: 'none' }}>
+            <Button size="xs" variant="light" leftSection={<IconHeart size={12} />} rightSection={<IconArrowRight size={12} />}>
+              Visit the goon center
+            </Button>
+          </Link>
+        </Alert>
+      )}
+
+      {notificationVisible && (
+        <Notification
+          title={
+            <>
+              <Text size="sm">Perhaps you should goon better.</Text>
+              <Text style={{ color: 'red' }} fw={700} size="sm">Do better.</Text>
+            </>
+          }
+          onClose={() => setNotificationVisible(false)}
+          style={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1000 }}
+        />
+      )}
     </MantineProvider>
   );
 }
