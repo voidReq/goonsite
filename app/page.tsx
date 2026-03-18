@@ -138,7 +138,7 @@ export default function Home() {
         <Alert
           variant="light"
           color="grape"
-          style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 1000, maxWidth: '280px' }}
+          style={{ position: 'fixed', bottom: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 1000, maxWidth: '280px', width: 'calc(100% - 32px)' }}
           icon={<IconInfoCircle />}
           onClose={() => setGoodGooner(false)}
           withCloseButton
@@ -161,7 +161,7 @@ export default function Home() {
             </>
           }
           onClose={() => setNotificationVisible(false)}
-          style={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1000 }}
+          style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 1000, maxWidth: '320px', width: 'calc(100% - 32px)' }}
         />
       )}
     </MantineProvider>
