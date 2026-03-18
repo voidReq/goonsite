@@ -12,12 +12,17 @@ function ensureDir() {
   }
 }
 
+export type GameType = 'tictactoe' | 'connect4' | 'chess';
+
+export const VALID_GAMES: GameType[] = ['tictactoe', 'connect4', 'chess'];
+
 export interface Message {
   id: string;
   text: string;
   author: string;
   timestamp: string;
   ip: string;
+  game?: GameType;
 }
 
 function readJson(filePath: string): Message[] {

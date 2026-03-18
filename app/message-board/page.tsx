@@ -33,7 +33,14 @@ interface Message {
   text: string;
   author: string;
   timestamp: string;
+  game?: string;
 }
+
+const GAME_ICONS: Record<string, string> = {
+  tictactoe: '❌',
+  connect4: '🔴',
+  chess: '♟',
+};
 
 const PASTEL_COLORS = [
   'rgba(124, 58, 237, 0.15)',
@@ -102,9 +109,16 @@ function MessageCard({
             <Text size="xs" style={{ color: '#94a3b8', fontStyle: 'italic' }}>
               &mdash; {message.author}
             </Text>
-            <Text size="xs" style={{ color: '#64748b' }}>
-              {new Date(message.timestamp).toLocaleDateString()}
-            </Text>
+            <Group gap={6} align="center">
+              {message.game && GAME_ICONS[message.game] && (
+                <span title={message.game} style={{ fontSize: '12px', lineHeight: 1 }}>
+                  {GAME_ICONS[message.game]}
+                </span>
+              )}
+              <Text size="xs" style={{ color: '#64748b' }}>
+                {new Date(message.timestamp).toLocaleDateString()}
+              </Text>
+            </Group>
           </Group>
         </div>
       </motion.div>
@@ -264,7 +278,7 @@ export default function MessageBoardPage() {
       const res = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: text.trim(), author: author.trim() }),
+        body: JSON.stringify({ text: text.trim(), author: author.trim(), game: selectedGame }),
       });
       const data = await res.json();
       if (res.ok) {

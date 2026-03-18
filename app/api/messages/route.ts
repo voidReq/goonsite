@@ -8,6 +8,8 @@ import {
   sanitizeText,
   validateMessage,
   validateAuthor,
+  VALID_GAMES,
+  type GameType,
 } from '@/lib/messages';
 
 function getIp(request: NextRequest): string {
@@ -49,7 +51,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
 
-  const { text, author } = body as { text: unknown; author: unknown };
+  const { text, author, game } = body as { text: unknown; author: unknown; game: unknown };
 
   const textValidation = validateMessage(text);
   if (!textValidation.valid) {
@@ -68,6 +70,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Message cannot be empty after sanitization.' }, { status: 400 });
   }
 
+  const validatedGame = typeof game === 'string' && VALID_GAMES.includes(game as GameType)
+    ? (game as GameType)
+    : undefined;
+
   const id = randomUUID();
 
   addPendingMessage({
@@ -76,6 +82,7 @@ export async function POST(request: NextRequest) {
     author: sanitizedAuthor,
     timestamp: new Date().toISOString(),
     ip,
+    game: validatedGame,
   });
 
   // Fire-and-forget Discord notification with one-click approve/deny links

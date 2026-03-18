@@ -26,12 +26,19 @@ import {
   IconRefresh,
 } from '@tabler/icons-react';
 
+const GAME_LABELS: Record<string, string> = {
+  tictactoe: '❌ Tic-Tac-Toe',
+  connect4: '🔴 Connect Four',
+  chess: '♟ Chess',
+};
+
 interface PendingMessage {
   id: string;
   text: string;
   author: string;
   timestamp: string;
   ip: string;
+  game?: string;
 }
 
 export default function AdminMessagesPage() {
@@ -193,6 +200,11 @@ export default function AdminMessagesPage() {
                     <Badge variant="light" color="gray" size="sm">
                       {msg.ip}
                     </Badge>
+                    {msg.game && GAME_LABELS[msg.game] && (
+                      <Badge variant="light" color="violet" size="sm">
+                        {GAME_LABELS[msg.game]}
+                      </Badge>
+                    )}
                   </Group>
                   <Text size="xs" c="dimmed">
                     {new Date(msg.timestamp).toLocaleString()}
