@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/macbook',
     '/revolutions',
     '/turtle',
+    '/message-board',
     '/goon-sploit',
     '/fim',
     '/james',
@@ -25,6 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     else if (route === '/projects') priority = 0.9;
     else if (route === '/notes') priority = 0.8;
     else if (route === '/goon-hub') priority = 0.7;
+    else if (route === '/message-board') priority = 0.6;
     else if (['/james', '/jerry', '/goon-sploit', '/fim', '/turtle', '/revolutions', '/macbook'].includes(route)) priority = 0.3;
 
     return {
