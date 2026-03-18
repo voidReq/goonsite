@@ -280,7 +280,7 @@ export default function MessageBoardPage() {
   const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
 
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 768px)');
+    const mq = window.matchMedia('(max-width: 1024px)');
     setIsMobile(mq.matches);
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     mq.addEventListener('change', handler);
