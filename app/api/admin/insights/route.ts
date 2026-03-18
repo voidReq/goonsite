@@ -4,6 +4,7 @@ import { join } from 'path';
 import { rateLimit } from '@/lib/rate-limit';
 import { getGeoCache } from '@/lib/geo-cache';
 import { sendAdminAlert } from '@/lib/notify';
+import { getIp } from '@/lib/request';
 
 const VISITORS_DIR = join(process.cwd(), 'data', 'visitors');
 
@@ -16,9 +17,7 @@ function isAuthorized(request: NextRequest): boolean {
 
 export async function GET(request: NextRequest) {
   // Rate limit
-  const ip = request.headers.get('cf-connecting-ip') ||
-             request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-             request.headers.get('x-real-ip') || 'unknown';
+  const ip = getIp(request);
   const userAgent = request.headers.get('user-agent') || 'Unknown';
 
   if (!isAuthorized(request)) {
