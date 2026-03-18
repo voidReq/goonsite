@@ -1,4 +1,21 @@
+import { createHmac } from 'crypto';
 import { getGeoForIp } from './geo-cache';
+
+/**
+ * Generate an HMAC-SHA256 signature for one-click message actions.
+ */
+export function signAction(id: string, action: string): string {
+  const secret = process.env.ADMIN_PASSWORD || '';
+  return createHmac('sha256', secret).update(`${id}:${action}`).digest('hex');
+}
+
+/**
+ * Verify an HMAC-SHA256 signature for one-click message actions.
+ */
+export function verifyAction(id: string, action: string, token: string): boolean {
+  const expected = signAction(id, action);
+  return expected === token;
+}
 
 export async function sendAdminAlert({
   ip,
@@ -43,5 +60,61 @@ export async function sendAdminAlert({
     });
   } catch (error) {
     console.error('Failed to send discord alert', error);
+  }
+}
+
+/**
+ * Send a Discord webhook notification when a new message is submitted,
+ * with one-click approve/deny links using signed tokens.
+ */
+export async function sendMessageAlert({
+  id,
+  text,
+  author,
+  ip,
+}: {
+  id: string;
+  text: string;
+  author: string;
+  ip: string;
+}) {
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  if (!webhookUrl) return;
+
+  const baseUrl = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+  const approveToken = signAction(id, 'approve');
+  const denyToken = signAction(id, 'deny');
+
+  const approveUrl = `${baseUrl}/api/admin/messages/quick?id=${id}&action=approve&token=${approveToken}`;
+  const denyUrl = `${baseUrl}/api/admin/messages/quick?id=${id}&action=deny&token=${denyToken}`;
+
+  try {
+    const geo = await getGeoForIp(ip);
+    const locationStr = geo
+      ? `${geo.city}, ${geo.region}, ${geo.country_name}`
+      : 'Unknown';
+
+    const embed = {
+      title: '💬 New Message Submitted',
+      color: 0x7c3aed,
+      fields: [
+        { name: 'Author', value: author, inline: true },
+        { name: 'IP', value: ip, inline: true },
+        { name: 'Location', value: locationStr, inline: true },
+        { name: 'Message', value: text.length > 1000 ? text.slice(0, 1000) + '...' : text, inline: false },
+        { name: 'Quick Actions', value: `[✅ Approve](${approveUrl}) · [❌ Deny](${denyUrl})`, inline: false },
+      ],
+      footer: { text: `ID: ${id}` },
+      timestamp: new Date().toISOString(),
+    };
+
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ embeds: [embed] }),
+    });
+  } catch (error) {
+    console.error('Failed to send message alert', error);
   }
 }

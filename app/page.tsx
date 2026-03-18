@@ -27,6 +27,7 @@ export default function Home() {
             <Link href="/notes" style={{ textDecoration: 'none' }}><Button>My Personal notes</Button></Link>
             <Link href="/projects" style={{ textDecoration: 'none' }}><Button>Projects/Vuln Writeups</Button></Link>
             <Link href="/goon-hub" style={{ textDecoration: 'none' }}><Button>Sitemap</Button></Link>
+            <Link href="/message-board" style={{ textDecoration: 'none' }}><Button>Leave a Message</Button></Link>
           </div>
         </div>
 
