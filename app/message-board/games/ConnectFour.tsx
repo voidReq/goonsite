@@ -406,7 +406,7 @@ export default function ConnectFour({ onWin }: ConnectFourProps) {
         >
           {status === 'won' && (
             <Text size="sm" fw={600} style={{ color: '#4ade80' }}>
-              You won! Form unlocked below.
+              You won!
             </Text>
           )}
           {status === 'lost' && (

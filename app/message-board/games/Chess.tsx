@@ -729,9 +729,6 @@ export default function Chess_Game({ onWin }: ChessProps) {
               <Text size="sm" fw={600} style={{ color: '#4ade80' }}>
                 Checkmate! You won!
               </Text>
-              <Text size="xs" style={{ color: '#4ade80', opacity: 0.8 }}>
-                Form unlocked below.
-              </Text>
             </>
           )}
           {gameStatus === 'lost' && (
@@ -745,15 +742,17 @@ export default function Chess_Game({ onWin }: ChessProps) {
             </Text>
           )}
 
-          <Button
-            variant="light"
-            color="violet"
-            size="sm"
-            leftSection={<IconRefresh size={14} />}
-            onClick={reset}
-          >
-            Rematch
-          </Button>
+          {gameStatus !== 'won' && (
+            <Button
+              variant="light"
+              color="violet"
+              size="sm"
+              leftSection={<IconRefresh size={14} />}
+              onClick={reset}
+            >
+              Rematch
+            </Button>
+          )}
         </motion.div>
       )}
     </div>
