@@ -380,23 +380,24 @@ export default function Chess_Game({ onWin }: ChessProps) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-      {/* Bot speech bubble */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={taunt}
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 8 }}
-          transition={{ duration: 0.25 }}
-          style={{
-            background: 'rgba(124, 58, 237, 0.1)',
-            border: '1px solid rgba(124, 58, 237, 0.3)',
-            borderRadius: '12px',
-            padding: '10px 18px',
-            maxWidth: '340px',
-            textAlign: 'center',
-          }}
-        >
+      {/* Bot speech bubble — fixed height to prevent board shifting */}
+      <div style={{ minHeight: '58px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={taunt}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              background: 'rgba(124, 58, 237, 0.1)',
+              border: '1px solid rgba(124, 58, 237, 0.3)',
+              borderRadius: '12px',
+              padding: '10px 18px',
+              maxWidth: '340px',
+              textAlign: 'center',
+            }}
+          >
           <Text size="sm" style={{ color: '#c4b5fd' }}>
             {botThinking ? (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
@@ -412,8 +413,9 @@ export default function Chess_Game({ onWin }: ChessProps) {
               taunt
             )}
           </Text>
-        </motion.div>
-      </AnimatePresence>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       {/* Check badge */}
       {gameStatus === 'check' && !isGameOver && (

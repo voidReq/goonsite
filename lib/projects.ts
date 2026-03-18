@@ -38,7 +38,9 @@ export function getAllProjects(): Project[] {
       } else if (file.endsWith('.md')) {
         const relativePath = path.relative(baseDir, filePath);
         const originalParts = relativePath.replace(/\.md$/, '').split(path.sep);
-        const slug = originalParts.map(part => part.toLowerCase().replace(/\s+/g, '-'));
+        const slug = originalParts.map(part =>
+          part.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '')
+        );
         
         const title = originalParts[originalParts.length - 1];
         

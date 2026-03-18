@@ -38,7 +38,9 @@ export function getAllNotes(): Note[] {
       } else if (file.endsWith('.md')) {
         const relativePath = path.relative(baseDir, filePath);
         const originalParts = relativePath.replace(/\.md$/, '').split(path.sep);
-        const slug = originalParts.map(part => part.toLowerCase().replace(/\s+/g, '-'));
+        const slug = originalParts.map(part =>
+          part.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '')
+        );
         
         const title = originalParts[originalParts.length - 1];
         
@@ -126,7 +128,7 @@ export function buildNoteTree(): NoteTreeItem[] {
         const nameWithoutExt = file.replace(/\.md$/, '');
         items.push({
           name: nameWithoutExt,
-          path: itemRelativePath.replace(/\.md$/, '').split('/').map(p => p.toLowerCase().replace(/\s+/g, '-')).join('/'),
+          path: itemRelativePath.replace(/\.md$/, '').split('/').map(p => p.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '')).join('/'),
           type: 'file',
         });
       }
