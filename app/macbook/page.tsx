@@ -12,13 +12,15 @@ import { useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 
 function LeBronModel({ onLoaded }: { onLoaded?: () => void }) {
-  const obj = useLoader(OBJLoader, "/lebron.obj");
+  const originalObj = useLoader(OBJLoader, "/lebron.obj");
   const ref = useRef<THREE.Group>(null);
+  const [clonedObj, setClonedObj] = useState<THREE.Group | null>(null);
 
-  // Center and scale the model
+  // Clone and set up the model to avoid mutating the cached original
   useEffect(() => {
-    if (obj) {
-      onLoaded?.();
+    if (originalObj) {
+      const obj = originalObj.clone(true);
+
       const box = new THREE.Box3().setFromObject(obj);
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
@@ -37,8 +39,11 @@ function LeBronModel({ onLoaded }: { onLoaded?: () => void }) {
           });
         }
       });
+
+      setClonedObj(obj);
+      onLoaded?.();
     }
-  }, [obj]);
+  }, [originalObj]);
 
   useFrame((_, delta) => {
     if (ref.current) {
@@ -46,9 +51,11 @@ function LeBronModel({ onLoaded }: { onLoaded?: () => void }) {
     }
   });
 
+  if (!clonedObj) return null;
+
   return (
     <group ref={ref}>
-      <primitive object={obj} />
+      <primitive object={clonedObj} />
     </group>
   );
 }
@@ -89,11 +96,18 @@ function MobileView() {
   }, [loaded]);
 
   return (
-    <div className="h-screen bg-black flex flex-col items-center justify-center relative">
+    <div className="h-dvh bg-black flex flex-col items-center justify-center relative">
       {!loaded && <LoadingScreen progress={progress} />}
 
       <div className="w-full h-full">
-        <Canvas camera={{ position: [0, 2, 12], fov: 50 }}>
+        <Canvas
+          camera={{ position: [0, 2, 12], fov: 50 }}
+          resize={{ debounce: 0 }}
+          onCreated={() => {
+            // Force resize recalculation after client-side navigation
+            window.dispatchEvent(new Event('resize'));
+          }}
+        >
           <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
           <directionalLight position={[-5, -5, -5]} intensity={0.3} />
