@@ -43,7 +43,7 @@ export default function Home() {
 
   return (
     <MantineProvider forceColorScheme="dark">
-      <div className="min-h-screen flex items-center justify-center p-4 md:p-8">
+      <div className="min-h-screen flex flex-col items-center justify-start md:justify-center p-4 py-8 md:p-8">
         <div className="w-full max-w-3xl grid grid-cols-2 md:grid-cols-3 gap-3">
 
           {/* Terminal — hero, spans 2 cols on mobile, 2 of 3 on desktop */}
