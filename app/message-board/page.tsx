@@ -188,9 +188,16 @@ function MessageCard({
           <Text size="xs" style={{ color: '#94a3b8', fontStyle: 'italic' }}>
             &mdash; {message.author}
           </Text>
-          <Text size="xs" style={{ color: '#64748b' }}>
-            {new Date(message.timestamp).toLocaleDateString()}
-          </Text>
+          <Group gap={6} align="center">
+            {message.game && GAME_ICONS[message.game] && (
+              <span title={message.game} style={{ fontSize: '12px', lineHeight: 1 }}>
+                {GAME_ICONS[message.game]}
+              </span>
+            )}
+            <Text size="xs" style={{ color: '#64748b' }}>
+              {new Date(message.timestamp).toLocaleDateString()}
+            </Text>
+          </Group>
         </Group>
       </div>
     </motion.div>
