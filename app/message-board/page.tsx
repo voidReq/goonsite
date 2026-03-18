@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   MantineProvider,
   TextInput,
@@ -60,6 +60,27 @@ const BORDER_COLORS = [
   'rgba(236, 72, 153, 0.5)',
   'rgba(139, 92, 246, 0.5)',
   'rgba(14, 165, 233, 0.5)',
+];
+
+const DEV_MESSAGES: Message[] = [
+  { id: '1', text: 'This site goes hard ngl', author: 'xXgamer99Xx', timestamp: '2026-02-10T08:30:00Z', game: 'tictactoe' },
+  { id: '2', text: 'Beat the chess bot on my first try lol get rekt', author: 'Magnus Carlsen (fake)', timestamp: '2026-02-12T14:20:00Z', game: 'chess' },
+  { id: '3', text: 'I have been trying to beat Connect Four for 45 minutes. I am not okay.', author: 'frustrated_frank', timestamp: '2026-02-15T22:10:00Z', game: 'connect4' },
+  { id: '4', text: 'Leaving my mark here. Hi future internet archaeologists.', author: 'digital_fossil', timestamp: '2026-02-18T11:00:00Z', game: 'tictactoe' },
+  { id: '5', text: 'The vibes are immaculate', author: 'vibecheck', timestamp: '2026-02-20T16:45:00Z', game: 'chess' },
+  { id: '6', text: 'First! ...wait there are already messages. Whatever. First in spirit.', author: 'AlwaysLate', timestamp: '2026-02-22T09:30:00Z', game: 'tictactoe' },
+  { id: '7', text: 'I showed this to my cat and she walked across my keyboard. Taking that as approval.', author: 'cat_parent_42', timestamp: '2026-02-25T13:15:00Z', game: 'connect4' },
+  { id: '8', text: 'Goon site? More like GOOD site. I will not be taking questions.', author: 'pun_master', timestamp: '2026-02-28T20:00:00Z', game: 'tictactoe' },
+  { id: '9', text: 'Been lurking for a while. Finally beat tic-tac-toe to say: nice work.', author: 'silent_observer', timestamp: '2026-03-02T07:45:00Z', game: 'tictactoe' },
+  { id: '10', text: 'The chess bot blundered its queen on move 3. I almost feel bad. Almost.', author: 'GothamChess Stan', timestamp: '2026-03-04T18:30:00Z', game: 'chess' },
+  { id: '11', text: 'Dropping this message like its hot', author: 'DJ_Placeholder', timestamp: '2026-03-06T12:00:00Z', game: 'connect4' },
+  { id: '12', text: 'This is my Roman Empire now', author: 'emperor_of_goon', timestamp: '2026-03-08T15:20:00Z', game: 'chess' },
+  { id: '13', text: 'My therapist said I need to touch grass. Does this count?', author: 'terminally_online', timestamp: '2026-03-10T21:00:00Z', game: 'tictactoe' },
+  { id: '14', text: 'Connect Four is actually just vertical tic-tac-toe with extra steps. Change my mind.', author: 'shower_thoughts', timestamp: '2026-03-12T10:30:00Z', game: 'connect4' },
+  { id: '15', text: 'Whoever made this: you are doing the lords work', author: 'grateful_goon', timestamp: '2026-03-14T17:45:00Z', game: 'chess' },
+  { id: '16', text: 'I was here. Remember me when this site blows up.', author: 'early_adopter', timestamp: '2026-03-15T08:00:00Z', game: 'tictactoe' },
+  { id: '17', text: 'just vibing tbh', author: 'low_effort_larry', timestamp: '2026-03-16T14:30:00Z', game: 'connect4' },
+  { id: '18', text: 'The particles floating in the background are mesmerizing. I have been staring at them for 10 minutes.', author: 'easily_distracted', timestamp: '2026-03-16T23:00:00Z', game: 'tictactoe' },
 ];
 
 function MessageCard({
@@ -127,52 +148,58 @@ function MessageCard({
 
   const row = Math.floor(index / 3);
   const col = index % 3;
-  const xOffset = (col - 1) * 320 + (row % 2 === 0 ? 0 : 40);
-  const yBase = row * 220;
+  const xOffset = (col - 1) * 310;
+  const yBase = row * 230;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 60, rotateX: -15 }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        z: isHovered ? 80 : zOffset,
-        rotateY: isHovered ? 0 : rotation,
-        scale: isHovered ? 1.08 : 1,
-      }}
-      transition={{
-        delay: index * 0.08,
-        duration: 0.6,
-        type: 'spring',
-        stiffness: 100,
-      }}
+    <div
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       style={{
         position: 'absolute',
-        left: `calc(50% + ${xOffset}px)`,
+        left: `calc(50% + ${xOffset}px - 140px)`,
         top: `${yBase}px`,
-        transform: `translateX(-50%)`,
-        transformStyle: 'preserve-3d',
         width: '280px',
         cursor: 'default',
-        zIndex: isHovered ? 50 : 10 - Math.abs(zOffset),
+        zIndex: isHovered ? 100 : 1,
+        // Flat 2D box for hit-testing — no 3D transforms here
+        transformStyle: 'flat',
       }}
     >
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 60, rotateX: -15 }}
+        animate={{
+          opacity: 1,
+          y: 0,
+          rotateX: 0,
+          z: isHovered ? 80 : zOffset,
+          rotateY: isHovered ? 0 : rotation,
+          scale: isHovered ? 1.08 : 1,
+        }}
+        transition={{
+          delay: index * 0.08,
+          duration: 0.6,
+          type: 'spring',
+          stiffness: 100,
+        }}
         style={{
-          background: PASTEL_COLORS[colorIdx],
-          border: `1px solid ${BORDER_COLORS[colorIdx]}`,
-          borderRadius: '12px',
-          padding: '20px',
-          backdropFilter: 'blur(12px)',
-          boxShadow: isHovered
-            ? `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${BORDER_COLORS[colorIdx]}`
-            : '0 8px 32px rgba(0,0,0,0.2)',
-          transition: 'box-shadow 0.3s ease',
+          transformStyle: 'preserve-3d',
+          pointerEvents: 'none',
         }}
       >
+        <div
+          style={{
+            background: PASTEL_COLORS[colorIdx],
+            border: `1px solid ${BORDER_COLORS[colorIdx]}`,
+            borderRadius: '12px',
+            padding: '20px',
+            backdropFilter: 'blur(12px)',
+            boxShadow: isHovered
+              ? `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${BORDER_COLORS[colorIdx]}`
+              : '0 8px 32px rgba(0,0,0,0.2)',
+            transition: 'box-shadow 0.3s ease',
+          }}
+        >
         <Text
           size="sm"
           style={{
@@ -199,8 +226,9 @@ function MessageCard({
             </Text>
           </Group>
         </Group>
-      </div>
-    </motion.div>
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
@@ -245,6 +273,7 @@ export default function MessageBoardPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [hasWon, setHasWon] = useState(false);
   const [selectedGame, setSelectedGame] = useState<GameChoice | null>(null);
+  const [page, setPage] = useState(0);
   const sceneRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -261,12 +290,26 @@ export default function MessageBoardPage() {
   useEffect(() => {
     fetch('/api/messages')
       .then((r) => r.json())
-      .then((data) => setMessages(data.messages || []))
-      .catch(() => {})
+      .then((data) => {
+        const real = data.messages || [];
+        // In dev, pad with fake messages to test layout
+        if (process.env.NODE_ENV === 'development' && real.length < 10) {
+          setMessages([...real, ...DEV_MESSAGES]);
+        } else {
+          setMessages(real);
+        }
+      })
+      .catch(() => {
+        if (process.env.NODE_ENV === 'development') setMessages(DEV_MESSAGES);
+      })
       .finally(() => setLoading(false));
   }, []);
 
+  const lastMoveRef = useRef(0);
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const now = Date.now();
+    if (now - lastMoveRef.current < 50) return; // throttle to ~20fps
+    lastMoveRef.current = now;
     if (!sceneRef.current) return;
     const rect = sceneRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
@@ -301,7 +344,10 @@ export default function MessageBoardPage() {
     }
   };
 
-  const boardHeight = isMobile ? 'auto' : `${Math.max(600, Math.ceil(messages.length / 3) * 220 + 100)}px`;
+  const cardsPerPage = 9; // 3 rows of 3
+  const totalPages = Math.ceil(messages.length / cardsPerPage);
+  const displayMessages = isMobile ? messages : messages.slice(page * cardsPerPage, (page + 1) * cardsPerPage);
+  const boardHeight = isMobile ? 'auto' : `${Math.max(230, Math.ceil(displayMessages.length / 3) * 230 + 40)}px`;
 
   return (
     <MantineProvider forceColorScheme="dark">
@@ -358,6 +404,25 @@ export default function MessageBoardPage() {
             <Text size="sm" c="dimmed">
               Beat the bot, leave a message. It&apos;ll appear once approved.
             </Text>
+            {!hasWon && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.5, duration: 1 }}
+                style={{ marginTop: '10px' }}
+              >
+              <motion.div
+                animate={{ y: [0, 4, 0] }}
+                transition={{ duration: 2, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' }}
+              >
+                <Text size="xs" c="dimmed" style={{ cursor: 'pointer' }} onClick={() => {
+                  document.getElementById('game-challenge')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }}>
+                  ↓ Scroll down to fight the bot ↓
+                </Text>
+              </motion.div>
+              </motion.div>
+            )}
           </motion.div>
         </div>
 
@@ -407,7 +472,7 @@ export default function MessageBoardPage() {
               </motion.div>
             ) : (
               <AnimatePresence>
-                {messages.map((msg, i) => (
+                {displayMessages.map((msg, i) => (
                   <MessageCard
                     key={msg.id}
                     message={msg}
@@ -421,11 +486,37 @@ export default function MessageBoardPage() {
               </AnimatePresence>
             )}
           </div>
+          {!isMobile && totalPages > 1 && (
+            <Group justify="center" mt="sm" gap="xs">
+              <Button
+                variant="subtle"
+                color="gray"
+                size="xs"
+                disabled={page === 0}
+                onClick={() => { setPage(p => p - 1); setHoveredIdx(null); }}
+              >
+                &larr; Prev
+              </Button>
+              <Text size="xs" c="dimmed">
+                {page + 1} / {totalPages}
+              </Text>
+              <Button
+                variant="subtle"
+                color="gray"
+                size="xs"
+                disabled={page >= totalPages - 1}
+                onClick={() => { setPage(p => p + 1); setHoveredIdx(null); }}
+              >
+                Next &rarr;
+              </Button>
+            </Group>
+          )}
         </div>
 
         {/* Game Challenge */}
         {!hasWon && (
           <motion.div
+            id="game-challenge"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
