@@ -9,6 +9,14 @@ const nextConfig = {
     }
     return config
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/internal/deploy',
+        destination: 'http://127.0.0.1:9000/deploy',
+      },
+    ];
+  },
   async headers() {
     return [
       {
