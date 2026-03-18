@@ -1,12 +1,104 @@
-import React from "react";
+"use client";
+
+import React, { Suspense } from "react";
 import { MacbookScroll } from "../components/ui/macbook-scroll";
 import Link from "next/link";
 import { MantineProvider } from '@mantine/core';
+import { useEffect, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
+import { useLoader } from "@react-three/fiber";
+import { useRef } from "react";
+import * as THREE from "three";
+
+function LeBronModel() {
+  const obj = useLoader(OBJLoader, "/lebron.obj");
+  const ref = useRef<THREE.Group>(null);
+
+  // Center and scale the model
+  useEffect(() => {
+    if (obj) {
+      const box = new THREE.Box3().setFromObject(obj);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const scale = 4 / maxDim;
+      obj.scale.setScalar(scale);
+      obj.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+
+      // Give it a visible material since there's no .mtl
+      obj.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          (child as THREE.Mesh).material = new THREE.MeshStandardMaterial({
+            color: "#bb9af7",
+            metalness: 0.3,
+            roughness: 0.6,
+          });
+        }
+      });
+    }
+  }, [obj]);
+
+  useFrame((_, delta) => {
+    if (ref.current) {
+      ref.current.rotation.y += delta * 1.5;
+    }
+  });
+
+  return (
+    <group ref={ref}>
+      <primitive object={obj} />
+    </group>
+  );
+}
+
+function MobileView() {
+  return (
+    <div className="h-screen bg-black flex flex-col items-center justify-center relative">
+      <div className="w-full h-full">
+        <Canvas camera={{ position: [0, 2, 12], fov: 50 }}>
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[5, 5, 5]} intensity={1} />
+          <directionalLight position={[-5, -5, -5]} intensity={0.3} />
+          <Suspense fallback={null}>
+            <LeBronModel />
+          </Suspense>
+        </Canvas>
+      </div>
+
+      {/* Overlay text */}
+      <span className="absolute top-12 text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500 text-center z-10 pointer-events-none">
+        Welcome to Goonsite
+      </span>
+
+      <Link
+        href="/"
+        className="absolute bottom-8 text-white/50 hover:text-white transition-colors text-sm z-10"
+      >
+        &larr; Back home
+      </Link>
+    </div>
+  );
+}
 
 export default function MacbookScrollDemo() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
+
+  if (isMobile) {
+    return (
+      <MantineProvider>
+        <MobileView />
+      </MantineProvider>
+    );
+  }
+
   return (
     <MantineProvider>
-      <div className="overflow-hidden bg-black w-full min-h-screen flex items-center justify-center">
+      <div className="overflow-hidden bg-black w-full min-h-screen flex items-start justify-center">
         <MacbookScroll
           title={
             <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">

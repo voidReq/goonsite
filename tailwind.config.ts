@@ -21,8 +21,13 @@ const config = {
       },
       animation: {
         "meteor-effect": "meteor 5s linear infinite",
+        "rotate-3d": "rotateY 4s linear infinite",
       },
       keyframes: {
+        rotateY: {
+          "0%": { transform: "rotateY(0deg)" },
+          "100%": { transform: "rotateY(360deg)" },
+        },
         meteor: {
           "0%": { transform: "rotate(215deg) translateX(0)", opacity: "1" },
           "70%": { opacity: "1" },
