@@ -27,7 +27,7 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
             'Optimizing goon-flow...',
             'Analyzing goon-data...',
             'Preparing for launch...',
-            'System check complete. All goon.',
+            'System check complete.',
             'Initiating goon-protocol...',
             'Synchronizing goon-nodes...',
             'Gooning session active.'
