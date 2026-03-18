@@ -3,16 +3,14 @@ import { appendFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { rateLimit } from '@/lib/rate-limit';
 import { getGeoForIp } from '@/lib/geo-cache';
+import { getIp } from '@/lib/request';
 
 const VISITORS_DIR = join(process.cwd(), 'data', 'visitors');
 
 export async function POST(request: NextRequest) {
   try {
     // Rate limit: 30 requests per 10 seconds per IP
-    const ip = request.headers.get('cf-connecting-ip') ||
-               request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               request.headers.get('x-real-ip') ||
-               'unknown';
+    const ip = getIp(request);
     const { limited } = rateLimit('log-visit', ip, 30, 10_000);
     if (limited) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
