@@ -84,7 +84,7 @@ export default function Home() {
             accent="#e0af68"
             icon={<IconMessageCircle size={18} />}
             title="Messages"
-            desc="Leave a trace"
+            desc="Leave your mark"
           />
 
           {/* Easter egg toggle */}
