@@ -83,11 +83,6 @@ export function denyMessage(id: string): boolean {
 export function sanitizeText(input: string): string {
   return input
     .replace(/<[^>]*>/g, '')       // strip HTML tags
-    .replace(/&/g, '&amp;')        // encode ampersands
-    .replace(/</g, '&lt;')         // encode <
-    .replace(/>/g, '&gt;')         // encode >
-    .replace(/"/g, '&quot;')       // encode "
-    .replace(/'/g, '&#x27;')       // encode '
     .replace(/\s+/g, ' ')          // collapse whitespace
     .trim();
 }
