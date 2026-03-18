@@ -200,7 +200,7 @@ export default function Chess_Game({ onWin }: ChessProps) {
   const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null);
   const [botThinking, setBotThinking] = useState(false);
   const [taunt, setTaunt] = useState('Beat me at chess and you can leave a message.');
-  const [winCalled, setWinCalled] = useState(false);
+  const winCalledRef = useRef(false);
   const [animatingMove, setAnimatingMove] = useState<{
     from: { row: number; col: number };
     to: { row: number; col: number };
@@ -245,8 +245,8 @@ export default function Chess_Game({ onWin }: ChessProps) {
   // ─── Win callback ───────────────────────────────────────────────────────
 
   useEffect(() => {
-    if (gameStatus === 'won' && !winCalled) {
-      setWinCalled(true);
+    if (gameStatus === 'won' && !winCalledRef.current) {
+      winCalledRef.current = true;
       setTaunt(randomTaunt('lost'));
       const timer = setTimeout(() => onWinRef.current(), 800);
       return () => clearTimeout(timer);
@@ -257,7 +257,7 @@ export default function Chess_Game({ onWin }: ChessProps) {
     if (gameStatus === 'draw') {
       setTaunt('Stalemate... I\'ll take it.');
     }
-  }, [gameStatus, winCalled]);
+  }, [gameStatus]);
 
   // ─── Make a move (with animation) ──────────────────────────────────────
 
@@ -372,7 +372,7 @@ export default function Chess_Game({ onWin }: ChessProps) {
     setLastMove(null);
     setBotThinking(false);
     setAnimatingMove(null);
-    setWinCalled(false);
+    winCalledRef.current = false;
     setTaunt('Beat me at chess and you can leave a message.');
   }, []);
 
