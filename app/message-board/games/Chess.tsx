@@ -211,6 +211,8 @@ export default function Chess_Game({ onWin }: ChessProps) {
   const boardRef = useRef<HTMLDivElement>(null);
   const gameRef = useRef(game);
   gameRef.current = game;
+  const onWinRef = useRef(onWin);
+  onWinRef.current = onWin;
 
   // ─── Derived state ──────────────────────────────────────────────────────
 
@@ -246,7 +248,7 @@ export default function Chess_Game({ onWin }: ChessProps) {
     if (gameStatus === 'won' && !winCalled) {
       setWinCalled(true);
       setTaunt(randomTaunt('lost'));
-      const timer = setTimeout(() => onWin(), 800);
+      const timer = setTimeout(() => onWinRef.current(), 800);
       return () => clearTimeout(timer);
     }
     if (gameStatus === 'lost') {
@@ -255,7 +257,7 @@ export default function Chess_Game({ onWin }: ChessProps) {
     if (gameStatus === 'draw') {
       setTaunt('Stalemate... I\'ll take it.');
     }
-  }, [gameStatus, winCalled, onWin]);
+  }, [gameStatus, winCalled]);
 
   // ─── Make a move (with animation) ──────────────────────────────────────
 
