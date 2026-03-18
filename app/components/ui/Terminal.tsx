@@ -29,7 +29,8 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
             'System check complete.',
             'Initiating goon-protocol...',
             'Synchronizing goon-nodes...',
-            'Gooning session active.'
+            'Gooning session active.',
+            'Autodeploy is live.'
           ]}
           loop={1}
           cursor
