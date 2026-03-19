@@ -21,6 +21,35 @@ import { useRouter } from 'next/navigation';
 import { IconLock, IconAlertCircle, IconMapPin, IconArrowLeft, IconPlus, IconMinus } from '@tabler/icons-react';
 
 const geoUrl = "/countries-110m.json";
+const usStatesUrl = "/us-states-10m.json";
+
+const MAJOR_CITIES = [
+  { name: "New York", lat: 40.71, lng: -74.01 },
+  { name: "Los Angeles", lat: 34.05, lng: -118.24 },
+  { name: "Chicago", lat: 41.88, lng: -87.63 },
+  { name: "Houston", lat: 29.76, lng: -95.37 },
+  { name: "San Francisco", lat: 37.77, lng: -122.42 },
+  { name: "Seattle", lat: 47.61, lng: -122.33 },
+  { name: "Miami", lat: 25.76, lng: -80.19 },
+  { name: "Denver", lat: 39.74, lng: -104.99 },
+  { name: "Atlanta", lat: 33.75, lng: -84.39 },
+  { name: "Dallas", lat: 32.78, lng: -96.80 },
+  { name: "London", lat: 51.51, lng: -0.13 },
+  { name: "Paris", lat: 48.86, lng: 2.35 },
+  { name: "Berlin", lat: 52.52, lng: 13.41 },
+  { name: "Tokyo", lat: 35.68, lng: 139.69 },
+  { name: "Sydney", lat: -33.87, lng: 151.21 },
+  { name: "São Paulo", lat: -23.55, lng: -46.63 },
+  { name: "Mumbai", lat: 19.08, lng: 72.88 },
+  { name: "Dubai", lat: 25.20, lng: 55.27 },
+  { name: "Singapore", lat: 1.35, lng: 103.82 },
+  { name: "Toronto", lat: 43.65, lng: -79.38 },
+  { name: "Mexico City", lat: 19.43, lng: -99.13 },
+  { name: "Cairo", lat: 30.04, lng: 31.24 },
+  { name: "Lagos", lat: 6.52, lng: 3.38 },
+  { name: "Moscow", lat: 55.76, lng: 37.62 },
+  { name: "Beijing", lat: 39.90, lng: 116.40 },
+];
 
 interface LocationStat {
   lat: number;
@@ -285,6 +314,42 @@ export default function AdminInsightsPage() {
                           ))
                         }
                       </Geographies>
+                      <Geographies geography={usStatesUrl}>
+                        {({ geographies }) =>
+                          geographies.map((geo) => (
+                            <Geography
+                              key={geo.rsmKey}
+                              geography={geo}
+                              fill="none"
+                              stroke="#3a3a3a"
+                              strokeWidth={0.3 / position.zoom}
+                              style={{
+                                default: { outline: "none" },
+                                hover: { outline: "none" },
+                                pressed: { outline: "none" },
+                              }}
+                            />
+                          ))
+                        }
+                      </Geographies>
+                      {MAJOR_CITIES.map((city) => (
+                        <Marker key={city.name} coordinates={[city.lng, city.lat]}>
+                          <circle r={1 / position.zoom} fill="#666" />
+                          <text
+                            textAnchor="middle"
+                            y={-3 / position.zoom}
+                            style={{
+                              fontSize: `${Math.max(2, 4 / position.zoom)}px`,
+                              fill: '#888',
+                              fontFamily: 'sans-serif',
+                              pointerEvents: 'none',
+                              userSelect: 'none',
+                            }}
+                          >
+                            {city.name}
+                          </text>
+                        </Marker>
+                      ))}
                       {clusteredLocations.map((loc, i) => {
                         // Scale radius by number of locations in cluster
                         const baseRadius = Math.max(3, Math.min(18, 3 + Math.sqrt(loc.count) * 3));
