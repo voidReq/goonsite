@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { Switch, Rating, Text, Tooltip, Notification, Alert, Button } from '@mantine/core';
-import { IconArrowRight, IconInfoCircle, IconHeart } from '@tabler/icons-react';
+import { IconArrowRight, IconInfoCircle, IconHeart, IconNotes, IconCode, IconMap, IconMessageCircle, IconChevronRight } from '@tabler/icons-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Terminal } from './components/ui/Terminal';
 import PageShell from './components/ui/PageShell';
+import GlowCard from './components/ui/GlowCard';
 
 // Floating code snippets that drift across the background
 const CODE_FRAGMENTS = [
@@ -30,6 +31,40 @@ function FloatingCode({ text, delay, duration, x }: { text: string; delay: numbe
   );
 }
 
+interface NavCardProps {
+  href: string;
+  accent: string;
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+  delay: number;
+}
+
+function NavCard({ href, accent, icon, title, desc, delay }: NavCardProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.5, ease: 'easeOut' }}
+    >
+      <Link href={href} style={{ textDecoration: 'none' }}>
+        <GlowCard color={accent}>
+          <div className="p-4 md:p-5 h-full">
+            <div className="flex flex-col h-full justify-between gap-2" style={{ minHeight: '80px' }}>
+              <div>
+                <div style={{ color: accent }} className="mb-2">{icon}</div>
+                <div className="font-mono font-bold text-[#c0caf5] text-base leading-tight">{title}</div>
+                <div className="text-[#565f89] text-xs mt-1">{desc}</div>
+              </div>
+              <IconChevronRight size={13} className="text-white/20 group-hover:text-white/50 transition-colors" />
+            </div>
+          </div>
+        </GlowCard>
+      </Link>
+    </motion.div>
+  );
+}
+
 export default function Home() {
   const [isGooning, setIsGooning] = useState(false);
   const [ratingValue, setRatingValue] = useState(0);
@@ -41,7 +76,7 @@ export default function Home() {
 
   return (
     <PageShell maxWidth="md" noBreadcrumbs>
-      <div className="relative min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center py-8 overflow-hidden">
+      <div className="relative min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-start md:justify-center py-4 md:py-8 overflow-hidden">
 
         {/* Animated background orbs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -64,67 +99,31 @@ export default function Home() {
           />
         ))}
 
-        {/* Main content */}
-        <div className="relative z-10 w-full max-w-2xl flex flex-col items-center gap-8 px-4">
+        {/* Bento grid */}
+        <div className="relative z-10 w-full max-w-3xl grid grid-cols-2 md:grid-cols-3 gap-3 px-4">
 
-          {/* Hero text */}
+          {/* Terminal — hero, spans 2 cols on mobile, 2 of 3 on desktop */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            className="col-span-2"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
-            className="text-center"
+            transition={{ duration: 0.5 }}
           >
-            <h1 className="font-mono text-4xl md:text-5xl font-black tracking-tight mb-3" style={{
-              background: 'linear-gradient(135deg, #bb9af7 0%, #7dcfff 50%, #9ece6a 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              lineHeight: 1.1,
-            }}>
-              goonsite.org
-            </h1>
-            <p className="text-[#565f89] text-sm md:text-base font-mono">
-              Security research &middot; Vulnerability writeups &middot; Interactive tools
-            </p>
-          </motion.div>
-
-          {/* Terminal */}
-          <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.6, ease: 'easeOut' }}
-            className="w-full"
-          >
-            <div className="terminal-window" style={{
-              boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(187,154,247,0.06)',
+            <div className="terminal-window h-full" style={{
+              boxShadow: '0 20px 60px rgba(0,0,0,0.3), 0 0 40px rgba(187,154,247,0.04)',
             }}>
               <Terminal fullWidth />
             </div>
           </motion.div>
 
-          {/* Status line */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="flex items-center gap-6 text-xs font-mono text-[#565f89]"
-          >
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#9ece6a] inline-block" /> self-hosted
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#7dcfff] inline-block" /> open source
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#bb9af7] inline-block" /> no tracking
-            </span>
-          </motion.div>
+          {/* Nav cards */}
+          <NavCard href="/notes" accent="#bb9af7" icon={<IconNotes size={18} />} title="Notes" desc="Personal brain dump" delay={0.1} />
+          <NavCard href="/projects" accent="#7dcfff" icon={<IconCode size={18} />} title="Projects" desc="Vuln writeups & builds" delay={0.15} />
+          <NavCard href="/goon-hub" accent="#9ece6a" icon={<IconMap size={18} />} title="Sitemap" desc="Everything, mapped" delay={0.2} />
+          <NavCard href="/message-board" accent="#e0af68" icon={<IconMessageCircle size={18} />} title="Messages" desc="Leave your mark" delay={0.25} />
 
           {/* Easter egg toggle */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-          >
+          <div className="col-span-2 md:col-span-3 flex justify-center pt-1">
             <Switch
               label="I am locked in."
               size="sm"
@@ -137,11 +136,11 @@ export default function Home() {
                 }
               }}
             />
-          </motion.div>
+          </div>
 
           {isGooning && (
             <motion.div
-              className="w-full"
+              className="col-span-2 md:col-span-3"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
