@@ -1,12 +1,25 @@
-import { createHmac } from 'crypto';
+import { createHmac, randomBytes } from 'crypto';
 import { getGeoForIp } from './geo-cache';
+
+/**
+ * HMAC secret for signing one-click approve/deny tokens.
+ * Priority: HMAC_SECRET env var → auto-generated per process (logged once on startup).
+ */
+let hmacSecret: string;
+if (process.env.HMAC_SECRET) {
+  hmacSecret = process.env.HMAC_SECRET;
+} else {
+  hmacSecret = randomBytes(32).toString('hex');
+  console.warn(
+    `[notify] No HMAC_SECRET set — generated ephemeral key: ${hmacSecret.slice(0, 8)}…  (tokens will invalidate on restart)`
+  );
+}
 
 /**
  * Generate an HMAC-SHA256 signature for one-click message actions.
  */
 export function signAction(id: string, action: string): string {
-  const secret = process.env.ADMIN_PASSWORD || '';
-  return createHmac('sha256', secret).update(`${id}:${action}`).digest('hex');
+  return createHmac('sha256', hmacSecret).update(`${id}:${action}`).digest('hex');
 }
 
 /**
