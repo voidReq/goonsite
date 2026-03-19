@@ -116,7 +116,7 @@ export default function AdminInsightsPage() {
   const [locations, setLocations] = useState<LocationStat[]>([]);
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
 
-  const MAX_ZOOM = 5000;
+  const MAX_ZOOM = 800;
 
   const handleZoomIn = () => {
     if (position.zoom >= MAX_ZOOM) return;
@@ -216,7 +216,10 @@ export default function AdminInsightsPage() {
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       setPosition((pos) => {
-        const factor = e.deltaY < 0 ? 1.2 : 1 / 1.2;
+        // Scale factor by how far the user scrolled — trackpads send small deltas
+        const intensity = Math.min(Math.abs(e.deltaY) / 50, 1);
+        const base = 1 + 0.5 * Math.max(0.2, intensity); // between 1.1x and 1.5x
+        const factor = e.deltaY < 0 ? base : 1 / base;
         const newZoom = Math.min(MAX_ZOOM, Math.max(1, pos.zoom * factor));
         return { ...pos, zoom: newZoom };
       });
