@@ -100,7 +100,7 @@ export default function Home() {
         ))}
 
         {/* Bento grid */}
-        <div className="relative z-10 w-full max-w-xl grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-3" style={{ width: '100%', maxWidth: '540px' }}>
 
           {/* Terminal — hero, spans 2 cols on mobile, 2 of 3 on desktop */}
           <motion.div
