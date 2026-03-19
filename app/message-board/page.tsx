@@ -90,6 +90,7 @@ function MessageCard({
   onMouseLeave,
   isHovered,
   isMobile,
+  isPinned,
 }: {
   message: Message;
   index: number;
@@ -97,6 +98,7 @@ function MessageCard({
   onMouseLeave: () => void;
   isHovered: boolean;
   isMobile: boolean;
+  isPinned?: boolean;
 }) {
   const colorIdx = index % PASTEL_COLORS.length;
   const rotation = ((index * 13) % 10) - 5;
@@ -112,22 +114,30 @@ function MessageCard({
       >
         <div
           style={{
-            background: PASTEL_COLORS[colorIdx],
-            border: `1px solid ${BORDER_COLORS[colorIdx]}`,
+            background: isPinned ? 'rgba(234, 179, 8, 0.15)' : PASTEL_COLORS[colorIdx],
+            border: isPinned ? '1.5px solid rgba(234, 179, 8, 0.6)' : `1px solid ${BORDER_COLORS[colorIdx]}`,
             borderRadius: '12px',
             padding: '16px',
             backdropFilter: 'blur(12px)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+            boxShadow: isPinned
+              ? '0 4px 24px rgba(234, 179, 8, 0.2), 0 0 12px rgba(234, 179, 8, 0.1)'
+              : '0 4px 20px rgba(0,0,0,0.2)',
           }}
         >
+          {isPinned && (
+            <Text size="xs" fw={700} mb={6} style={{ color: '#eab308', letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
+              📌 First message
+            </Text>
+          )}
           <Text
-            size="sm"
-            style={{ color: '#e2e8f0', lineHeight: 1.6, marginBottom: '10px', wordBreak: 'break-word' }}
+            size={isPinned ? 'md' : 'sm'}
+            fw={isPinned ? 600 : 400}
+            style={{ color: isPinned ? '#fde68a' : '#e2e8f0', lineHeight: 1.6, marginBottom: '10px', wordBreak: 'break-word' }}
           >
             &ldquo;{message.text}&rdquo;
           </Text>
           <Group justify="space-between" align="center">
-            <Text size="xs" style={{ color: '#94a3b8', fontStyle: 'italic' }}>
+            <Text size="xs" style={{ color: isPinned ? '#d4a017' : '#94a3b8', fontStyle: 'italic' }}>
               &mdash; {message.author}
             </Text>
             <Group gap={6} align="center">
@@ -136,7 +146,7 @@ function MessageCard({
                   {GAME_ICONS[message.game]}
                 </span>
               )}
-              <Text size="xs" style={{ color: '#64748b' }}>
+              <Text size="xs" style={{ color: isPinned ? '#b8860b' : '#64748b' }}>
                 {new Date(message.timestamp).toLocaleDateString()}
               </Text>
             </Group>
@@ -189,23 +199,35 @@ function MessageCard({
       >
         <div
           style={{
-            background: isHovered
-              ? PASTEL_COLORS[colorIdx].replace('0.15)', '0.95)')
-              : PASTEL_COLORS[colorIdx],
-            border: `1px solid ${BORDER_COLORS[colorIdx]}`,
+            background: isPinned
+              ? (isHovered ? 'rgba(234, 179, 8, 0.95)' : 'rgba(234, 179, 8, 0.15)')
+              : (isHovered ? PASTEL_COLORS[colorIdx].replace('0.15)', '0.95)') : PASTEL_COLORS[colorIdx]),
+            border: isPinned
+              ? '1.5px solid rgba(234, 179, 8, 0.6)'
+              : `1px solid ${BORDER_COLORS[colorIdx]}`,
             borderRadius: '12px',
             padding: '20px',
             backdropFilter: 'blur(12px)',
-            boxShadow: isHovered
-              ? `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${BORDER_COLORS[colorIdx]}`
-              : '0 8px 32px rgba(0,0,0,0.2)',
+            boxShadow: isPinned
+              ? (isHovered
+                ? '0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(234, 179, 8, 0.4)'
+                : '0 8px 32px rgba(0,0,0,0.2), 0 0 16px rgba(234, 179, 8, 0.15)')
+              : (isHovered
+                ? `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${BORDER_COLORS[colorIdx]}`
+                : '0 8px 32px rgba(0,0,0,0.2)'),
             transition: 'box-shadow 0.3s ease, background 0.3s ease',
           }}
         >
+        {isPinned && (
+          <Text size="xs" fw={700} mb={6} style={{ color: isHovered ? '#422006' : '#eab308', letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
+            📌 First message
+          </Text>
+        )}
         <Text
-          size="sm"
+          size={isPinned ? 'md' : 'sm'}
+          fw={isPinned ? 600 : 400}
           style={{
-            color: '#e2e8f0',
+            color: isPinned ? (isHovered ? '#422006' : '#fde68a') : (isHovered ? '#0a0a0a' : '#e2e8f0'),
             lineHeight: 1.6,
             marginBottom: '12px',
             wordBreak: 'break-word',
@@ -222,7 +244,7 @@ function MessageCard({
           &ldquo;{message.text}&rdquo;
         </Text>
         <Group justify="space-between" align="center">
-          <Text size="xs" style={{ color: '#94a3b8', fontStyle: 'italic' }}>
+          <Text size="xs" style={{ color: isPinned ? (isHovered ? '#5c3a0a' : '#d4a017') : (isHovered ? '#1e293b' : '#94a3b8'), fontStyle: 'italic' }}>
             &mdash; {message.author}
           </Text>
           <Group gap={6} align="center">
@@ -231,7 +253,7 @@ function MessageCard({
                 {GAME_ICONS[message.game]}
               </span>
             )}
-            <Text size="xs" style={{ color: '#64748b' }}>
+            <Text size="xs" style={{ color: isPinned ? (isHovered ? '#5c3a0a' : '#b8860b') : (isHovered ? '#334155' : '#64748b') }}>
               {new Date(message.timestamp).toLocaleDateString()}
             </Text>
           </Group>
@@ -518,6 +540,7 @@ export default function MessageBoardPage() {
                     onMouseEnter={() => setHoveredIdx(i)}
                     onMouseLeave={() => setHoveredIdx(null)}
                     isMobile={isMobile}
+                    isPinned={pinned !== null && msg.id === pinned.id}
                   />
                 ))}
               </AnimatePresence>
