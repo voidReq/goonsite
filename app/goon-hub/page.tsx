@@ -86,7 +86,7 @@ function Prompt() {
       <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
       <span style={{ color: '#7dcfff' }}>:</span>
       <span style={{ color: '#c0caf5' }}>~</span>
-      <span style={{ color: '#7dcfff' }}>$ </span>
+      <span style={{ color: '#7dcfff' }}>$&nbsp; </span>
     </>
   );
 }
@@ -175,10 +175,12 @@ export default function GoonHub() {
       setHistory(prev => [...prev, { type: 'output', text: names.join('  ') }]);
     } else if (command === 'tree') {
       setHistory(prev => [...prev, { type: 'output', text: '__tree__' }]);
+    } else if (command === 'pwd') {
+      setHistory(prev => [...prev, { type: 'output', text: '/home/goon/sitemap' }]);
     } else if (command === 'help') {
       setHistory(prev => [...prev, {
         type: 'output',
-        text: 'Available commands:\n  cd <dir>     Navigate to a page (tab to autocomplete)\n  cd ..        Go back home\n  cd ~         Go home\n  ls           List all pages\n  tree         Show the sitemap tree\n  clear        Clear the terminal\n  help         Show this message'
+        text: 'Available commands:\n  cd <dir>     Navigate to a page (tab to autocomplete)\n  cd ..        Go back home\n  cd ~         Go home\n  ls           List all pages\n  tree         Show the sitemap tree\n  pwd          Print working directory\n  clear        Clear the terminal\n  help         Show this message'
       }]);
     } else if (command === 'clear') {
       setHistory([]);
