@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/lebron.png",
   },
-  themeColor: "#1a1a1a",
+  themeColor: "#0f0f14",
 };
 
 export const viewport: Viewport = {
