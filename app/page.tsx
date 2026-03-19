@@ -75,8 +75,8 @@ export default function Home() {
   useEffect(() => { setMounted(true); }, []);
 
   return (
-    <PageShell maxWidth="md" noBreadcrumbs>
-      <div className="relative min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-start md:justify-center py-4 md:py-8 overflow-hidden">
+    <PageShell maxWidth="full" noBreadcrumbs noPadding>
+      <div className="relative min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden">
 
         {/* Animated background orbs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -100,7 +100,7 @@ export default function Home() {
         ))}
 
         {/* Bento grid */}
-        <div className="relative z-10 w-full max-w-3xl grid grid-cols-2 md:grid-cols-3 gap-3 px-4">
+        <div className="relative z-10 w-full max-w-xl grid grid-cols-2 md:grid-cols-3 gap-3">
 
           {/* Terminal — hero, spans 2 cols on mobile, 2 of 3 on desktop */}
           <motion.div
