@@ -11,9 +11,9 @@ export default function ProjectsLayout({ children }: { children: React.ReactNode
   const tree = buildProjectTree();
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)]" style={{ color: '#c0caf5' }}>
+    <div className="flex" style={{ color: '#c0caf5', minHeight: 'calc(100dvh - 3.5rem)' }}>
       <ProjectsSidebar tree={tree} />
-      <main className="flex-1 pt-14 md:pt-0">
+      <main className="flex-1">
         {children}
       </main>
     </div>

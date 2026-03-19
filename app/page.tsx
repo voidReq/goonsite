@@ -76,7 +76,7 @@ export default function Home() {
 
   return (
     <PageShell maxWidth="full" noBreadcrumbs noPadding>
-      <div className="relative min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden">
+      <div className="relative flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden" style={{ minHeight: 'calc(100dvh - 3.5rem)' }}>
 
         {/* Animated background orbs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">

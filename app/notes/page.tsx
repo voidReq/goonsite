@@ -17,7 +17,7 @@ const PLANNED = [
 
 export default function NotesIndexPage() {
   return (
-    <div className="relative min-h-[calc(100vh-3.5rem)] overflow-hidden">
+    <div className="relative min-h-[calc(100dvh-3.5rem)] overflow-hidden">
       {/* Animated background */}
       <div className="absolute inset-0 mesh-gradient-purple pointer-events-none" />
       <div className="absolute inset-0 grid-bg pointer-events-none" />
@@ -135,7 +135,7 @@ export default function NotesIndexPage() {
           className="mt-8 text-center"
         >
           <p className="text-xs font-mono" style={{ color: '#565f89' }}>
-            Select a note from the sidebar <span style={{ color: '#bb9af7' }}>→</span>
+            <span style={{ color: '#bb9af7' }}>←</span> Select a note from the sidebar
           </p>
         </motion.div>
       </div>

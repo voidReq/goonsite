@@ -38,7 +38,7 @@ const SECTIONS = [
 
 export default function ProjectsIndexPage() {
   return (
-    <div className="relative min-h-[calc(100vh-3.5rem)] overflow-hidden">
+    <div className="relative min-h-[calc(100dvh-3.5rem)] overflow-hidden">
       {/* Animated background */}
       <div className="absolute inset-0 mesh-gradient-cyan pointer-events-none" />
       <div className="absolute inset-0 grid-bg-cyan pointer-events-none" />
@@ -136,7 +136,7 @@ export default function ProjectsIndexPage() {
           className="mt-8 text-center"
         >
           <p className="text-xs font-mono" style={{ color: '#565f89' }}>
-            or browse the tree in the sidebar <span style={{ color: '#7dcfff' }}>→</span>
+            <span style={{ color: '#7dcfff' }}>←</span> or browse the tree in the sidebar
           </p>
         </motion.div>
       </div>
