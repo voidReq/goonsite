@@ -626,22 +626,31 @@ export default function EncodePage() {
                 <Group gap="sm" align="flex-end">
                   <Box>
                     <Text size="xs" mb={4} style={{ color: COLORS.textSecondary }}>Direction</Text>
-                    <Group gap={0}>
+                    <Group gap={0} style={{ border: `1px solid ${COLORS.border}`, borderRadius: 6, overflow: "hidden" }}>
                       <Button
                         size="sm"
-                        variant={encDir === "encode" ? "filled" : "subtle"}
-                        color="violet"
+                        variant={encDir === "encode" ? "filled" : "default"}
+                        color={encDir === "encode" ? "violet" : undefined}
                         onClick={() => { setEncDir("encode"); setGuessMsg(null); }}
-                        style={{ borderRadius: "6px 0 0 6px" }}
+                        style={{
+                          borderRadius: 0,
+                          backgroundColor: encDir === "encode" ? undefined : COLORS.surface,
+                          color: encDir === "encode" ? undefined : COLORS.textSecondary,
+                          borderRight: `1px solid ${COLORS.border}`,
+                        }}
                       >
                         Encode
                       </Button>
                       <Button
                         size="sm"
-                        variant={encDir === "decode" ? "filled" : "subtle"}
-                        color="violet"
+                        variant={encDir === "decode" ? "filled" : "default"}
+                        color={encDir === "decode" ? "violet" : undefined}
                         onClick={() => { setEncDir("decode"); setGuessMsg(null); }}
-                        style={{ borderRadius: "0 6px 6px 0" }}
+                        style={{
+                          borderRadius: 0,
+                          backgroundColor: encDir === "decode" ? undefined : COLORS.surface,
+                          color: encDir === "decode" ? undefined : COLORS.textSecondary,
+                        }}
                       >
                         Decode
                       </Button>
