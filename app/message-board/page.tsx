@@ -549,32 +549,32 @@ export default function MessageBoardPage() {
               </AnimatePresence>
             )}
           </div>
-          {!isMobile && totalPages > 1 && (
-            <Group justify="center" mt="xl" gap="xs" style={{ position: 'relative', zIndex: 0 }}>
-              <Button
-                variant="subtle"
-                color="gray"
-                size="xs"
-                disabled={page === 0}
-                onClick={() => { setPage(p => p - 1); setHoveredIdx(null); }}
-              >
-                &larr; Prev
-              </Button>
-              <Text size="xs" c="dimmed">
-                {page + 1} / {totalPages}
-              </Text>
-              <Button
-                variant="subtle"
-                color="gray"
-                size="xs"
-                disabled={page >= totalPages - 1}
-                onClick={() => { setPage(p => p + 1); setHoveredIdx(null); }}
-              >
-                Next &rarr;
-              </Button>
-            </Group>
-          )}
         </div>
+        {!isMobile && totalPages > 1 && (
+          <Group justify="center" mt="xl" gap="xs" style={{ position: 'relative', zIndex: 1 }}>
+            <Button
+              variant="subtle"
+              color="gray"
+              size="xs"
+              disabled={page === 0}
+              onClick={() => { setPage(p => p - 1); setHoveredIdx(null); }}
+            >
+              &larr; Prev
+            </Button>
+            <Text size="xs" c="dimmed">
+              {page + 1} / {totalPages}
+            </Text>
+            <Button
+              variant="subtle"
+              color="gray"
+              size="xs"
+              disabled={page >= totalPages - 1}
+              onClick={() => { setPage(p => p + 1); setHoveredIdx(null); }}
+            >
+              Next &rarr;
+            </Button>
+          </Group>
+        )}
 
         {/* Game Challenge */}
         {!hasWon && (
