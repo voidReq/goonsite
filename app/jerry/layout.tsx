@@ -6,6 +6,10 @@ import '@mantine/core/styles.css'; // Mantine core styles
 export const metadata: Metadata = {
     title: "Jerry's Blog",
     description: "Jerry's website",
+    robots: {
+        index: false,
+        follow: false,
+    },
 };
 
 export default function RootLayout({

@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import { buildProjectTree } from '@/lib/projects';
 import ProjectsSidebar from '@/app/components/ProjectsSidebar';
+
+export const metadata: Metadata = {
+  title: "Projects & Vulnerability Writeups",
+  description: "Security projects, vulnerability writeups, and exploit walkthroughs. Detailed technical analysis of real-world security issues.",
+};
 
 export default function ProjectsLayout({
   children,

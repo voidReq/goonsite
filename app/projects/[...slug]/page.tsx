@@ -52,14 +52,17 @@ export async function generateMetadata(
   const url = `https://goonsite.org/projects/${decodedSlug.join('/')}`;
   
   return {
-    title: `${project.title} | The Goonsite Projects`,
+    title: project.title,
     description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: project.title,
       description,
       type: 'article',
       url,
-      siteName: 'The Goonsite',
+      siteName: 'goonsite.org',
       images: [
         {
           url: '/og-image.png',
@@ -88,11 +91,27 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
     notFound();
   }
   
+  const projectUrl = `https://goonsite.org/projects/${decodedSlug.join('/')}`;
+  const projectDescription = project.description || extractDescription(project.content);
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: project.title,
+    description: projectDescription,
+    url: projectUrl,
+    author: { '@type': 'Person', name: 'James', url: 'https://goonsite.org' },
+    publisher: { '@type': 'Organization', name: 'goonsite.org' },
+  };
+
   return (
     <div className="p-4 sm:p-8 w-full">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-4xl mx-auto w-full">
         <h1 className="text-4xl font-bold mb-8">{project.title}</h1>
-        
+
         <MarkdownRenderer content={project.content} />
       </div>
     </div>

@@ -6,7 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Replace this with your actual domain
   const baseUrl = 'https://goonsite.org';
 
-  // Static routes
+  // Static routes — exclude /james and /jerry (noindex)
   const routes = [
     '',
     '/goon-hub',
@@ -18,8 +18,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/message-board',
     '/goon-sploit',
     '/fim',
-    '/james',
-    '/jerry'
   ].map((route) => {
     let priority = 0.5;
     if (route === '') priority = 1.0;
@@ -27,7 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     else if (route === '/notes') priority = 0.8;
     else if (route === '/goon-hub') priority = 0.7;
     else if (route === '/message-board') priority = 0.6;
-    else if (['/james', '/jerry', '/goon-sploit', '/fim', '/turtle', '/revolutions', '/macbook'].includes(route)) priority = 0.3;
+    else if (['/goon-sploit', '/fim', '/turtle', '/revolutions', '/macbook'].includes(route)) priority = 0.3;
 
     return {
       url: `${baseUrl}${route}`,

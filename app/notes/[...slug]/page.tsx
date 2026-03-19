@@ -65,14 +65,17 @@ export async function generateMetadata(
   const url = `https://goonsite.org/notes/${decodedSlug.join('/')}`;
   
   return {
-    title: `${note.title} | The Goonsite Notes`,
+    title: note.title,
     description,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: note.title,
       description,
       type: 'article',
       url,
-      siteName: 'The Goonsite',
+      siteName: 'goonsite.org',
       images: [
         {
           url: '/og-image.png',
@@ -106,11 +109,27 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
   const allNotes = getAllNotes();
   const contentWithLinks = convertWikiLinks(note.content, allNotes);
   
+  const noteUrl = `https://goonsite.org/notes/${decodedSlug.join('/')}`;
+  const noteDescription = extractDescription(note.content);
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: note.title,
+    description: noteDescription,
+    url: noteUrl,
+    author: { '@type': 'Person', name: 'James', url: 'https://goonsite.org' },
+    publisher: { '@type': 'Organization', name: 'goonsite.org' },
+  };
+
   return (
     <div className="p-4 sm:p-8 w-full">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="max-w-4xl mx-auto w-full">
         <h1 className="text-4xl font-bold mb-8">{note.title}</h1>
-        
+
         <MarkdownRenderer content={contentWithLinks} />
       </div>
     </div>

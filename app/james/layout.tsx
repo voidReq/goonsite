@@ -10,6 +10,10 @@ import { MantineProvider, ColorSchemeScript } from '@mantine/core'; // Import Co
 export const metadata: Metadata = {
   title: "The Goonsite",
   description: "Personal projects, security notes, and more!",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({
