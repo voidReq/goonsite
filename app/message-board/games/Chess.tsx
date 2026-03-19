@@ -164,6 +164,13 @@ function stupidBotMove(game: Chess): Move | null {
   const moves = game.moves({ verbose: true });
   if (moves.length === 0) return null;
 
+  // Always play checkmate if available
+  for (const move of moves) {
+    const testGame = new Chess(game.fen());
+    testGame.move({ from: move.from, to: move.to, promotion: move.promotion || undefined });
+    if (testGame.isCheckmate()) return move;
+  }
+
   // Separate captures from quiet moves
   const captures = moves.filter((m) => m.captured);
   const quietMoves = moves.filter((m) => !m.captured);
