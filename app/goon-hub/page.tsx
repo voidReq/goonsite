@@ -3,6 +3,7 @@
 import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import Link from 'next/link';
+import { IconArrowLeft } from '@tabler/icons-react';
 
 interface TreeEntry {
   href: string;
@@ -26,19 +27,19 @@ const siteTree: TreeEntry[] = [
   { href: '/revolutions', name: 'revolutions', color: '#ff9e64' },
 ];
 
-function TreeLines({ entries, depth = 0 }: { entries: TreeEntry[]; depth?: number }) {
+function TreeLines({ entries, depth = 0, parentPrefixes = [] }: { entries: TreeEntry[]; depth?: number; parentPrefixes?: string[] }) {
   return (
     <>
       {entries.map((entry, i) => {
         const isLast = i === entries.length - 1;
         const prefix = isLast ? '└── ' : '├── ';
-        const childPrefix = isLast ? '    ' : '│   ';
+        const continuation = isLast ? '    ' : '│   ';
 
         return (
           <div key={entry.href}>
             <div className="leading-relaxed">
               <span className="text-[#565f89] select-none">
-                {'    '.repeat(depth)}{prefix}
+                {parentPrefixes.join('')}{prefix}
               </span>
               <Link
                 href={entry.href}
@@ -49,7 +50,7 @@ function TreeLines({ entries, depth = 0 }: { entries: TreeEntry[]; depth?: numbe
               </Link>
             </div>
             {entry.children && (
-              <TreeLines entries={entry.children} depth={depth + 1} />
+              <TreeLines entries={entry.children} depth={depth + 1} parentPrefixes={[...parentPrefixes, continuation]} />
             )}
           </div>
         );
@@ -62,7 +63,13 @@ export default function GoonHub() {
   return (
     <MantineProvider forceColorScheme="dark">
       <div className="min-h-screen flex items-start md:items-center justify-center p-4 py-8 md:p-8">
-        <div className="w-full max-w-2xl">
+        <div className="w-full max-w-2xl lg:max-w-4xl">
+
+          {/* Back button */}
+          <Link href="/" className="inline-flex items-center gap-1.5 text-sm font-mono text-white/40 hover:text-white/70 transition-colors mb-4">
+            <IconArrowLeft size={14} />
+            <span>cd ~</span>
+          </Link>
 
           {/* Terminal window */}
           <div className="rounded-xl overflow-hidden border border-white/10" style={{ backgroundColor: '#1a1b26' }}>
@@ -76,7 +83,7 @@ export default function GoonHub() {
             </div>
 
             {/* Terminal body */}
-            <div className="p-4 md:p-6 font-mono text-sm md:text-base">
+            <div className="p-4 md:p-6 lg:p-8 font-mono text-sm md:text-base lg:text-lg">
 
               {/* Prompt + command */}
               <div className="mb-1">
