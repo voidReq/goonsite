@@ -23,32 +23,77 @@ import { IconLock, IconAlertCircle, IconMapPin, IconArrowLeft, IconPlus, IconMin
 const geoUrl = "/countries-110m.json";
 const usStatesUrl = "/us-states-10m.json";
 
-const MAJOR_CITIES = [
-  { name: "New York", lat: 40.71, lng: -74.01 },
-  { name: "Los Angeles", lat: 34.05, lng: -118.24 },
-  { name: "Chicago", lat: 41.88, lng: -87.63 },
-  { name: "Houston", lat: 29.76, lng: -95.37 },
-  { name: "San Francisco", lat: 37.77, lng: -122.42 },
-  { name: "Seattle", lat: 47.61, lng: -122.33 },
-  { name: "Miami", lat: 25.76, lng: -80.19 },
-  { name: "Denver", lat: 39.74, lng: -104.99 },
-  { name: "Atlanta", lat: 33.75, lng: -84.39 },
-  { name: "Dallas", lat: 32.78, lng: -96.80 },
-  { name: "London", lat: 51.51, lng: -0.13 },
-  { name: "Paris", lat: 48.86, lng: 2.35 },
-  { name: "Berlin", lat: 52.52, lng: 13.41 },
-  { name: "Tokyo", lat: 35.68, lng: 139.69 },
-  { name: "Sydney", lat: -33.87, lng: 151.21 },
-  { name: "São Paulo", lat: -23.55, lng: -46.63 },
-  { name: "Mumbai", lat: 19.08, lng: 72.88 },
-  { name: "Dubai", lat: 25.20, lng: 55.27 },
-  { name: "Singapore", lat: 1.35, lng: 103.82 },
-  { name: "Toronto", lat: 43.65, lng: -79.38 },
-  { name: "Mexico City", lat: 19.43, lng: -99.13 },
-  { name: "Cairo", lat: 30.04, lng: 31.24 },
-  { name: "Lagos", lat: 6.52, lng: 3.38 },
-  { name: "Moscow", lat: 55.76, lng: 37.62 },
-  { name: "Beijing", lat: 39.90, lng: 116.40 },
+// minZoom: the zoom level at which the city label appears
+const CITIES = [
+  // Tier 1 — always visible
+  { name: "New York", lat: 40.71, lng: -74.01, minZoom: 1 },
+  { name: "Los Angeles", lat: 34.05, lng: -118.24, minZoom: 1 },
+  { name: "London", lat: 51.51, lng: -0.13, minZoom: 1 },
+  { name: "Tokyo", lat: 35.68, lng: 139.69, minZoom: 1 },
+  { name: "Paris", lat: 48.86, lng: 2.35, minZoom: 1 },
+  { name: "Sydney", lat: -33.87, lng: 151.21, minZoom: 1 },
+  { name: "São Paulo", lat: -23.55, lng: -46.63, minZoom: 1 },
+  { name: "Beijing", lat: 39.90, lng: 116.40, minZoom: 1 },
+  { name: "Mumbai", lat: 19.08, lng: 72.88, minZoom: 1 },
+  { name: "Cairo", lat: 30.04, lng: 31.24, minZoom: 1 },
+  // Tier 2 — zoom >= 2
+  { name: "Chicago", lat: 41.88, lng: -87.63, minZoom: 2 },
+  { name: "San Francisco", lat: 37.77, lng: -122.42, minZoom: 2 },
+  { name: "Houston", lat: 29.76, lng: -95.37, minZoom: 2 },
+  { name: "Seattle", lat: 47.61, lng: -122.33, minZoom: 2 },
+  { name: "Miami", lat: 25.76, lng: -80.19, minZoom: 2 },
+  { name: "Toronto", lat: 43.65, lng: -79.38, minZoom: 2 },
+  { name: "Berlin", lat: 52.52, lng: 13.41, minZoom: 2 },
+  { name: "Moscow", lat: 55.76, lng: 37.62, minZoom: 2 },
+  { name: "Dubai", lat: 25.20, lng: 55.27, minZoom: 2 },
+  { name: "Singapore", lat: 1.35, lng: 103.82, minZoom: 2 },
+  { name: "Mexico City", lat: 19.43, lng: -99.13, minZoom: 2 },
+  { name: "Lagos", lat: 6.52, lng: 3.38, minZoom: 2 },
+  // Tier 3 — zoom >= 5
+  { name: "Denver", lat: 39.74, lng: -104.99, minZoom: 5 },
+  { name: "Atlanta", lat: 33.75, lng: -84.39, minZoom: 5 },
+  { name: "Dallas", lat: 32.78, lng: -96.80, minZoom: 5 },
+  { name: "Boston", lat: 42.36, lng: -71.06, minZoom: 5 },
+  { name: "Phoenix", lat: 33.45, lng: -112.07, minZoom: 5 },
+  { name: "Detroit", lat: 42.33, lng: -83.05, minZoom: 5 },
+  { name: "Minneapolis", lat: 44.98, lng: -93.27, minZoom: 5 },
+  { name: "Portland", lat: 45.52, lng: -122.68, minZoom: 5 },
+  { name: "Amsterdam", lat: 52.37, lng: 4.90, minZoom: 5 },
+  { name: "Madrid", lat: 40.42, lng: -3.70, minZoom: 5 },
+  { name: "Rome", lat: 41.90, lng: 12.50, minZoom: 5 },
+  { name: "Istanbul", lat: 41.01, lng: 28.98, minZoom: 5 },
+  { name: "Seoul", lat: 37.57, lng: 126.98, minZoom: 5 },
+  { name: "Bangkok", lat: 13.76, lng: 100.50, minZoom: 5 },
+  { name: "Jakarta", lat: -6.21, lng: 106.85, minZoom: 5 },
+  { name: "Nairobi", lat: -1.29, lng: 36.82, minZoom: 5 },
+  { name: "Buenos Aires", lat: -34.60, lng: -58.38, minZoom: 5 },
+  { name: "Shanghai", lat: 31.23, lng: 121.47, minZoom: 5 },
+  // Tier 4 — zoom >= 15
+  { name: "San Diego", lat: 32.72, lng: -117.16, minZoom: 15 },
+  { name: "San Jose", lat: 37.34, lng: -121.89, minZoom: 15 },
+  { name: "Austin", lat: 30.27, lng: -97.74, minZoom: 15 },
+  { name: "Nashville", lat: 36.16, lng: -86.78, minZoom: 15 },
+  { name: "Charlotte", lat: 35.23, lng: -80.84, minZoom: 15 },
+  { name: "Las Vegas", lat: 36.17, lng: -115.14, minZoom: 15 },
+  { name: "Salt Lake City", lat: 40.76, lng: -111.89, minZoom: 15 },
+  { name: "Raleigh", lat: 35.78, lng: -78.64, minZoom: 15 },
+  { name: "Pittsburgh", lat: 40.44, lng: -79.99, minZoom: 15 },
+  { name: "Columbus", lat: 39.96, lng: -82.99, minZoom: 15 },
+  { name: "Oakland", lat: 37.80, lng: -122.27, minZoom: 15 },
+  { name: "Sacramento", lat: 38.58, lng: -121.49, minZoom: 15 },
+  { name: "Tampa", lat: 27.95, lng: -82.46, minZoom: 15 },
+  { name: "Orlando", lat: 28.54, lng: -81.38, minZoom: 15 },
+  { name: "New Orleans", lat: 29.95, lng: -90.07, minZoom: 15 },
+  { name: "Milwaukee", lat: 43.04, lng: -87.91, minZoom: 15 },
+  { name: "Kansas City", lat: 39.10, lng: -94.58, minZoom: 15 },
+  { name: "Indianapolis", lat: 39.77, lng: -86.16, minZoom: 15 },
+  { name: "Manchester", lat: 53.48, lng: -2.24, minZoom: 15 },
+  { name: "Lyon", lat: 45.76, lng: 4.84, minZoom: 15 },
+  { name: "Munich", lat: 48.14, lng: 11.58, minZoom: 15 },
+  { name: "Osaka", lat: 34.69, lng: 135.50, minZoom: 15 },
+  { name: "Melbourne", lat: -37.81, lng: 144.96, minZoom: 15 },
+  { name: "Vancouver", lat: 49.28, lng: -123.12, minZoom: 15 },
+  { name: "Montreal", lat: 45.50, lng: -73.57, minZoom: 15 },
 ];
 
 interface LocationStat {
@@ -71,7 +116,7 @@ export default function AdminInsightsPage() {
   const [locations, setLocations] = useState<LocationStat[]>([]);
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
 
-  const MAX_ZOOM = 800;
+  const MAX_ZOOM = 5000;
 
   const handleZoomIn = () => {
     if (position.zoom >= MAX_ZOOM) return;
@@ -290,7 +335,20 @@ export default function AdminInsightsPage() {
                       <Button variant="default" size="xs" p={4} onClick={handleZoomOut}><IconMinus size={16} /></Button>
                     </Button.Group>
                   </Group>
-                  <ComposableMap projection="geoMercator" projectionConfig={{ scale: 120 }}>
+                  <ComposableMap projection="geoMercator" projectionConfig={{ scale: 120 }} style={{ backgroundColor: '#0d1117' }}>
+                    <defs>
+                      <radialGradient id="dotGlow">
+                        <stop offset="0%" stopColor="#a855f7" stopOpacity={0.6} />
+                        <stop offset="100%" stopColor="#7c3aed" stopOpacity={0} />
+                      </radialGradient>
+                      <filter id="glow">
+                        <feGaussianBlur stdDeviation="2" result="blur" />
+                        <feMerge>
+                          <feMergeNode in="blur" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+                    </defs>
                     <ZoomableGroup
                       zoom={position.zoom}
                       center={position.coordinates as [number, number]}
@@ -302,13 +360,13 @@ export default function AdminInsightsPage() {
                             <Geography
                               key={geo.rsmKey}
                               geography={geo}
-                              fill="#2a2a2a"
-                              stroke="#141414"
-                              strokeWidth={0.5 / position.zoom} // Keep borders thin on zoom
+                              fill="#1a1f2e"
+                              stroke="#2d3548"
+                              strokeWidth={0.5 / position.zoom}
                               style={{
                                 default: { outline: "none" },
-                                hover: { fill: "#3a3a3a", outline: "none" },
-                                pressed: { fill: "#4a4a4a", outline: "none" },
+                                hover: { fill: "#232940", outline: "none" },
+                                pressed: { fill: "#2a3150", outline: "none" },
                               }}
                             />
                           ))
@@ -321,7 +379,7 @@ export default function AdminInsightsPage() {
                               key={geo.rsmKey}
                               geography={geo}
                               fill="none"
-                              stroke="#3a3a3a"
+                              stroke="#2d3548"
                               strokeWidth={0.3 / position.zoom}
                               style={{
                                 default: { outline: "none" },
@@ -332,18 +390,19 @@ export default function AdminInsightsPage() {
                           ))
                         }
                       </Geographies>
-                      {MAJOR_CITIES.map((city) => (
+                      {CITIES.filter((c) => position.zoom >= c.minZoom).map((city) => (
                         <Marker key={city.name} coordinates={[city.lng, city.lat]}>
-                          <circle r={1 / position.zoom} fill="#666" />
+                          <circle r={0.8 / position.zoom} fill="#999" />
                           <text
                             textAnchor="middle"
-                            y={-3 / position.zoom}
+                            y={-2.5 / position.zoom}
                             style={{
-                              fontSize: `${Math.max(2, 4 / position.zoom)}px`,
-                              fill: '#888',
+                              fontSize: `${Math.max(1.5, 3.5 / position.zoom)}px`,
+                              fill: '#aaa',
                               fontFamily: 'sans-serif',
                               pointerEvents: 'none',
                               userSelect: 'none',
+                              textShadow: '0 0 3px #000, 0 0 6px #000',
                             }}
                           >
                             {city.name}
@@ -354,18 +413,14 @@ export default function AdminInsightsPage() {
                         // Scale radius by number of locations in cluster
                         const baseRadius = Math.max(3, Math.min(18, 3 + Math.sqrt(loc.count) * 3));
                         const radius = baseRadius / position.zoom;
+                        const glowRadius = radius * 2.5;
                         const tooltipLabel = loc.country
                           ? `${loc.city}, ${loc.country} — ${loc.totalVisits} visits (${loc.uniqueVisitors} unique)`
                           : `${loc.city} — ${loc.totalVisits} visits (${loc.uniqueVisitors} unique)`;
                         return (
                           <Marker key={i} coordinates={[loc.lng, loc.lat]}>
                             <Tooltip label={tooltipLabel} withArrow position="top">
-                              <circle
-                                r={radius}
-                                fill="#7c3aed"
-                                fillOpacity={0.7}
-                                stroke="#fff"
-                                strokeWidth={0.5 / position.zoom}
+                              <g
                                 style={{ cursor: 'pointer' }}
                                 onClick={() => {
                                   setPosition((pos) => ({
@@ -373,7 +428,16 @@ export default function AdminInsightsPage() {
                                     zoom: Math.min(MAX_ZOOM, pos.zoom * 3),
                                   }));
                                 }}
-                              />
+                              >
+                                <circle r={glowRadius} fill="url(#dotGlow)" />
+                                <circle
+                                  r={radius}
+                                  fill="#a855f7"
+                                  fillOpacity={0.85}
+                                  stroke="#c084fc"
+                                  strokeWidth={0.4 / position.zoom}
+                                />
+                              </g>
                             </Tooltip>
                           </Marker>
                         );
