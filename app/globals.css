@@ -59,7 +59,87 @@ body {
 * {
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+/* Prevent max-width from clipping positioned elements like dropdowns */
+body *:not([style*="position: absolute"]):not([style*="position: fixed"]):not(.dropdown-portal) {
   max-width: 100%;
+}
+
+/* Override: let navbars, dropdowns, modals, and fixed/absolute elements escape */
+nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
+  max-width: none;
+}
+
+/* ─── Animated grid background ─── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(187, 154, 247, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(187, 154, 247, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-position: center center;
+}
+
+.grid-bg-cyan {
+  background-image:
+    linear-gradient(rgba(125, 207, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125, 207, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  background-position: center center;
+}
+
+/* ─── Mesh gradient backgrounds ─── */
+.mesh-gradient-purple {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(187, 154, 247, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(125, 207, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(158, 206, 106, 0.04) 0%, transparent 60%);
+}
+
+.mesh-gradient-cyan {
+  background:
+    radial-gradient(ellipse at 80% 20%, rgba(125, 207, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(187, 154, 247, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(224, 175, 104, 0.03) 0%, transparent 60%);
+}
+
+/* ─── Floating orb animation ─── */
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -20px) scale(1.05); }
+  50% { transform: translate(-20px, -40px) scale(0.95); }
+  75% { transform: translate(-30px, 10px) scale(1.02); }
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.15;
+  pointer-events: none;
+  animation: float-orb 20s ease-in-out infinite;
+}
+
+/* ─── Scanline effect ─── */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.scanline-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(187, 154, 247, 0.02) 50%,
+    transparent 100%
+  );
+  height: 200%;
+  animation: scanline 8s linear infinite;
+  opacity: 0.5;
 }
 
 /* ─── Shared glassmorphism panel ─── */

@@ -99,24 +99,25 @@ export default function NotesSidebar({ tree }: { tree: NoteTreeItem[] }) {
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-black/60 z-30"
+          className="md:hidden fixed inset-0 top-14 bg-black/60 z-30"
           onClick={closeSidebar}
         />
       )}
 
       {/* Sidebar */}
       <div className={`
-        w-64 h-screen overflow-y-auto p-4
-        fixed md:sticky top-0 z-40
+        w-64 overflow-y-auto p-4
+        fixed md:sticky top-14 md:top-0 z-40
         transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}
         style={{
           backgroundColor: '#16161e',
           borderRight: '1px solid rgba(255,255,255,0.06)',
+          height: 'calc(100vh - 3.5rem)',
         }}
       >
-        <div className="mb-4 pb-4 mt-4 md:mt-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="mb-4 pb-4 mt-2 md:mt-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <Link
             href="/notes"
             className="text-lg font-bold transition-colors"

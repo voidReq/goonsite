@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,6 +27,8 @@ export default function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const toolsBtnRef = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     setMobileOpen(false);
@@ -105,9 +107,20 @@ export default function NavBar() {
               ))}
 
               {/* Tools Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setToolsOpen(!toolsOpen)}
+              <div
+                ref={toolsBtnRef}
+                className="relative"
+                onMouseEnter={() => {
+                  if (toolsBtnRef.current) {
+                    const rect = toolsBtnRef.current.getBoundingClientRect();
+                    setDropdownPos({ top: rect.bottom + 4, left: rect.right - 208 });
+                  }
+                  setToolsOpen(true);
+                }}
+                onMouseLeave={() => setToolsOpen(false)}
+              >
+                <Link
+                  href="/tools/encode"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
                   style={{
                     color: isToolsActive ? '#f7768e' : '#565f89',
@@ -125,28 +138,36 @@ export default function NavBar() {
                       e.currentTarget.style.backgroundColor = 'transparent';
                     }
                   }}
+                  onClick={(e) => { e.preventDefault(); setToolsOpen(!toolsOpen); }}
                 >
                   <IconTools size={15} />
                   <span>Tools</span>
-                </button>
+                </Link>
 
                 <AnimatePresence>
                   {toolsOpen && (
-                    <>
-                      <div className="fixed inset-0 z-40" onClick={() => setToolsOpen(false)} />
-                      <motion.div
-                        initial={{ opacity: 0, y: -4, scale: 0.97 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -4, scale: 0.97 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-1 z-50 w-52 rounded-xl overflow-hidden"
-                        style={{
-                          backgroundColor: 'rgba(26, 27, 38, 0.95)',
-                          backdropFilter: 'blur(16px)',
-                          border: '1px solid rgba(255,255,255,0.08)',
-                          boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-                        }}
-                      >
+                    <motion.div
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.12 }}
+                      className="dropdown-portal"
+                      style={{
+                        position: 'fixed',
+                        top: `${dropdownPos.top}px`,
+                        left: `${Math.max(8, dropdownPos.left)}px`,
+                        zIndex: 9999,
+                        width: '13rem',
+                        borderRadius: '12px',
+                        overflow: 'visible',
+                        backgroundColor: 'rgba(22, 22, 30, 0.98)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        boxShadow: '0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)',
+                        maxWidth: 'none',
+                      }}
+                    >
+                      <div className="py-1">
                         {TOOL_ITEMS.map(tool => (
                           <Link
                             key={tool.href}
@@ -155,6 +176,7 @@ export default function NavBar() {
                             style={{
                               color: isActive(tool.href) ? tool.color : '#c0caf5',
                               backgroundColor: isActive(tool.href) ? `${tool.color}10` : 'transparent',
+                              maxWidth: 'none',
                             }}
                             onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = isActive(tool.href) ? `${tool.color}10` : 'transparent'; }}
@@ -163,8 +185,8 @@ export default function NavBar() {
                             {tool.label}
                           </Link>
                         ))}
-                      </motion.div>
-                    </>
+                      </div>
+                    </motion.div>
                   )}
                 </AnimatePresence>
               </div>
