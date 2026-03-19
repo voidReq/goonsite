@@ -1,59 +1,115 @@
 
 "use client";
-import { MantineProvider, Text, Paper, Title, Code } from '@mantine/core';
+import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import Link from 'next/link';
 
-interface TreeDataItem {
-  value: string;
-  label: React.ReactNode;
-  children?: TreeDataItem[];
+interface TreeEntry {
+  href: string;
+  name: string;
+  color?: string;
+  children?: TreeEntry[];
 }
 
-const treeData: TreeDataItem[] = [
-  { value: 'home', label: <Link href="/">Home</Link> },
+const siteTree: TreeEntry[] = [
+  { href: '/', name: 'home', color: '#9ece6a' },
   {
-    value: 'goon-hub',
-    label: <Link href="/goon-hub">Goon Hub</Link>,
+    href: '/goon-hub', name: 'goon-hub/', color: '#bb9af7',
     children: [
-      { value: 'goon-sploit', label: <Link href="/goon-sploit">Goon-sploit</Link> }]
+      { href: '/goon-sploit', name: 'goon-sploit', color: '#f7768e' },
+    ],
   },
-  { value: 'macbook', label: <Link href="/macbook">Macbook</Link> },
-  { value: 'message-board', label: <Link href="/message-board">Message Board</Link> },
-  { value: 'notes', label: <Link href="/notes">Notes</Link> },
-  { value: 'projects', label: <Link href="/projects">Projects/Vuln Writeups</Link> },
-  { value: 'revolutions', label: <Link href="/revolutions">Revolutions</Link> },
+  { href: '/macbook', name: 'macbook', color: '#7dcfff' },
+  { href: '/message-board', name: 'message-board', color: '#e0af68' },
+  { href: '/notes', name: 'notes/', color: '#bb9af7' },
+  { href: '/projects', name: 'projects/', color: '#7dcfff' },
+  { href: '/revolutions', name: 'revolutions', color: '#ff9e64' },
 ];
 
-const renderTree = (nodes: TreeDataItem[]) => (
-  <ul style={{ listStyleType: 'none', paddingLeft: '20px' }}>
-    {nodes.map((node) => (
-      <li key={node.value}>
-        <Text>{node.children ? '\u251c\u2500\u2500' : '\u2514\u2500\u2500'} {node.label}</Text>
-        {node.children && renderTree(node.children)}
-      </li>
-    ))}
-  </ul>
-);
+function TreeLines({ entries, depth = 0 }: { entries: TreeEntry[]; depth?: number }) {
+  return (
+    <>
+      {entries.map((entry, i) => {
+        const isLast = i === entries.length - 1;
+        const prefix = isLast ? '└── ' : '├── ';
+        const childPrefix = isLast ? '    ' : '│   ';
+
+        return (
+          <div key={entry.href}>
+            <div className="leading-relaxed">
+              <span className="text-[#565f89] select-none">
+                {'    '.repeat(depth)}{prefix}
+              </span>
+              <Link
+                href={entry.href}
+                className="hover:underline transition-colors"
+                style={{ color: entry.color || '#c0caf5' }}
+              >
+                {entry.name}
+              </Link>
+            </div>
+            {entry.children && (
+              <TreeLines entries={entry.children} depth={depth + 1} />
+            )}
+          </div>
+        );
+      })}
+    </>
+  );
+}
 
 export default function GoonHub() {
   return (
     <MantineProvider forceColorScheme="dark">
-      <div style={{ padding: '20px', minHeight: '100vh' }}>
-        <Title order={1} style={{ marginBottom: '20px' }}>Goon Hub</Title>
-        <Paper withBorder p="md" radius="md">
-          <Title order={3}>Site Navigation</Title>
-          <Code block style={{ fontFamily: 'monospace' }}>
-            <div>
-              <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
-              <span style={{ color: '#7dcfff' }}>:</span>
-              <span style={{ color: '#c0caf5' }}>~</span>
-              <span style={{ color: '#7dcfff' }}>$</span>
-              <span> tree</span>
+      <div className="min-h-screen flex items-start md:items-center justify-center p-4 py-8 md:p-8">
+        <div className="w-full max-w-2xl">
+
+          {/* Terminal window */}
+          <div className="rounded-xl overflow-hidden border border-white/10" style={{ backgroundColor: '#1a1b26' }}>
+
+            {/* Title bar */}
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5" style={{ backgroundColor: '#16161e' }}>
+              <span className="w-3 h-3 rounded-full bg-[#f7768e]" />
+              <span className="w-3 h-3 rounded-full bg-[#e0af68]" />
+              <span className="w-3 h-3 rounded-full bg-[#9ece6a]" />
+              <span className="ml-3 text-xs font-mono text-white/30">goon@goonsite: ~/sitemap</span>
             </div>
-            {renderTree(treeData)}
-          </Code>
-        </Paper>
+
+            {/* Terminal body */}
+            <div className="p-4 md:p-6 font-mono text-sm md:text-base">
+
+              {/* Prompt + command */}
+              <div className="mb-1">
+                <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
+                <span style={{ color: '#7dcfff' }}>:</span>
+                <span style={{ color: '#c0caf5' }}>~</span>
+                <span style={{ color: '#7dcfff' }}>$ </span>
+                <span style={{ color: '#c0caf5' }}>tree --sitemap</span>
+              </div>
+
+              {/* Output header */}
+              <div className="mt-3 mb-1 text-[#565f89]">.</div>
+
+              {/* Tree */}
+              <TreeLines entries={siteTree} />
+
+              {/* Summary line */}
+              <div className="mt-3 text-[#565f89] text-xs md:text-sm">
+                {siteTree.length} directories, {siteTree.reduce((acc, e) => acc + (e.children?.length || 0), 0)} subdirectories
+              </div>
+
+              {/* Next prompt (idle cursor) */}
+              <div className="mt-4">
+                <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
+                <span style={{ color: '#7dcfff' }}>:</span>
+                <span style={{ color: '#c0caf5' }}>~</span>
+                <span style={{ color: '#7dcfff' }}>$ </span>
+                <span className="inline-block w-2 h-4 bg-[#c0caf5] animate-pulse align-middle" />
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </MantineProvider>
   );
