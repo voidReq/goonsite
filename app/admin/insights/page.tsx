@@ -116,7 +116,7 @@ export default function AdminInsightsPage() {
   const [locations, setLocations] = useState<LocationStat[]>([]);
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
 
-  const MAX_ZOOM = 800;
+  const MAX_ZOOM = 5000;
 
   const handleZoomIn = () => {
     if (position.zoom >= MAX_ZOOM) return;
