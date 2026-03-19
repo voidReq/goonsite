@@ -160,42 +160,154 @@ function wouldHangPiece(game: Chess, move: Move): boolean {
   return false;
 }
 
+/**
+ * Find bot pieces that are currently hanging (attacked by opponent with a
+ * profitable or equal exchange). Returns moves that rescue those pieces
+ * by moving them to a safe square.
+ */
+function findRescueMoves(game: Chess): Move[] {
+  const botColor = game.turn(); // 'b' for the bot
+  const opponentColor = botColor === 'w' ? 'b' : 'w';
+  const board = game.board();
+  const rescues: Move[] = [];
+
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const piece = board[row][col];
+      if (!piece || piece.color !== botColor) continue;
+      if (piece.type === 'k') continue; // king safety handled by chess.js legality
+
+      const sq = coordsToSquare(row, col);
+      const myValue = PIECE_VALUES[piece.type];
+
+      // Is this piece attacked?
+      if (!isSquareAttacked(game, sq, opponentColor)) continue;
+
+      // Is it defended? If defended and attacker would lose material, it's fine
+      if (isSquareAttacked(game, sq, botColor)) {
+        // Still threatened if attacker is cheaper (e.g. pawn attacks our queen)
+        // Check if any opponent piece attacking this square is cheaper
+        const opponentMoves = game.moves({ verbose: true });
+        // Actually we need opponent's perspective — simulate opponent turn
+        const flipped = new Chess(game.fen());
+        // We can't easily flip turns, so approximate: if our piece value > 3
+        // and it's attacked, consider rescuing it even if defended
+        if (myValue <= 3) continue; // minor pieces that are defended are okay
+      }
+
+      // This piece is in danger — find moves that rescue it
+      const pieceMoves = game.moves({ square: sq, verbose: true });
+      for (const move of pieceMoves) {
+        const testGame = new Chess(game.fen());
+        testGame.move({ from: move.from, to: move.to, promotion: move.promotion || undefined });
+
+        const stillAttacked = isSquareAttacked(testGame, move.to as Square, opponentColor);
+        if (!stillAttacked) {
+          rescues.push(move);
+        } else {
+          // Moving to an attacked square is okay if it's a profitable capture
+          if (move.captured && PIECE_VALUES[move.captured] >= myValue) {
+            rescues.push(move);
+          }
+        }
+      }
+    }
+  }
+
+  return rescues;
+}
+
+/**
+ * Simple positional bonus: prefer center squares for knights/bishops,
+ * and advancing pawns.
+ */
+function positionalBonus(move: Move): number {
+  let bonus = 0;
+  const toCol = move.to.charCodeAt(0) - 97;
+  const toRow = 8 - parseInt(move.to[1]);
+
+  // Center control bonus for knights and bishops
+  if (move.piece === 'n' || move.piece === 'b') {
+    const centerDist = Math.abs(3.5 - toCol) + Math.abs(3.5 - toRow);
+    bonus += (4 - centerDist) * 0.1;
+  }
+
+  // Pawn advancement bonus (bot is black, so lower row = more advanced)
+  if (move.piece === 'p' && move.color === 'b') {
+    bonus += (toRow - 1) * 0.05;
+  }
+
+  // Check bonus
+  if (move.san.includes('+')) {
+    bonus += 0.3;
+  }
+
+  return bonus;
+}
+
 function stupidBotMove(game: Chess): Move | null {
   const moves = game.moves({ verbose: true });
   if (moves.length === 0) return null;
 
-  // Always play checkmate if available
+  // 1. Always play checkmate if available
   for (const move of moves) {
     const testGame = new Chess(game.fen());
     testGame.move({ from: move.from, to: move.to, promotion: move.promotion || undefined });
     if (testGame.isCheckmate()) return move;
   }
 
+  // 2. Find pieces in danger and rescue moves
+  const rescues = findRescueMoves(game);
+  const safeRescues = rescues.filter((m) => !wouldHangPiece(game, m));
+
   // Separate captures from quiet moves
   const captures = moves.filter((m) => m.captured);
-  const quietMoves = moves.filter((m) => !m.captured);
 
   // Find good captures (positive or neutral exchanges)
   const goodCaptures = captures.filter((m) => evaluateCapture(game, m) >= 0);
 
-  // 50% chance: take a good capture if available
-  if (goodCaptures.length > 0 && Math.random() < 0.5) {
-    // Prefer higher-value captures
+  // 3. If a valuable piece is in danger, prioritize rescuing it (80% of the time)
+  if (safeRescues.length > 0 && Math.random() < 0.8) {
+    // Prefer rescue moves that are also captures (defend by counterattacking)
+    const rescueCaptures = safeRescues.filter((m) => m.captured);
+    if (rescueCaptures.length > 0) {
+      rescueCaptures.sort((a, b) => {
+        const aVal = PIECE_VALUES[a.piece] + (a.captured ? PIECE_VALUES[a.captured] : 0);
+        const bVal = PIECE_VALUES[b.piece] + (b.captured ? PIECE_VALUES[b.captured] : 0);
+        return bVal - aVal;
+      });
+      return rescueCaptures[0];
+    }
+
+    // Otherwise just move the most valuable piece to safety
+    safeRescues.sort((a, b) => PIECE_VALUES[b.piece] - PIECE_VALUES[a.piece]);
+    return safeRescues[0];
+  }
+
+  // 4. Take good captures (60% chance)
+  if (goodCaptures.length > 0 && Math.random() < 0.6) {
     goodCaptures.sort((a, b) => evaluateCapture(game, b) - evaluateCapture(game, a));
-    // Pick from the top captures (some randomness — pick from top 2)
     const pick = Math.min(Math.floor(Math.random() * 2), goodCaptures.length - 1);
     return goodCaptures[pick];
   }
 
-  // Filter out moves that hang pieces (60% of the time — still stupid sometimes)
-  if (Math.random() < 0.6) {
-    const safeMoves = quietMoves.filter((m) => !wouldHangPiece(game, m));
-    if (safeMoves.length > 0) {
-      return safeMoves[Math.floor(Math.random() * safeMoves.length)];
-    }
+  // 5. Filter out moves that hang pieces, prefer positionally good moves
+  const quietMoves = moves.filter((m) => !m.captured);
+  const safeMoves = quietMoves.filter((m) => !wouldHangPiece(game, m));
+
+  if (safeMoves.length > 0 && Math.random() < 0.75) {
+    // Sort by positional bonus with some randomness
+    safeMoves.sort((a, b) => positionalBonus(b) - positionalBonus(a) + (Math.random() - 0.5) * 0.3);
+    return safeMoves[0];
   }
 
-  // Fallback: random move
+  // 6. All safe moves (captures + quiet)
+  const allSafe = moves.filter((m) => !wouldHangPiece(game, m));
+  if (allSafe.length > 0) {
+    return allSafe[Math.floor(Math.random() * allSafe.length)];
+  }
+
+  // 7. Fallback: random move
   return moves[Math.floor(Math.random() * moves.length)];
 }
 
