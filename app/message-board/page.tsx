@@ -550,7 +550,7 @@ export default function MessageBoardPage() {
             )}
           </div>
           {!isMobile && totalPages > 1 && (
-            <Group justify="center" mt="sm" gap="xs">
+            <Group justify="center" mt="xl" gap="xs" style={{ position: 'relative', zIndex: 0 }}>
               <Button
                 variant="subtle"
                 color="gray"
