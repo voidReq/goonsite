@@ -36,7 +36,7 @@ const links = [
 
 export default function JerryMain() {
     return (
-        <MantineProvider>
+        <MantineProvider forceColorScheme="dark">
             <NavComponent />
             <Container size="sm" py="xl">
                 <Title order={1} ta="center" mb="xs">

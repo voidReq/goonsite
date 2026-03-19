@@ -16,7 +16,7 @@ export default function LandingPageComponent({
 }) {
     const posts = getPosts(folder);
     return (
-        <MantineProvider>
+        <MantineProvider forceColorScheme="dark">
             <AppShell>
                 <NavComponent />
                 <Container size="sm" py="xl">

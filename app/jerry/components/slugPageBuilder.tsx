@@ -23,7 +23,7 @@ export default (folder: string, defaultSlug = "", children: React.ReactNode = nu
         post = getSpecificPost(folder, slug);
     } catch {
         return (
-            <MantineProvider>
+            <MantineProvider forceColorScheme="dark">
                 <AppShell>
                     <NavComponent />
                     <Container>
@@ -39,7 +39,7 @@ export default (folder: string, defaultSlug = "", children: React.ReactNode = nu
     const nextId = posts[index + 1]?.id;
 
     return (
-        <MantineProvider>
+        <MantineProvider forceColorScheme="dark">
             <AppShell>
                 <NavComponent />
                 <Container size="sm" py="xl">

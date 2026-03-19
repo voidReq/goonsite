@@ -3,8 +3,7 @@
 import React, { Suspense } from "react";
 import { MacbookScroll } from "../components/ui/macbook-scroll";
 import Link from "next/link";
-import { MantineProvider, Progress } from '@mantine/core';
-import '@mantine/core/styles.css';
+import { Progress } from '@mantine/core';
 import { useEffect, useState, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
@@ -140,32 +139,26 @@ export default function MacbookScrollDemo() {
   }, []);
 
   if (isMobile) {
-    return (
-      <MantineProvider>
-        <MobileView />
-      </MantineProvider>
-    );
+    return <MobileView />;
   }
 
   return (
-    <MantineProvider>
-      <div className="overflow-hidden bg-black w-full min-h-screen flex items-start justify-center">
-        <MacbookScroll
-          title={
-            <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-              Welcome to Goonsite
-            </span>
-          }
-          badge={
-            <Link href="/" className="opacity-70 hover:opacity-100 transition-opacity duration-200">
-              <Badge className="h-12 w-12 transform hover:scale-110 transition-transform duration-200" />
-            </Link>
-          }
-          src={`/lebron.png`}
-          showGradient={true}
-        />
-      </div>
-    </MantineProvider>
+    <div className="overflow-hidden bg-black w-full min-h-screen flex items-start justify-center">
+      <MacbookScroll
+        title={
+          <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
+            Welcome to Goonsite
+          </span>
+        }
+        badge={
+          <Link href="/" className="opacity-70 hover:opacity-100 transition-opacity duration-200">
+            <Badge className="h-12 w-12 transform hover:scale-110 transition-transform duration-200" />
+          </Link>
+        }
+        src={`/lebron.png`}
+        showGradient={true}
+      />
+    </div>
   );
 }
 
