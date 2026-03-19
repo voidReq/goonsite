@@ -116,7 +116,7 @@ export default function AdminInsightsPage() {
   const [locations, setLocations] = useState<LocationStat[]>([]);
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
 
-  const MAX_ZOOM = 5000;
+  const MAX_ZOOM = 500;
 
   const handleZoomIn = () => {
     if (position.zoom >= MAX_ZOOM) return;
@@ -395,25 +395,28 @@ export default function AdminInsightsPage() {
                           ))
                         }
                       </Geographies>
-                      {CITIES.filter((c) => position.zoom >= c.minZoom).map((city) => (
-                        <Marker key={city.name} coordinates={[city.lng, city.lat]}>
-                          <circle r={0.8 / position.zoom} fill="#999" />
-                          <text
-                            textAnchor="middle"
-                            y={-2.5 / position.zoom}
-                            style={{
-                              fontSize: `${Math.max(1.5, 3.5 / position.zoom)}px`,
-                              fill: '#aaa',
-                              fontFamily: 'sans-serif',
-                              pointerEvents: 'none',
-                              userSelect: 'none',
-                              textShadow: '0 0 3px #000, 0 0 6px #000',
-                            }}
-                          >
-                            {city.name}
-                          </text>
-                        </Marker>
-                      ))}
+                      {CITIES.filter((c) => position.zoom >= c.minZoom).map((city) => {
+                        const fontSize = 3.5 / position.zoom;
+                        return (
+                          <Marker key={city.name} coordinates={[city.lng, city.lat]}>
+                            <circle r={0.8 / position.zoom} fill="#999" />
+                            <text
+                              textAnchor="middle"
+                              y={-2.5 / position.zoom}
+                              style={{
+                                fontSize: `${fontSize}px`,
+                                fill: '#aaa',
+                                fontFamily: 'sans-serif',
+                                pointerEvents: 'none',
+                                userSelect: 'none',
+                                textShadow: '0 0 3px #000, 0 0 6px #000',
+                              }}
+                            >
+                              {city.name}
+                            </text>
+                          </Marker>
+                        );
+                      })}
                       {clusteredLocations.map((loc, i) => {
                         // Scale radius by number of locations in cluster
                         const baseRadius = Math.max(3, Math.min(18, 3 + Math.sqrt(loc.count) * 3));
