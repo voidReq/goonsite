@@ -37,13 +37,15 @@ const siteTree: TreeEntry[] = [
   { href: '/revolutions', name: 'revolutions', color: '#ff9e64' },
 ];
 
-// Flatten tree into a lookup for matching names to hrefs
-function flattenTree(entries: TreeEntry[]): { name: string; href: string }[] {
-  const result: { name: string; href: string }[] = [];
+// Flatten tree into lookups — supports both bare names and parent/child paths
+function flattenTree(entries: TreeEntry[], parentPath = ''): { name: string; path: string; href: string }[] {
+  const result: { name: string; path: string; href: string }[] = [];
   for (const entry of entries) {
-    result.push({ name: entry.name.replace(/\/$/, ''), href: entry.href });
+    const bare = entry.name.replace(/\/$/, '');
+    const fullPath = parentPath ? `${parentPath}/${bare}` : bare;
+    result.push({ name: bare, path: fullPath, href: entry.href });
     if (entry.children) {
-      result.push(...flattenTree(entry.children));
+      result.push(...flattenTree(entry.children, bare));
     }
   }
   return result;
@@ -119,16 +121,20 @@ export default function GoonHub() {
     inputRef.current?.focus();
   }, []);
 
-  // Compute tab-completion ghost text
+  // Compute tab-completion ghost text — matches bare names and parent/child paths
   const updateGhost = useCallback((value: string) => {
     const trimmed = value.trimStart();
     const cdMatch = trimmed.match(/^cd\s+(.+)/i);
     if (cdMatch) {
       const partial = cdMatch[1].replace(/^\//, '').toLowerCase();
       if (partial.length > 0) {
-        const match = allPages.find(p => p.name.toLowerCase().startsWith(partial) && p.name.toLowerCase() !== partial);
+        // Try path match first (e.g. "tools/jw" → "tools/jwt-debugger"), then bare name
+        const match = allPages.find(p => p.path.toLowerCase().startsWith(partial) && p.path.toLowerCase() !== partial)
+          || allPages.find(p => p.name.toLowerCase().startsWith(partial) && p.name.toLowerCase() !== partial);
         if (match) {
-          setGhost(match.name.slice(partial.length));
+          // Use whichever matched — path or name
+          const matchStr = match.path.toLowerCase().startsWith(partial) ? match.path : match.name;
+          setGhost(matchStr.slice(partial.length));
           return;
         }
       }
@@ -142,8 +148,12 @@ export default function GoonHub() {
     updateGhost(value);
   };
 
+  // Resolve cd target — supports bare names (e.g. "notes") and paths (e.g. "tools/jwt-debugger", "goon-hub/goon-sploit")
   const resolveTarget = (arg: string): { href: string; name: string } | null => {
     const clean = arg.replace(/^\//, '').replace(/\/$/, '').toLowerCase();
+    // Match full path first, then bare name
+    const byPath = allPages.find(p => p.path.toLowerCase() === clean);
+    if (byPath) return byPath;
     return allPages.find(p => p.name.toLowerCase() === clean) || null;
   };
 
@@ -179,8 +189,8 @@ export default function GoonHub() {
         }
       }
     } else if (command === 'ls') {
-      const names = allPages.map(p => p.name);
-      setHistory(prev => [...prev, { type: 'output', text: names.join('  ') }]);
+      const paths = allPages.map(p => p.path);
+      setHistory(prev => [...prev, { type: 'output', text: paths.join('  ') }]);
     } else if (command === 'tree') {
       setHistory(prev => [...prev, { type: 'output', text: '__tree__' }]);
     } else if (command === 'pwd') {
