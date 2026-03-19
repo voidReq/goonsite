@@ -372,39 +372,38 @@ function identifyHash(input: string): HashMatch[] {
 // ---------------------------------------------------------------------------
 // Guess encoding
 // ---------------------------------------------------------------------------
-function guessEncoding(input: string): { op: EncodingOp; label: string } | null {
+function guessDecoding(input: string): { algo: string; label: string } | null {
   const trimmed = input.trim();
   if (!trimmed) return null;
 
-  // Base64: valid chars, length divisible by 4 (or close with padding), and decodes cleanly
+  // Base64: valid chars and decodes to mostly printable ASCII
   if (/^[A-Za-z0-9+/=\n\r]+$/.test(trimmed) && trimmed.length >= 4) {
     const stripped = trimmed.replace(/\s/g, '');
     try {
       const decoded = atob(stripped);
-      // Check if result is mostly printable ASCII — strong signal it's base64
       const printable = decoded.split('').filter(c => c.charCodeAt(0) >= 32 && c.charCodeAt(0) < 127).length;
       if (printable / decoded.length > 0.8) {
-        return { op: 'base64-decode', label: 'Looks like Base64 → decoding' };
+        return { algo: 'base64', label: 'Detected Base64' };
       }
     } catch { /* not base64 */ }
   }
 
   // URL encoded: has %XX patterns
   if (/%[0-9A-Fa-f]{2}/.test(trimmed)) {
-    return { op: 'url-decode', label: 'Looks like URL encoding → decoding' };
+    return { algo: 'url', label: 'Detected URL encoding' };
   }
 
   // HTML entities: has &...; patterns
   if (/&(#\d+|#x[0-9a-fA-F]+|[a-zA-Z]+);/.test(trimmed)) {
-    return { op: 'html-decode', label: 'Looks like HTML entities → decoding' };
+    return { algo: 'html', label: 'Detected HTML entities' };
   }
 
   // Unicode escapes: has \uXXXX patterns
   if (/\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}/.test(trimmed)) {
-    return { op: 'unicode-unescape', label: 'Looks like Unicode escapes → unescaping' };
+    return { algo: 'unicode', label: 'Detected Unicode escapes' };
   }
 
-  // Hex string: even-length, only hex chars, long enough to be encoded text
+  // Hex string: even-length hex that decodes to printable text
   if (/^[0-9a-fA-F]+$/.test(trimmed) && trimmed.length >= 4 && trimmed.length % 2 === 0) {
     try {
       const bytes = [];
@@ -414,14 +413,9 @@ function guessEncoding(input: string): { op: EncodingOp; label: string } | null 
       const decoded = new TextDecoder().decode(new Uint8Array(bytes));
       const printable = decoded.split('').filter(c => c.charCodeAt(0) >= 32 && c.charCodeAt(0) < 127).length;
       if (printable / decoded.length > 0.8) {
-        return { op: 'hex-decode', label: 'Looks like hex-encoded text → decoding' };
+        return { algo: 'hex', label: 'Detected hex encoding' };
       }
     } catch { /* not hex */ }
-  }
-
-  // Plain text with special chars → suggest base64 encode
-  if (/[^\x20-\x7E]/.test(trimmed) || trimmed.includes('\n')) {
-    return { op: 'base64-encode', label: 'Plain text with special chars → Base64 encoding' };
   }
 
   return null;
@@ -457,8 +451,21 @@ export default function EncodePage() {
   // -- Encode/Decode state --
   const [encInput, setEncInput] = useState("");
   const [encOutput, setEncOutput] = useState("");
-  const [encOp, setEncOp] = useState<EncodingOp>("base64-encode");
+  const [encAlgo, setEncAlgo] = useState("base64");
+  const [encDir, setEncDir] = useState<"encode" | "decode">("encode");
   const [guessMsg, setGuessMsg] = useState<string | null>(null);
+
+  // Derive the combined op from algo + direction
+  const encOp: EncodingOp = (() => {
+    const map: Record<string, { encode: EncodingOp; decode: EncodingOp }> = {
+      base64: { encode: "base64-encode", decode: "base64-decode" },
+      url: { encode: "url-encode", decode: "url-decode" },
+      hex: { encode: "hex-encode", decode: "hex-decode" },
+      html: { encode: "html-encode", decode: "html-decode" },
+      unicode: { encode: "unicode-escape", decode: "unicode-unescape" },
+    };
+    return map[encAlgo]?.[encDir] || "base64-encode";
+  })();
 
   // -- Hash state --
   const [hashInput, setHashInput] = useState("");
@@ -519,17 +526,12 @@ export default function EncodePage() {
     setEncInput(encOutput);
   }, [encOutput]);
 
-  const opOptions = [
-    { value: "base64-encode", label: "Base64 Encode" },
-    { value: "base64-decode", label: "Base64 Decode" },
-    { value: "url-encode", label: "URL Encode" },
-    { value: "url-decode", label: "URL Decode" },
-    { value: "hex-encode", label: "Hex Encode" },
-    { value: "hex-decode", label: "Hex Decode" },
-    { value: "html-encode", label: "HTML Entity Encode" },
-    { value: "html-decode", label: "HTML Entity Decode" },
-    { value: "unicode-escape", label: "Unicode Escape" },
-    { value: "unicode-unescape", label: "Unicode Unescape" },
+  const algoOptions = [
+    { value: "base64", label: "Base64" },
+    { value: "url", label: "URL" },
+    { value: "hex", label: "Hex" },
+    { value: "html", label: "HTML Entities" },
+    { value: "unicode", label: "Unicode" },
   ];
 
   return (
@@ -620,13 +622,36 @@ export default function EncodePage() {
             {/* ===================== TAB 1: Encode/Decode ===================== */}
             <Tabs.Panel value="encode">
               <Stack gap="md">
-                {/* Operation selector + Guess */}
+                {/* Direction toggle + Algorithm selector */}
                 <Group gap="sm" align="flex-end">
+                  <Box>
+                    <Text size="xs" mb={4} style={{ color: COLORS.textSecondary }}>Direction</Text>
+                    <Group gap={0}>
+                      <Button
+                        size="sm"
+                        variant={encDir === "encode" ? "filled" : "subtle"}
+                        color="violet"
+                        onClick={() => { setEncDir("encode"); setGuessMsg(null); }}
+                        style={{ borderRadius: "6px 0 0 6px" }}
+                      >
+                        Encode
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={encDir === "decode" ? "filled" : "subtle"}
+                        color="violet"
+                        onClick={() => { setEncDir("decode"); setGuessMsg(null); }}
+                        style={{ borderRadius: "0 6px 6px 0" }}
+                      >
+                        Decode
+                      </Button>
+                    </Group>
+                  </Box>
                   <Select
-                    label="Operation"
-                    data={opOptions}
-                    value={encOp}
-                    onChange={(v) => { v && setEncOp(v as EncodingOp); setGuessMsg(null); }}
+                    label="Algorithm"
+                    data={algoOptions}
+                    value={encAlgo}
+                    onChange={(v) => { v && setEncAlgo(v); setGuessMsg(null); }}
                     allowDeselect={false}
                     style={{ flex: 1 }}
                     styles={{
@@ -638,25 +663,27 @@ export default function EncodePage() {
                       },
                     }}
                   />
-                  <Tooltip label="Auto-detect encoding and decode" withArrow>
-                    <Button
-                      variant="light"
-                      color="violet"
-                      size="sm"
-                      leftSection={<IconSearch size={14} />}
-                      onClick={() => {
-                        const guess = guessEncoding(encInput);
-                        if (guess) {
-                          setEncOp(guess.op);
-                          setGuessMsg(guess.label);
-                        } else {
-                          setGuessMsg(encInput.trim() ? "Can\u2019t guess \u2014 try selecting manually" : "Enter some text first");
-                        }
-                      }}
-                    >
-                      Guess
-                    </Button>
-                  </Tooltip>
+                  {encDir === "decode" && (
+                    <Tooltip label="Auto-detect encoding from input" withArrow>
+                      <Button
+                        variant="light"
+                        color="violet"
+                        size="sm"
+                        leftSection={<IconSearch size={14} />}
+                        onClick={() => {
+                          const guess = guessDecoding(encInput);
+                          if (guess) {
+                            setEncAlgo(guess.algo);
+                            setGuessMsg(guess.label);
+                          } else {
+                            setGuessMsg(encInput.trim() ? "Can\u2019t detect \u2014 select manually" : "Enter text first");
+                          }
+                        }}
+                      >
+                        Guess
+                      </Button>
+                    </Tooltip>
+                  )}
                 </Group>
                 {guessMsg && (
                   <Text size="xs" style={{ color: guessMsg.startsWith("Can") || guessMsg.startsWith("Enter") ? COLORS.amber : COLORS.green }}>
