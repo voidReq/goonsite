@@ -16,6 +16,18 @@ export type GameType = 'tictactoe' | 'connect4' | 'chess';
 
 export const VALID_GAMES: GameType[] = ['tictactoe', 'connect4', 'chess'];
 
+export const VALID_COLORS = [
+  'violet',
+  'blue',
+  'green',
+  'amber',
+  'pink',
+  'cyan',
+  'red',
+] as const;
+
+export type MessageColor = (typeof VALID_COLORS)[number];
+
 export interface Message {
   id: string;
   text: string;
@@ -23,6 +35,7 @@ export interface Message {
   timestamp: string;
   ip: string;
   game?: GameType;
+  color?: MessageColor;
 }
 
 function readJson(filePath: string): Message[] {

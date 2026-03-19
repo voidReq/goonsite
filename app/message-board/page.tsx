@@ -28,12 +28,15 @@ const GAMES: { id: GameChoice; label: string; emoji: string; desc: string }[] = 
   { id: 'chess', label: 'Chess', emoji: '♟', desc: 'For the brave' },
 ];
 
+type MessageColor = 'violet' | 'blue' | 'green' | 'amber' | 'pink' | 'cyan' | 'red';
+
 interface Message {
   id: string;
   text: string;
   author: string;
   timestamp: string;
   game?: string;
+  color?: MessageColor;
 }
 
 const GAME_ICONS: Record<string, string> = {
@@ -42,45 +45,40 @@ const GAME_ICONS: Record<string, string> = {
   chess: '♟',
 };
 
-const PASTEL_COLORS = [
-  'rgba(124, 58, 237, 0.15)',
-  'rgba(37, 99, 235, 0.15)',
-  'rgba(5, 150, 105, 0.15)',
-  'rgba(217, 119, 6, 0.15)',
-  'rgba(236, 72, 153, 0.15)',
-  'rgba(139, 92, 246, 0.15)',
-  'rgba(14, 165, 233, 0.15)',
-];
+const COLOR_MAP: Record<MessageColor, { bg: string; border: string; rgb: string }> = {
+  violet: { bg: 'rgba(124, 58, 237, 0.15)', border: 'rgba(124, 58, 237, 0.5)', rgb: '124, 58, 237' },
+  blue:   { bg: 'rgba(37, 99, 235, 0.15)',  border: 'rgba(37, 99, 235, 0.5)',  rgb: '37, 99, 235' },
+  green:  { bg: 'rgba(5, 150, 105, 0.15)',  border: 'rgba(5, 150, 105, 0.5)',  rgb: '5, 150, 105' },
+  amber:  { bg: 'rgba(217, 119, 6, 0.15)',  border: 'rgba(217, 119, 6, 0.5)',  rgb: '217, 119, 6' },
+  pink:   { bg: 'rgba(236, 72, 153, 0.15)', border: 'rgba(236, 72, 153, 0.5)', rgb: '236, 72, 153' },
+  cyan:   { bg: 'rgba(14, 165, 233, 0.15)', border: 'rgba(14, 165, 233, 0.5)', rgb: '14, 165, 233' },
+  red:    { bg: 'rgba(239, 68, 68, 0.15)',  border: 'rgba(239, 68, 68, 0.5)',  rgb: '239, 68, 68' },
+};
 
-const BORDER_COLORS = [
-  'rgba(124, 58, 237, 0.5)',
-  'rgba(37, 99, 235, 0.5)',
-  'rgba(5, 150, 105, 0.5)',
-  'rgba(217, 119, 6, 0.5)',
-  'rgba(236, 72, 153, 0.5)',
-  'rgba(139, 92, 246, 0.5)',
-  'rgba(14, 165, 233, 0.5)',
-];
+const COLOR_KEYS: MessageColor[] = ['violet', 'blue', 'green', 'amber', 'pink', 'cyan', 'red'];
+
+const PASTEL_COLORS = COLOR_KEYS.map(k => COLOR_MAP[k].bg);
+const BORDER_COLORS = COLOR_KEYS.map(k => COLOR_MAP[k].border);
 
 const DEV_MESSAGES: Message[] = [
-  { id: '1', text: 'This site goes hard ngl', author: 'xXgamer99Xx', timestamp: '2026-02-10T08:30:00Z', game: 'tictactoe' },
-  { id: '2', text: 'Beat the chess bot on my first try lol get rekt', author: 'Magnus Carlsen (fake)', timestamp: '2026-02-12T14:20:00Z', game: 'chess' },
-  { id: '3', text: 'I have been trying to beat Connect Four for 45 minutes. I am not okay.', author: 'frustrated_frank', timestamp: '2026-02-15T22:10:00Z', game: 'connect4' },
-  { id: '4', text: 'Leaving my mark here. Hi future internet archaeologists.', author: 'digital_fossil', timestamp: '2026-02-18T11:00:00Z', game: 'tictactoe' },
-  { id: '5', text: 'The vibes are immaculate', author: 'vibecheck', timestamp: '2026-02-20T16:45:00Z', game: 'chess' },
-  { id: '6', text: 'First! ...wait there are already messages. Whatever. First in spirit.', author: 'AlwaysLate', timestamp: '2026-02-22T09:30:00Z', game: 'tictactoe' },
-  { id: '7', text: 'I showed this to my cat and she walked across my keyboard. Taking that as approval.', author: 'cat_parent_42', timestamp: '2026-02-25T13:15:00Z', game: 'connect4' },
-  { id: '8', text: 'Goon site? More like GOOD site. I will not be taking questions.', author: 'pun_master', timestamp: '2026-02-28T20:00:00Z', game: 'tictactoe' },
-  { id: '9', text: 'Been lurking for a while. Finally beat tic-tac-toe to say: nice work.', author: 'silent_observer', timestamp: '2026-03-02T07:45:00Z', game: 'tictactoe' },
-  { id: '10', text: 'The chess bot blundered its queen on move 3. I almost feel bad. Almost.', author: 'GothamChess Stan', timestamp: '2026-03-04T18:30:00Z', game: 'chess' },
-  { id: '11', text: 'Dropping this message like its hot', author: 'DJ_Placeholder', timestamp: '2026-03-06T12:00:00Z', game: 'connect4' },
-  { id: '12', text: 'This is my Roman Empire now', author: 'emperor_of_goon', timestamp: '2026-03-08T15:20:00Z', game: 'chess' },
-  { id: '13', text: 'My therapist said I need to touch grass. Does this count?', author: 'terminally_online', timestamp: '2026-03-10T21:00:00Z', game: 'tictactoe' },
-  { id: '14', text: 'Connect Four is actually just vertical tic-tac-toe with extra steps. Change my mind.', author: 'shower_thoughts', timestamp: '2026-03-12T10:30:00Z', game: 'connect4' },
-  { id: '15', text: 'Whoever made this: you are doing the lords work', author: 'grateful_goon', timestamp: '2026-03-14T17:45:00Z', game: 'chess' },
-  { id: '16', text: 'I was here. Remember me when this site blows up.', author: 'early_adopter', timestamp: '2026-03-15T08:00:00Z', game: 'tictactoe' },
-  { id: '17', text: 'just vibing tbh', author: 'low_effort_larry', timestamp: '2026-03-16T14:30:00Z', game: 'connect4' },
-  { id: '18', text: 'The particles floating in the background are mesmerizing. I have been staring at them for 10 minutes.', author: 'easily_distracted', timestamp: '2026-03-16T23:00:00Z', game: 'tictactoe' },
+  { id: '1', text: 'This site goes hard ngl', author: 'xXgamer99Xx', timestamp: '2026-02-10T08:30:00Z', game: 'tictactoe', color: 'violet' },
+  { id: '2', text: 'Beat the chess bot on my first try lol get rekt', author: 'Magnus Carlsen (fake)', timestamp: '2026-02-12T14:20:00Z', game: 'chess', color: 'blue' },
+  { id: '3', text: 'I have been trying to beat Connect Four for 45 minutes. I am not okay.', author: 'frustrated_frank', timestamp: '2026-02-15T22:10:00Z', game: 'connect4', color: 'red' },
+  { id: '4', text: 'Leaving my mark here. Hi future internet archaeologists.', author: 'digital_fossil', timestamp: '2026-02-18T11:00:00Z', game: 'tictactoe', color: 'green' },
+  { id: '5', text: 'The vibes are immaculate', author: 'vibecheck', timestamp: '2026-02-20T16:45:00Z', game: 'chess', color: 'cyan' },
+  { id: '6', text: 'First! ...wait there are already messages. Whatever. First in spirit.', author: 'AlwaysLate', timestamp: '2026-02-22T09:30:00Z', game: 'tictactoe', color: 'pink' },
+  { id: '7', text: 'I showed this to my cat and she walked across my keyboard. Taking that as approval.', author: 'cat_parent_42', timestamp: '2026-02-25T13:15:00Z', game: 'connect4', color: 'amber' },
+  { id: '8', text: 'Goon site? More like GOOD site. I will not be taking questions.', author: 'pun_master', timestamp: '2026-02-28T20:00:00Z', game: 'tictactoe', color: 'violet' },
+  { id: '9', text: 'Been lurking for a while. Finally beat tic-tac-toe to say: nice work.', author: 'silent_observer', timestamp: '2026-03-02T07:45:00Z', game: 'tictactoe', color: 'blue' },
+  { id: '10', text: 'The chess bot blundered its queen on move 3. I almost feel bad. Almost.', author: 'GothamChess Stan', timestamp: '2026-03-04T18:30:00Z', game: 'chess', color: 'green' },
+  { id: '11', text: 'Dropping this message like its hot', author: 'DJ_Placeholder', timestamp: '2026-03-06T12:00:00Z', game: 'connect4', color: 'pink' },
+  { id: '12', text: 'This is my Roman Empire now', author: 'emperor_of_goon', timestamp: '2026-03-08T15:20:00Z', game: 'chess', color: 'red' },
+  { id: '13', text: 'My therapist said I need to touch grass. Does this count?', author: 'terminally_online', timestamp: '2026-03-10T21:00:00Z', game: 'tictactoe', color: 'cyan' },
+  { id: '14', text: 'Connect Four is actually just vertical tic-tac-toe with extra steps. Change my mind.', author: 'shower_thoughts', timestamp: '2026-03-12T10:30:00Z', game: 'connect4', color: 'amber' },
+  { id: '15', text: 'Whoever made this: you are doing the lords work', author: 'grateful_goon', timestamp: '2026-03-14T17:45:00Z', game: 'chess', color: 'violet' },
+  { id: '16', text: 'I was here. Remember me when this site blows up.', author: 'early_adopter', timestamp: '2026-03-15T08:00:00Z', game: 'tictactoe', color: 'blue' },
+  { id: '17', text: 'just vibing tbh', author: 'low_effort_larry', timestamp: '2026-03-16T14:30:00Z', game: 'connect4', color: 'pink' },
+  { id: '18', text: 'The particles floating in the background are mesmerizing. I have been staring at them for 10 minutes.', author: 'easily_distracted', timestamp: '2026-03-16T23:00:00Z', game: 'tictactoe', color: 'cyan' },
 ];
 
 function MessageCard({
@@ -100,7 +98,9 @@ function MessageCard({
   isMobile: boolean;
   isPinned?: boolean;
 }) {
-  const colorIdx = index % PASTEL_COLORS.length;
+  const msgColor = message.color && COLOR_MAP[message.color]
+    ? COLOR_MAP[message.color]
+    : { bg: PASTEL_COLORS[index % PASTEL_COLORS.length], border: BORDER_COLORS[index % BORDER_COLORS.length], rgb: '124, 58, 237' };
   const rotation = ((index * 13) % 10) - 5;
   const zOffset = ((index * 37) % 80) - 40;
 
@@ -114,8 +114,8 @@ function MessageCard({
       >
         <div
           style={{
-            background: isPinned ? 'rgba(234, 179, 8, 0.15)' : PASTEL_COLORS[colorIdx],
-            border: isPinned ? '1.5px solid rgba(234, 179, 8, 0.6)' : `1px solid ${BORDER_COLORS[colorIdx]}`,
+            background: isPinned ? 'rgba(234, 179, 8, 0.15)' : msgColor.bg,
+            border: isPinned ? '1.5px solid rgba(234, 179, 8, 0.6)' : `1px solid ${msgColor.border}`,
             borderRadius: '12px',
             padding: '16px',
             backdropFilter: 'blur(12px)',
@@ -201,10 +201,10 @@ function MessageCard({
           style={{
             background: isPinned
               ? (isHovered ? 'rgba(234, 179, 8, 0.95)' : 'rgba(234, 179, 8, 0.15)')
-              : (isHovered ? PASTEL_COLORS[colorIdx].replace('0.15)', '0.95)') : PASTEL_COLORS[colorIdx]),
+              : (isHovered ? `rgba(${msgColor.rgb}, 0.95)` : msgColor.bg),
             border: isPinned
               ? '1.5px solid rgba(234, 179, 8, 0.6)'
-              : `1px solid ${BORDER_COLORS[colorIdx]}`,
+              : `1px solid ${msgColor.border}`,
             borderRadius: '12px',
             padding: '20px',
             backdropFilter: 'blur(12px)',
@@ -213,7 +213,7 @@ function MessageCard({
                 ? '0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(234, 179, 8, 0.4)'
                 : '0 8px 32px rgba(0,0,0,0.2), 0 0 16px rgba(234, 179, 8, 0.15)')
               : (isHovered
-                ? `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${BORDER_COLORS[colorIdx]}`
+                ? `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${msgColor.border}`
                 : '0 8px 32px rgba(0,0,0,0.2)'),
             transition: 'box-shadow 0.3s ease, background 0.3s ease',
           }}
@@ -306,6 +306,7 @@ export default function MessageBoardPage() {
   const [hasWon, setHasWon] = useState(false);
   const [selectedGame, setSelectedGame] = useState<GameChoice | null>(null);
   const [page, setPage] = useState(0);
+  const [selectedColor, setSelectedColor] = useState<MessageColor>('violet');
   const sceneRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -360,7 +361,7 @@ export default function MessageBoardPage() {
       const res = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: text.trim(), author: author.trim(), game: selectedGame }),
+        body: JSON.stringify({ text: text.trim(), author: author.trim(), game: selectedGame, color: selectedColor }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -495,6 +496,8 @@ export default function MessageBoardPage() {
             maxWidth: isMobile ? '100%' : '1100px',
             margin: '0 auto',
             padding: isMobile ? '0 16px 40px' : '0 20px',
+            position: 'relative',
+            zIndex: 10,
           }}
         >
           <div
@@ -749,7 +752,7 @@ export default function MessageBoardPage() {
                   mb="xs"
                 />
 
-                <Group justify="space-between" mb="md">
+                <Group justify="space-between" mb="sm">
                   <Text size="xs" c={wordCount > 150 ? 'red' : 'dimmed'}>
                     {wordCount}/150 words
                   </Text>
@@ -759,6 +762,46 @@ export default function MessageBoardPage() {
                     </Text>
                   )}
                 </Group>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <Text size="sm" fw={500} mb={6} style={{ color: '#c9d1d9' }}>
+                    Card color
+                  </Text>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {COLOR_KEYS.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setSelectedColor(c)}
+                        title={c}
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '50%',
+                          border: selectedColor === c
+                            ? `2.5px solid ${COLOR_MAP[c].border}`
+                            : '2px solid transparent',
+                          background: COLOR_MAP[c].bg,
+                          boxShadow: selectedColor === c
+                            ? `0 0 10px ${COLOR_MAP[c].border}`
+                            : 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          position: 'relative',
+                        }}
+                      >
+                        <span
+                          style={{
+                            position: 'absolute',
+                            inset: '6px',
+                            borderRadius: '50%',
+                            background: `rgba(${COLOR_MAP[c].rgb}, 0.8)`,
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
                 <AnimatePresence>
                   {feedback && (
