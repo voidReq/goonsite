@@ -26,6 +26,14 @@ const siteTree: TreeEntry[] = [
   { href: '/message-board', name: 'message-board', color: '#e0af68' },
   { href: '/notes', name: 'notes/', color: '#bb9af7' },
   { href: '/projects', name: 'projects/', color: '#7dcfff' },
+  {
+    href: '/tools/jwt', name: 'tools/', color: '#f7768e',
+    children: [
+      { href: '/tools/jwt', name: 'jwt-debugger', color: '#f7768e' },
+      { href: '/tools/headers', name: 'header-analyzer', color: '#7dcfff' },
+      { href: '/tools/encode', name: 'encode-hash', color: '#9ece6a' },
+    ],
+  },
   { href: '/revolutions', name: 'revolutions', color: '#ff9e64' },
 ];
 

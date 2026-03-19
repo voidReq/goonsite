@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { MantineProvider, Switch, Rating, Text, Tooltip, Notification, Alert, Button } from '@mantine/core';
 import '@mantine/core/styles.css';
-import { IconArrowRight, IconInfoCircle, IconHeart, IconNotes, IconCode, IconMap, IconMessageCircle, IconChevronRight } from '@tabler/icons-react';
+import { IconArrowRight, IconInfoCircle, IconHeart, IconNotes, IconCode, IconMap, IconMessageCircle, IconChevronRight, IconKey, IconShield, IconHash } from '@tabler/icons-react';
 import Link from 'next/link';
 import { Terminal } from './components/ui/Terminal';
 
@@ -85,6 +85,31 @@ export default function Home() {
             icon={<IconMessageCircle size={18} />}
             title="Messages"
             desc="Leave your mark"
+          />
+
+          {/* Tools */}
+          <NavCard
+            href="/tools/jwt"
+            accent="#f7768e"
+            icon={<IconKey size={18} />}
+            title="JWT Debugger"
+            desc="Decode & analyze tokens"
+          />
+
+          <NavCard
+            href="/tools/headers"
+            accent="#7dcfff"
+            icon={<IconShield size={18} />}
+            title="Header Analyzer"
+            desc="Grade security headers"
+          />
+
+          <NavCard
+            href="/tools/encode"
+            accent="#9ece6a"
+            icon={<IconHash size={18} />}
+            title="Encode & Hash"
+            desc="Base64, hex, SHA, MD5"
           />
 
           {/* Easter egg toggle */}
