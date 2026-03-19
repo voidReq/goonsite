@@ -101,7 +101,7 @@ export default function AdminInsightsPage() {
     // Distance threshold in degrees — shrinks as zoom increases
     const threshold = 15 / position.zoom;
     const used = new Array(locations.length).fill(false);
-    const clusters: LocationStat[] = [];
+    const clusters: (LocationStat & { count: number })[] = [];
 
     for (let i = 0; i < locations.length; i++) {
       if (used[i]) continue;
@@ -126,10 +126,27 @@ export default function AdminInsightsPage() {
       const label = group.length === 1
         ? `${group[0].city}, ${group[0].country}`
         : `${group.length} locations`;
-      clusters.push({ lat: avgLat, lng: avgLng, city: label, country: '', totalVisits, uniqueVisitors });
+      clusters.push({ lat: avgLat, lng: avgLng, city: label, country: '', totalVisits, uniqueVisitors, count: group.length });
     }
     return clusters;
   }, [locations, position.zoom]);
+
+  const mapRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = mapRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setPosition((pos) => {
+        const factor = e.deltaY < 0 ? 1.2 : 1 / 1.2;
+        const newZoom = Math.min(100, Math.max(1, pos.zoom * factor));
+        return { ...pos, zoom: newZoom };
+      });
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
 
   if (!authed) {
     return (
@@ -199,7 +216,7 @@ export default function AdminInsightsPage() {
                   <Loader color="violet" />
                 </Group>
               ) : (
-                <div style={{ width: '100%', minHeight: 400, position: 'relative' }}>
+                <div ref={mapRef} style={{ width: '100%', minHeight: 400, position: 'relative' }}>
                   <Group style={{ position: 'absolute', top: 10, right: 10, zIndex: 10 }}>
                     <Button.Group orientation="vertical">
                       <Button variant="default" size="xs" p={4} onClick={handleZoomIn}><IconPlus size={16} /></Button>
@@ -231,14 +248,16 @@ export default function AdminInsightsPage() {
                         }
                       </Geographies>
                       {clusteredLocations.map((loc, i) => {
-                        const radius = 4 / position.zoom;
+                        // Scale radius by number of locations in cluster
+                        const baseRadius = Math.max(3, Math.min(18, 3 + Math.sqrt(loc.count) * 3));
+                        const radius = baseRadius / position.zoom;
                         const tooltipLabel = loc.country
                           ? `${loc.city}, ${loc.country} — ${loc.totalVisits} visits (${loc.uniqueVisitors} unique)`
                           : `${loc.city} — ${loc.totalVisits} visits (${loc.uniqueVisitors} unique)`;
                         return (
                           <Marker key={i} coordinates={[loc.lng, loc.lat]}>
                             <Tooltip label={tooltipLabel} withArrow position="top">
-                              <circle r={radius} fill="#7c3aed" fillOpacity={0.8} stroke="#fff" strokeWidth={0.5 / position.zoom} style={{ cursor: 'pointer' }} />
+                              <circle r={radius} fill="#7c3aed" fillOpacity={0.7} stroke="#fff" strokeWidth={0.5 / position.zoom} style={{ cursor: 'pointer' }} />
                             </Tooltip>
                           </Marker>
                         );
