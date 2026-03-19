@@ -916,6 +916,37 @@ function DebuggerTab() {
 // ══════════════════════════════════════════════════════════════
 //  BUILDER TAB
 // ══════════════════════════════════════════════════════════════
+// ── HMAC signing via Web Crypto ────────────────────────────────
+const HMAC_ALGOS: Record<string, string> = {
+  HS256: "SHA-256",
+  HS384: "SHA-384",
+  HS512: "SHA-512",
+};
+
+async function hmacSign(header: object, payload: object, secret: string, alg: string): Promise<string> {
+  const hashAlgo = HMAC_ALGOS[alg];
+  if (!hashAlgo) return "";
+  const encoder = new TextEncoder();
+  const headerB64 = base64urlEncode(JSON.stringify(header));
+  const payloadB64 = base64urlEncode(JSON.stringify(payload));
+  const data = encoder.encode(`${headerB64}.${payloadB64}`);
+  const keyData = encoder.encode(secret);
+  const key = await crypto.subtle.importKey("raw", keyData, { name: "HMAC", hash: hashAlgo }, false, ["sign"]);
+  const sig = await crypto.subtle.sign("HMAC", key, data);
+  // base64url encode the signature
+  const bytes = new Uint8Array(sig);
+  let binary = "";
+  bytes.forEach(b => { binary += String.fromCharCode(b); });
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function generateSecret(length = 32): string {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  const arr = new Uint8Array(length);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, b => chars[b % chars.length]).join("");
+}
+
 function BuilderTab() {
   const [alg, setAlg] = useState("HS256");
   const [sub, setSub] = useState("1234567890");
@@ -927,6 +958,12 @@ function BuilderTab() {
   const [customKey, setCustomKey] = useState("");
   const [customVal, setCustomVal] = useState("");
   const [customClaims, setCustomClaims] = useState<[string, string][]>([]);
+  const [secret, setSecret] = useState(() => generateSecret());
+  const [signedToken, setSignedToken] = useState<string | null>(null);
+  const [signing, setSigning] = useState(false);
+
+  const isHmac = alg in HMAC_ALGOS;
+  const isNone = alg === "none";
 
   const now = Math.floor(Date.now() / 1000);
   const header = { alg, typ: "JWT" };
@@ -940,19 +977,41 @@ function BuilderTab() {
   if (includeExp) payload.exp = now + expHours * 3600;
   for (const [k, v] of customClaims) {
     if (k) {
-      // Try to parse as number or boolean
       if (v === "true") payload[k] = true;
       else if (v === "false") payload[k] = false;
       else if (/^\d+$/.test(v)) payload[k] = parseInt(v);
       else payload[k] = v;
     }
   }
-  // Remove undefined
   Object.keys(payload).forEach(k => { if (payload[k] === undefined) delete payload[k]; });
 
-  const token = buildFakeJwt(header, payload, alg === "none" ? "" : "signature-requires-secret-key");
-  const decoded = decodeJwt(token);
+  // Build unsigned token for display
+  const unsignedParts = [base64urlEncode(JSON.stringify(header)), base64urlEncode(JSON.stringify(payload))];
+  const displayToken = signedToken || `${unsignedParts[0]}.${unsignedParts[1]}.${isNone ? "" : "signature-requires-signing"}`;
+
+  const decoded = decodeJwt(displayToken);
   const findings = decoded ? analyzeJwt(decoded) : [];
+
+  // Sign whenever inputs change (for HMAC algs)
+  const doSign = useCallback(async () => {
+    if (isNone) {
+      setSignedToken(`${unsignedParts[0]}.${unsignedParts[1]}.`);
+      return;
+    }
+    if (!isHmac || !secret.trim()) {
+      setSignedToken(null);
+      return;
+    }
+    setSigning(true);
+    try {
+      const sig = await hmacSign(header, payload, secret, alg);
+      setSignedToken(`${unsignedParts[0]}.${unsignedParts[1]}.${sig}`);
+    } catch {
+      setSignedToken(null);
+    } finally {
+      setSigning(false);
+    }
+  }, [alg, secret, sub, name, role, isAdmin, includeExp, expHours, customClaims, isHmac, isNone]);
 
   const addCustomClaim = () => {
     if (customKey.trim()) {
@@ -965,7 +1024,7 @@ function BuilderTab() {
   return (
     <Stack gap="lg">
       <Text size="sm" c="dimmed">
-        Build a JWT interactively. The token updates live as you change values. Signature is a placeholder — real signing requires a secret key.
+        Build a JWT interactively. For HMAC algorithms (HS256/384/512), enter a secret key to generate a real signature. Everything runs in your browser via Web Crypto.
       </Text>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
@@ -986,6 +1045,52 @@ function BuilderTab() {
             ]}
             styles={{ input: { backgroundColor: BG, borderColor: BORDER, color: "#c0caf5" } }}
           />
+
+          {/* Secret key — for HMAC algorithms */}
+          {isHmac && (
+            <>
+              <Divider my="md" color={BORDER} />
+              <Text size="sm" fw={600} mb="sm" style={{ color: AMBER }}>Secret Key</Text>
+              <Group gap="xs" align="flex-end">
+                <TextInput
+                  size="sm"
+                  placeholder="Enter signing secret..."
+                  value={secret}
+                  onChange={e => { setSecret(e.currentTarget.value); setSignedToken(null); }}
+                  style={{ flex: 1 }}
+                  styles={{ input: { backgroundColor: BG, borderColor: BORDER, color: AMBER, fontFamily: "monospace", fontSize: 13 } }}
+                />
+                <Tooltip label="Generate random 32-char secret" withArrow>
+                  <ActionIcon size="lg" variant="light" color="yellow" onClick={() => { setSecret(generateSecret()); setSignedToken(null); }}>
+                    <IconRefresh size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </Group>
+              <Group gap="xs" mt="xs">
+                <Button size="xs" variant="light" color="violet" onClick={doSign} loading={signing} leftSection={<IconKey size={14} />}>
+                  Sign Token
+                </Button>
+                {signedToken && <Badge size="sm" variant="light" color="green">Signed</Badge>}
+                {!isNone && !signedToken && <Text size="xs" c="dimmed">Click to generate a real HMAC signature</Text>}
+              </Group>
+            </>
+          )}
+
+          {isNone && (
+            <>
+              <Divider my="md" color={BORDER} />
+              <Paper p="xs" radius="sm" style={{ backgroundColor: `${RED}15`, border: `1px solid ${RED}30` }}>
+                <Text size="xs" style={{ color: RED }}>No signature — this token can be forged by anyone.</Text>
+              </Paper>
+            </>
+          )}
+
+          {!isHmac && !isNone && (
+            <>
+              <Divider my="md" color={BORDER} />
+              <Text size="xs" c="dimmed">RSA signing requires a private key and is not supported in the browser builder. The signature will be a placeholder.</Text>
+            </>
+          )}
 
           <Divider my="md" color={BORDER} />
 
@@ -1024,8 +1129,11 @@ function BuilderTab() {
         <Stack gap="md">
           <Paper p="md" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}>
             <Group gap="xs" mb="xs" justify="space-between">
-              <Text size="sm" fw={600} style={{ color: "#e0e0e0" }}>Live Token</Text>
-              <CopyButton value={token}>
+              <Group gap="xs">
+                <Text size="sm" fw={600} style={{ color: "#e0e0e0" }}>Live Token</Text>
+                {signedToken && isHmac && <Badge size="xs" variant="light" color="green">HMAC signed</Badge>}
+              </Group>
+              <CopyButton value={displayToken}>
                 {({ copied, copy }) => (
                   <Button size="xs" variant="subtle" color={copied ? "green" : "gray"} onClick={copy} leftSection={copied ? <IconCheck size={12} /> : <IconCopy size={12} />}>
                     {copied ? "Copied" : "Copy"}
@@ -1034,11 +1142,11 @@ function BuilderTab() {
               </CopyButton>
             </Group>
             <Code block style={{ backgroundColor: BG, border: `1px solid ${BORDER}`, padding: "0.75rem", borderRadius: 8, wordBreak: "break-all", whiteSpace: "pre-wrap", lineHeight: 1.6, fontSize: 12 }}>
-              <span style={{ color: PURPLE }}>{token.split(".")[0]}</span>
+              <span style={{ color: PURPLE }}>{displayToken.split(".")[0]}</span>
               <span style={{ color: DIM }}>.</span>
-              <span style={{ color: CYAN }}>{token.split(".")[1]}</span>
+              <span style={{ color: CYAN }}>{displayToken.split(".")[1]}</span>
               <span style={{ color: DIM }}>.</span>
-              <span style={{ color: AMBER }}>{token.split(".")[2] || <span style={{ color: RED, fontStyle: "italic" }}>(empty)</span>}</span>
+              <span style={{ color: AMBER }}>{displayToken.split(".")[2] || <span style={{ color: RED, fontStyle: "italic" }}>(empty)</span>}</span>
             </Code>
           </Paper>
 
