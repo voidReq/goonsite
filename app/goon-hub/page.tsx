@@ -238,7 +238,7 @@ export default function GoonHub() {
           {/* Back button */}
           <Link href="/" className="inline-flex items-center gap-1.5 text-sm font-mono text-white/40 hover:text-white/70 transition-colors mb-4">
             <IconArrowLeft size={14} />
-            <span>cd ~</span>
+            <span>cd /home</span>
           </Link>
 
           {/* Terminal window */}
