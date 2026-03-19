@@ -20,7 +20,7 @@ import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from 're
 import { useRouter } from 'next/navigation';
 import { IconLock, IconAlertCircle, IconMapPin, IconArrowLeft, IconPlus, IconMinus } from '@tabler/icons-react';
 
-const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+const geoUrl = "/countries-110m.json";
 
 interface LocationStat {
   lat: number;
