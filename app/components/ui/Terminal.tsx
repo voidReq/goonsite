@@ -29,7 +29,7 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
               'Hacking the goon-frame...',
               'Compiling goon-code...',
               'Running diagnostics...',
-              'Establishing secure connection...',
+              'Establishing goonnection...',
               'Optimizing goon-flow...',
               'Analyzing goon-data...',
               'Preparing for launch...',
@@ -37,7 +37,6 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
               'Initiating goon-protocol...',
               'Synchronizing goon-nodes...',
               'Gooning session active.',
-              'Autodeploy is live.'
             ]}
             loop={1}
             cursor
