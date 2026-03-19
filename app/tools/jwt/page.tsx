@@ -12,7 +12,6 @@ import {
   Stack,
   Box,
   Title,
-  Anchor,
   Code,
   Divider,
   CopyButton,
@@ -25,8 +24,8 @@ import {
   NumberInput,
   Switch,
 } from "@mantine/core";
+import PageShell from "../../components/ui/PageShell";
 import {
-  IconArrowLeft,
   IconShieldCheck,
   IconAlertTriangle,
   IconAlertCircle,
@@ -285,12 +284,8 @@ export default function JwtDebuggerPage() {
   const [activeTab, setActiveTab] = useState<string | null>("learn");
 
   return (
-    <Box style={{ minHeight: "100vh", backgroundColor: BG, color: "#c0caf5" }}>
-      <Box style={{ maxWidth: 960, margin: "0 auto", padding: "2rem 1.25rem 4rem" }}>
-        <Anchor href="/" underline="hover" style={{ color: DIM, fontSize: 14, display: "inline-flex", alignItems: "center", gap: 4 }}>
-          <IconArrowLeft size={14} /> Back to home
-        </Anchor>
-
+    <PageShell maxWidth="lg">
+      <Box style={{ maxWidth: 960, margin: "0 auto" }}>
         <Group gap="sm" mt="lg" mb={4}>
           <IconKey size={28} color={PURPLE} />
           <Title order={1} style={{ color: "#e0e0e0", fontSize: "1.75rem", fontWeight: 700 }}>JWT Debugger & Security Analyzer</Title>
@@ -315,7 +310,7 @@ export default function JwtDebuggerPage() {
           <Tabs.Panel value="build"><BuilderTab /></Tabs.Panel>
         </Tabs>
       </Box>
-    </Box>
+    </PageShell>
   );
 }
 

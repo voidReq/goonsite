@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react";
 import {
-  MantineProvider,
   Text,
   Paper,
   Textarea,
@@ -15,16 +14,14 @@ import {
   Tooltip,
   Progress,
   Divider,
-  Anchor,
   Code,
   Collapse,
 } from "@mantine/core";
-import "@mantine/core/styles.css";
+import PageShell from "../../components/ui/PageShell";
 import {
   IconShieldCheck,
   IconShieldOff,
   IconAlertTriangle,
-  IconArrowLeft,
   IconAnalyze,
   IconTrash,
   IconChevronDown,
@@ -889,27 +886,8 @@ export default function HttpHeaderAnalyzer() {
   }, []);
 
   return (
-    <MantineProvider forceColorScheme="dark">
-      <Box
-        style={{
-          minHeight: "100vh",
-          backgroundColor: COLORS.bg,
-          padding: "24px 16px",
-        }}
-      >
+    <PageShell maxWidth="lg">
         <Box style={{ maxWidth: 860, margin: "0 auto" }}>
-          {/* Back link */}
-          <Anchor
-            href="/"
-            underline="hover"
-            style={{ color: COLORS.muted, fontSize: 14 }}
-          >
-            <Group gap={4}>
-              <IconArrowLeft size={14} />
-              <span>Back to home</span>
-            </Group>
-          </Anchor>
-
           {/* Header */}
           <Box mt="lg" mb="xl">
             <Group gap="sm" mb={4}>
@@ -1072,7 +1050,6 @@ export default function HttpHeaderAnalyzer() {
             </Stack>
           )}
         </Box>
-      </Box>
-    </MantineProvider>
+    </PageShell>
   );
 }

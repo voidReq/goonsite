@@ -1,11 +1,9 @@
 
 "use client";
-import { MantineProvider } from '@mantine/core';
-import '@mantine/core/styles.css';
 import Link from 'next/link';
-import { IconArrowLeft } from '@tabler/icons-react';
 import { useState, useRef, useEffect, useCallback, KeyboardEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import PageShell from '../components/ui/PageShell';
 
 interface TreeEntry {
   href: string;
@@ -249,29 +247,22 @@ export default function GoonHub() {
   };
 
   return (
-    <MantineProvider forceColorScheme="dark">
-      <div className="min-h-screen flex items-start md:items-center justify-center p-4 py-8 md:p-8">
+    <PageShell maxWidth="lg">
+      <div className="flex items-start md:items-center justify-center min-h-[calc(100vh-5rem)]">
         <div className="w-full max-w-2xl lg:max-w-4xl">
-
-          {/* Back button */}
-          <Link href="/" className="inline-flex items-center gap-1.5 text-sm font-mono text-white/40 hover:text-white/70 transition-colors mb-4">
-            <IconArrowLeft size={14} />
-            <span>cd /home</span>
-          </Link>
 
           {/* Terminal window */}
           <div
-            className="rounded-xl overflow-hidden border border-white/10 cursor-text"
-            style={{ backgroundColor: '#1a1b26' }}
+            className="terminal-window cursor-text"
             onClick={() => inputRef.current?.focus()}
           >
 
             {/* Title bar */}
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5" style={{ backgroundColor: '#16161e' }}>
-              <span className="w-3 h-3 rounded-full bg-[#f7768e]" />
-              <span className="w-3 h-3 rounded-full bg-[#e0af68]" />
-              <span className="w-3 h-3 rounded-full bg-[#9ece6a]" />
-              <span className="ml-3 text-xs font-mono text-white/30">goon@goonsite: ~/sitemap</span>
+            <div className="terminal-titlebar">
+              <span className="terminal-dot" style={{ backgroundColor: '#f7768e' }} />
+              <span className="terminal-dot" style={{ backgroundColor: '#e0af68' }} />
+              <span className="terminal-dot" style={{ backgroundColor: '#9ece6a' }} />
+              <span className="ml-3 text-xs font-mono" style={{ color: '#565f89' }}>goon@goonsite: ~/sitemap</span>
             </div>
 
             {/* Terminal body */}
@@ -354,6 +345,6 @@ export default function GoonHub() {
 
         </div>
       </div>
-    </MantineProvider>
+    </PageShell>
   );
 }

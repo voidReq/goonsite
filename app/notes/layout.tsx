@@ -7,17 +7,13 @@ export const metadata: Metadata = {
   description: "Personal security research notes covering web vulnerabilities, penetration testing techniques, cryptography, and more.",
 };
 
-export default function NotesLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function NotesLayout({ children }: { children: React.ReactNode }) {
   const tree = buildNoteTree();
-  
+
   return (
-    <div className="flex min-h-screen text-white">
+    <div className="flex min-h-[calc(100vh-3.5rem)]" style={{ color: '#c0caf5' }}>
       <NotesSidebar tree={tree} />
-      <main className="flex-1 pt-16 md:pt-0 md:ml-0">
+      <main className="flex-1 pt-4 md:pt-0">
         {children}
       </main>
     </div>

@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from 'geist/font/sans';
-import "./globals.css"; // Your global styles
-import '@mantine/core/styles.css'; // Mantine core styles
+import "./globals.css";
+import '@mantine/core/styles.css';
 import { ColorSchemeScript } from '@mantine/core';
 import { Providers } from './components/Providers';
+import NavBar from './components/ui/NavBar';
+import { VisitorBeacon } from './components/VisitorBeacon';
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://goonsite.org"),
@@ -51,8 +53,6 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-import { VisitorBeacon } from './components/VisitorBeacon';
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -77,7 +77,10 @@ export default function RootLayout({
       <body>
         <Providers>
           <VisitorBeacon />
-          {children}
+          <NavBar />
+          <main className="pt-14">
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

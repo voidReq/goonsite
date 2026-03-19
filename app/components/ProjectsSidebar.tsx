@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import type { ProjectTreeItem } from '@/lib/projects';
+import { IconChevronRight, IconChevronDown, IconFile, IconFolder, IconFolderOpen, IconMenu2, IconX } from '@tabler/icons-react';
 
 function TreeNode({
   item,
@@ -22,14 +23,22 @@ function TreeNode({
       {item.type === 'directory' ? (
         <div>
           <div
-            className="flex items-center py-1 px-2 hover:bg-gray-800 rounded cursor-pointer"
+            className="flex items-center py-1.5 px-2 rounded-lg cursor-pointer transition-colors duration-150"
             onClick={() => setIsOpen(!isOpen)}
-            style={{ paddingLeft: `${level * 1.5 + 0.5}rem` }}
+            style={{
+              paddingLeft: `${level * 1.25 + 0.5}rem`,
+              backgroundColor: 'transparent',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
           >
-            <span className="mr-2 text-gray-400 text-xs">
-              {isOpen ? '▼' : '▶'}
+            <span className="mr-1.5" style={{ color: '#565f89' }}>
+              {isOpen ? <IconChevronDown size={12} /> : <IconChevronRight size={12} />}
             </span>
-            <span className="text-blue-400 font-semibold text-sm">{item.name}</span>
+            <span className="mr-1.5" style={{ color: '#bb9af7' }}>
+              {isOpen ? <IconFolderOpen size={14} /> : <IconFolder size={14} />}
+            </span>
+            <span className="font-medium text-sm" style={{ color: '#bb9af7' }}>{item.name}</span>
           </div>
           {isOpen && hasChildren && (
             <div>
@@ -42,11 +51,24 @@ function TreeNode({
       ) : (
         <Link
           href={`/projects/${item.path}`}
-          className="flex items-center py-1 px-2 hover:bg-gray-800 rounded transition-colors"
-          style={{ paddingLeft: `${level * 1.5 + 0.5}rem` }}
+          className="flex items-center py-1.5 px-2 rounded-lg transition-colors duration-150"
+          style={{
+            paddingLeft: `${level * 1.25 + 0.5}rem`,
+            color: '#c0caf5',
+            backgroundColor: 'transparent',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)';
+            e.currentTarget.style.color = '#7dcfff';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = '#c0caf5';
+          }}
           onClick={onProjectClick}
         >
-          <span className="text-gray-200 hover:text-white text-sm">{item.name}</span>
+          <span className="mr-1.5" style={{ color: '#565f89' }}><IconFile size={13} /></span>
+          <span className="text-sm">{item.name}</span>
         </Link>
       )}
     </div>
@@ -63,55 +85,50 @@ export default function ProjectsSidebar({ tree }: { tree: ProjectTreeItem[] }) {
       {/* Mobile menu button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-lg border border-gray-700 hover:bg-gray-700 transition-colors"
+        className="md:hidden fixed top-[4.25rem] left-4 z-50 p-2 rounded-lg transition-colors"
+        style={{
+          backgroundColor: '#1a1b26',
+          border: '1px solid rgba(255,255,255,0.06)',
+          color: '#c0caf5',
+        }}
         aria-label="Toggle navigation"
       >
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          {isOpen ? (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          )}
-        </svg>
+        {isOpen ? <IconX size={18} /> : <IconMenu2 size={18} />}
       </button>
 
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-black/50 z-30"
+          className="md:hidden fixed inset-0 bg-black/60 z-30"
           onClick={closeSidebar}
         />
       )}
 
       {/* Sidebar */}
       <div className={`
-        w-64 bg-gray-900 border-r border-gray-800 h-screen overflow-y-auto p-4
+        w-64 h-screen overflow-y-auto p-4
         fixed md:sticky top-0 z-40
         transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-      `}>
-        <div className="mb-4 pb-4 border-b border-gray-800 mt-12 md:mt-0">
-          <Link
-            href="/"
-            className="block text-gray-400 hover:text-white transition-colors text-sm mb-3"
-            onClick={closeSidebar}
-          >
-            ← Home
-          </Link>
+      `}
+        style={{
+          backgroundColor: '#16161e',
+          borderRight: '1px solid rgba(255,255,255,0.06)',
+        }}
+      >
+        <div className="mb-4 pb-4 mt-4 md:mt-0" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
           <Link
             href="/projects"
-            className="text-xl font-bold text-white hover:text-blue-400 transition-colors"
+            className="text-lg font-bold transition-colors"
+            style={{ color: '#c0caf5' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#7dcfff'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#c0caf5'; }}
             onClick={closeSidebar}
           >
-            Projects and Writeups
+            Projects & Writeups
           </Link>
         </div>
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           {tree.map((item, index) => (
             <TreeNode key={index} item={item} onProjectClick={closeSidebar} />
           ))}

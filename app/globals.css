@@ -3,6 +3,20 @@
 @tailwind utilities;
 
 :root {
+  --goon-bg: #0a0a0a;
+  --goon-surface: #1a1b26;
+  --goon-surface-hover: #1e2030;
+  --goon-surface-bright: #24283b;
+  --goon-border: rgba(255, 255, 255, 0.06);
+  --goon-border-hover: rgba(255, 255, 255, 0.12);
+  --goon-purple: #bb9af7;
+  --goon-cyan: #7dcfff;
+  --goon-green: #9ece6a;
+  --goon-red: #f7768e;
+  --goon-amber: #e0af68;
+  --goon-blue: #7aa2f7;
+  --goon-text: #c0caf5;
+  --goon-text-dim: #565f89;
   --background: #0a0a0a;
   --foreground: #ededed;
   color-scheme: dark;
@@ -17,13 +31,76 @@ body {
   overflow-wrap: break-word;
 }
 
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Smooth scrollbar for Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
 * {
   word-wrap: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
 }
 
-/* Markdown styling */
+/* ─── Shared glassmorphism panel ─── */
+.glass-panel {
+  background: rgba(26, 27, 38, 0.6);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.glass-panel-solid {
+  background: #1a1b26;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+/* ─── Terminal styling ─── */
+.terminal-window {
+  background: #1a1b26;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.terminal-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  background: #16161e;
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* ─── Markdown / Prose styling ─── */
 .prose {
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
@@ -35,25 +112,30 @@ body {
 }
 
 .prose a {
-  color: #60a5fa !important;
+  color: var(--goon-blue) !important;
   text-decoration: underline !important;
+  text-decoration-color: rgba(122, 162, 247, 0.3) !important;
+  text-underline-offset: 2px !important;
   word-break: break-word !important;
+  transition: color 0.15s, text-decoration-color 0.15s !important;
 }
 
 .prose a:hover {
-  color: #93c5fd !important;
+  color: var(--goon-cyan) !important;
+  text-decoration-color: var(--goon-cyan) !important;
 }
 
 .prose pre {
-  background-color: #1a1a1a !important;
-  border: 1px solid #2a2a2a !important;
+  background-color: #16161e !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
 .prose code {
-  background-color: #1a1a1a !important;
-  padding: 0.2em 0.4em !important;
-  border-radius: 3px !important;
-  font-size: 0.9em !important;
+  background-color: var(--goon-surface) !important;
+  padding: 0.15em 0.4em !important;
+  border-radius: 4px !important;
+  font-size: 0.88em !important;
+  color: var(--goon-purple) !important;
   word-break: break-word !important;
   overflow-wrap: break-word !important;
 }
@@ -61,6 +143,7 @@ body {
 .prose pre code {
   background-color: transparent !important;
   padding: 0 !important;
+  color: #c0caf5 !important;
 }
 
 /* List styling */
@@ -108,6 +191,7 @@ body {
   margin-top: 1.5em !important;
   margin-bottom: 0.75em !important;
   line-height: 1.2 !important;
+  color: var(--goon-text) !important;
 }
 
 .prose h1 {
@@ -118,6 +202,8 @@ body {
 .prose h2 {
   font-size: 1.875em !important;
   font-weight: 700 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  padding-bottom: 0.3em !important;
 }
 
 .prose h3 {
@@ -140,12 +226,11 @@ body {
   font-weight: 600 !important;
 }
 
-/* Prism syntax highlighting styles - imported in MarkdownRenderer */
-/* Override Prism styles for dark theme compatibility */
+/* Prism syntax highlighting */
 .prose pre[class*="language-"] {
-  background-color: #1a1a1a !important;
-  border: 1px solid #2a2a2a !important;
-  border-radius: 0.5rem !important;
+  background-color: #16161e !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 0.75rem !important;
   padding: 1rem !important;
   overflow-x: auto !important;
   margin: 1.5em 0 !important;
@@ -155,10 +240,10 @@ body {
 }
 
 .prose code[class*="language-"] {
-  background-color: #1a1a1a !important;
+  background-color: #16161e !important;
   padding: 0 !important;
-  font-size: 0.9em !important;
-  line-height: 1.5 !important;
+  font-size: 0.88em !important;
+  line-height: 1.6 !important;
   display: block !important;
   width: max-content !important;
   min-width: 100% !important;
@@ -166,12 +251,11 @@ body {
 }
 
 .prose pre[class*="language-"] code {
-  color: #e6e6e6 !important;
+  color: #c0caf5 !important;
   font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace !important;
-  background-color: #1a1a1a !important;
+  background-color: #16161e !important;
 }
 
-/* Override ALL Prism theme backgrounds to ensure grey extends with scroll */
 .prose pre[class*="language-"] *,
 .prose code[class*="language-"] *,
 .prose pre[class*="language-"] code *,
@@ -180,13 +264,11 @@ body {
   background-color: transparent !important;
 }
 
-/* Ensure pre itself maintains the background */
 .prose pre[class*="language-"],
 .prose pre[class*="language-"] code {
-  background: #1a1a1a !important;
+  background: #16161e !important;
 }
 
-/* Ensure all text content wraps properly */
 .prose p,
 .prose li,
 .prose td,
@@ -197,26 +279,63 @@ body {
   hyphens: auto !important;
 }
 
-/* Image styling for markdown content */
 .prose img {
   max-width: 100% !important;
   height: auto !important;
-  border-radius: 0.5rem !important;
+  border-radius: 0.75rem !important;
   margin: 1.5em 0 !important;
-  border: 1px solid #2a2a2a !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
-/* Mobile-specific adjustments */
+/* Blockquotes */
+.prose blockquote {
+  border-left: 3px solid var(--goon-purple) !important;
+  padding-left: 1em !important;
+  margin-left: 0 !important;
+  color: var(--goon-text-dim) !important;
+  font-style: italic !important;
+}
+
+/* Tables */
+.prose table {
+  border-collapse: collapse !important;
+  width: 100% !important;
+}
+
+.prose th,
+.prose td {
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  padding: 0.5em 0.75em !important;
+}
+
+.prose th {
+  background-color: var(--goon-surface) !important;
+  font-weight: 600 !important;
+  color: var(--goon-text) !important;
+}
+
+.prose hr {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  margin: 2em 0 !important;
+}
+
+/* Mobile adjustments */
 @media (max-width: 640px) {
   .prose ul,
   .prose ol {
     padding-left: 0 !important;
   }
-  
+
   .prose ul ul,
   .prose ol ol,
   .prose ul ol,
   .prose ol ul {
     padding-left: 1em !important;
   }
+}
+
+/* Pulsing animation for status dot */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0; transform: scale(2); }
 }

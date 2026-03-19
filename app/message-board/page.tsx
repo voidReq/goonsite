@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
-  MantineProvider,
   TextInput,
   Textarea,
   Button,
@@ -12,9 +11,7 @@ import {
   Group,
   Badge,
 } from '@mantine/core';
-import '@mantine/core/styles.css';
-import { IconSend, IconArrowLeft, IconMessageCircle, IconTrophy } from '@tabler/icons-react';
-import Link from 'next/link';
+import { IconSend, IconMessageCircle, IconTrophy } from '@tabler/icons-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TicTacToe from './games/TicTacToe';
 import ConnectFour from './games/ConnectFour';
@@ -410,7 +407,7 @@ export default function MessageBoardPage() {
   const boardHeight = isMobile ? 'auto' : `${Math.max(230, Math.ceil(displayMessages.length / 3) * 230 + 80)}px`;
 
   return (
-    <MantineProvider forceColorScheme="dark">
+    <>
       {/* Floating particles — fewer on mobile */}
       {Array.from({ length: isMobile ? 6 : 15 }).map((_, i) => (
         <FloatingParticle key={i} delay={i * 1.2} duration={8 + Math.random() * 6} />
@@ -418,7 +415,7 @@ export default function MessageBoardPage() {
 
       <div
         style={{
-          minHeight: '100vh',
+          minHeight: 'calc(100vh - 3.5rem)',
           background: 'radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.08) 0%, #0a0a0a 70%)',
           position: 'relative',
           overflow: 'hidden',
@@ -426,12 +423,7 @@ export default function MessageBoardPage() {
       >
         {/* Header */}
         <div style={{ padding: '30px 20px 0', maxWidth: '900px', margin: '0 auto' }}>
-          <Group justify="space-between" align="center" mb="md">
-            <Link href="/" style={{ textDecoration: 'none' }}>
-              <Button variant="subtle" color="gray" leftSection={<IconArrowLeft size={16} />}>
-                Back
-              </Button>
-            </Link>
+          <Group justify="flex-end" align="center" mb="md">
             <Badge
               size="lg"
               variant="light"
@@ -841,6 +833,6 @@ export default function MessageBoardPage() {
           )}
         </AnimatePresence>
       </div>
-    </MantineProvider>
+    </>
   );
 }

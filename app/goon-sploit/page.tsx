@@ -1,8 +1,7 @@
 "use client";
 import { useState } from 'react';
-import { MantineProvider, Text, TextInput, Button, Progress, Paper, Title, Group, Modal } from '@mantine/core';
-import '@mantine/core/styles.css';
-import Link from 'next/link';
+import { Text, Button, Progress, Paper, Title, Group, Modal } from '@mantine/core';
+import PageShell from '../components/ui/PageShell';
 
 export default function GoonSploit() {
   const [scanning, setScanning] = useState(false);
@@ -24,17 +23,17 @@ export default function GoonSploit() {
   };
 
   return (
-    <MantineProvider forceColorScheme="dark">
-      <div style={{ padding: '20px', minHeight: '100vh', backgroundColor: '#1a1a1a' }}>
-        <Title order={1} style={{ marginBottom: '20px' }}>Goon-sploit</Title>
+    <PageShell maxWidth="lg">
+      <div className="py-8">
+        <Title order={1} style={{ marginBottom: '20px', color: '#c0caf5' }}>Goon-sploit</Title>
         <Group grow>
-          <Paper withBorder p="md" radius="md" style={{ flex: 1 }}>
-            <Title order={3}>Goon-Threat Scanner</Title>
+          <Paper p="md" radius="md" className="glass-panel-solid">
+            <Title order={3} style={{ color: '#c0caf5' }}>Goon-Threat Scanner</Title>
             <Text size="sm" c="dimmed">Scan for the latest goon-related threats.</Text>
-            <Button onClick={startScan} disabled={scanning} style={{ marginTop: '20px' }}>
+            <Button onClick={startScan} disabled={scanning} color="violet" style={{ marginTop: '20px' }}>
               {scanning ? 'Scanning...' : 'Start Scan'}
             </Button>
-            {scanning && <Progress value={scanProgress} striped animated style={{ marginTop: '20px' }} />}
+            {scanning && <Progress value={scanProgress} striped animated color="violet" style={{ marginTop: '20px' }} />}
           </Paper>
         </Group>
         <Modal
@@ -43,11 +42,11 @@ export default function GoonSploit() {
           title="Goonware Detected!"
         >
           <Text>Your system has been infected with goonware. To remove it, please download and run our anti-goonware tool.</Text>
-          <Button component="a" href="/anti-goonware.c" download style={{ marginTop: '20px' }}>
+          <Button component="a" href="/anti-goonware.c" download color="violet" style={{ marginTop: '20px' }}>
             Download Anti-Goonware
           </Button>
         </Modal>
       </div>
-    </MantineProvider>
+    </PageShell>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  MantineProvider,
   Text,
   Paper,
   Textarea,
@@ -17,9 +16,8 @@ import {
   Box,
   Select,
 } from "@mantine/core";
-import "@mantine/core/styles.css";
+import PageShell from "../../components/ui/PageShell";
 import {
-  IconArrowLeft,
   IconArrowsExchange,
   IconCopy,
   IconCheck,
@@ -535,32 +533,8 @@ export default function EncodePage() {
   ];
 
   return (
-    <MantineProvider forceColorScheme="dark">
-      <Box
-        style={{
-          minHeight: "100vh",
-          backgroundColor: COLORS.bg,
-          padding: "1.5rem",
-        }}
-      >
-        <Box style={{ maxWidth: 900, margin: "0 auto" }}>
-          {/* Back link */}
-          <a
-            href="/"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              color: COLORS.purple,
-              textDecoration: "none",
-              fontSize: 14,
-              marginBottom: 12,
-            }}
-          >
-            <IconArrowLeft size={16} />
-            Back to home
-          </a>
-
+    <PageShell maxWidth="lg">
+      <Box style={{ maxWidth: 900, margin: "0 auto" }}>
           {/* Header */}
           <Text
             size="xl"
@@ -983,8 +957,7 @@ export default function EncodePage() {
             All processing happens locally in your browser. No data is
             transmitted.
           </Text>
-        </Box>
       </Box>
-    </MantineProvider>
+    </PageShell>
   );
 }
