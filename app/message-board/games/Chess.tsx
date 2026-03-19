@@ -16,9 +16,9 @@ type GameStatus = 'playing' | 'won' | 'lost' | 'draw' | 'check';
 
 // ─── Piece rendering ─────────────────────────────────────────────────────────
 
-// Use filled (black) unicode pieces for both sides — style with color + stroke
+// Outlined (white) unicode pieces for white, filled (black) for black
 const PIECE_UNICODE: Record<string, Record<string, string>> = {
-  w: { k: '\u265A', q: '\u265B', r: '\u265C', b: '\u265D', n: '\u265E', p: '\u265F' },
+  w: { k: '\u2654', q: '\u2655', r: '\u2656', b: '\u2657', n: '\u2658', p: '\u2659' },
   b: { k: '\u265A', q: '\u265B', r: '\u265C', b: '\u265D', n: '\u265E', p: '\u265F' },
 };
 
