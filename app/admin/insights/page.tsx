@@ -396,13 +396,14 @@ export default function AdminInsightsPage() {
                         }
                       </Geographies>
                       {CITIES.filter((c) => position.zoom >= c.minZoom).map((city) => {
-                        const fontSize = 3.5 / position.zoom;
+                        // Keep labels visually consistent — counter the zoom scaling
+                        const fontSize = 8 / Math.pow(position.zoom, 0.75);
                         return (
                           <Marker key={city.name} coordinates={[city.lng, city.lat]}>
-                            <circle r={0.8 / position.zoom} fill="#999" />
+                            <circle r={1.2 / Math.pow(position.zoom, 0.75)} fill="#999" />
                             <text
                               textAnchor="middle"
-                              y={-2.5 / position.zoom}
+                              y={-4 / Math.pow(position.zoom, 0.75)}
                               style={{
                                 fontSize: `${fontSize}px`,
                                 fill: '#aaa',
