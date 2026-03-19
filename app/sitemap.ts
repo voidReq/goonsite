@@ -18,11 +18,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/message-board',
     '/goon-sploit',
     '/fim',
+    '/tools/jwt',
+    '/tools/headers',
+    '/tools/encode',
   ].map((route) => {
     let priority = 0.5;
     if (route === '') priority = 1.0;
     else if (route === '/projects') priority = 0.9;
     else if (route === '/notes') priority = 0.8;
+    else if (route.startsWith('/tools/')) priority = 0.8;
     else if (route === '/goon-hub') priority = 0.7;
     else if (route === '/message-board') priority = 0.6;
     else if (['/goon-sploit', '/fim', '/turtle', '/revolutions', '/macbook'].includes(route)) priority = 0.3;
