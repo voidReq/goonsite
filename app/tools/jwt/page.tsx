@@ -621,10 +621,14 @@ function TokenVisual({ parts, highlightPart, labels }: { parts: string[]; highli
 function DebuggerTab() {
   const [token, setToken] = useState("");
   const [explainerOpen, setExplainerOpen] = useState(false);
+  const [noneExplainerOpen, setNoneExplainerOpen] = useState(false);
+  const [hoveredPart, setHoveredPart] = useState(-1);
 
   const decoded = useMemo(() => (token.trim() ? decodeJwt(token) : null), [token]);
   const findings = useMemo(() => (decoded ? analyzeJwt(decoded) : []), [decoded]);
   const hasAlgoConfusion = findings.some(f => f.title.includes("Algorithm Confusion"));
+  const hasNoneAlg = findings.some(f => f.title.includes('"none"'));
+  const alg = decoded ? String(decoded.header.alg ?? "").toLowerCase() : "";
 
   return (
     <Stack gap="lg">
@@ -658,13 +662,51 @@ function DebuggerTab() {
 
       {decoded && (
         <>
-          {/* Color-coded raw */}
+          {/* Color-coded token with hover buttons */}
           <Paper p="md" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}>
-            <Text size="sm" fw={600} mb="xs" style={{ color: "#e0e0e0" }}>Color-coded Token</Text>
-            <TokenVisual parts={[decoded.rawParts[0], decoded.rawParts[1], decoded.rawParts[2]]} highlightPart={-1} />
+            <Group gap="xs" mb="xs" justify="space-between">
+              <Text size="sm" fw={600} style={{ color: "#e0e0e0" }}>Color-coded Token</Text>
+              <Group gap={6}>
+                {[{ label: "Header", color: PURPLE, idx: 0 }, { label: "Payload", color: CYAN, idx: 1 }, { label: "Signature", color: AMBER, idx: 2 }].map(p => (
+                  <Badge
+                    key={p.idx}
+                    size="sm"
+                    variant={hoveredPart === p.idx ? "filled" : "outline"}
+                    style={{
+                      cursor: "pointer",
+                      borderColor: p.color,
+                      color: hoveredPart === p.idx ? "#0a0a0a" : p.color,
+                      backgroundColor: hoveredPart === p.idx ? p.color : "transparent",
+                      transition: "all 0.15s",
+                    }}
+                    onMouseEnter={() => setHoveredPart(p.idx)}
+                    onMouseLeave={() => setHoveredPart(-1)}
+                    onClick={() => setHoveredPart(hoveredPart === p.idx ? -1 : p.idx)}
+                  >
+                    {p.label}
+                  </Badge>
+                ))}
+              </Group>
+            </Group>
+            <TokenVisual parts={[decoded.rawParts[0], decoded.rawParts[1], decoded.rawParts[2]]} highlightPart={hoveredPart} />
+
+            {/* Show decoded content for hovered part */}
+            {hoveredPart >= 0 && (
+              <>
+                <Divider my="sm" color={BORDER} />
+                <Text size="xs" fw={600} mb={4} style={{ color: hoveredPart === 0 ? PURPLE : hoveredPart === 1 ? CYAN : AMBER }}>
+                  {hoveredPart === 0 ? "Decoded Header:" : hoveredPart === 1 ? "Decoded Payload:" : "Raw Signature (base64url):"}
+                </Text>
+                <Code block style={{ backgroundColor: BG, border: `1px solid ${BORDER}`, padding: "0.5rem", borderRadius: 6, fontSize: 12, color: hoveredPart === 0 ? PURPLE : hoveredPart === 1 ? CYAN : AMBER }}>
+                  {hoveredPart === 2
+                    ? (decoded.signature || "(empty — unsigned token!)")
+                    : JSON.stringify(hoveredPart === 0 ? decoded.header : decoded.payload, null, 2)}
+                </Code>
+              </>
+            )}
           </Paper>
 
-          {/* Header & Payload */}
+          {/* Header & Payload decoded */}
           <DecodedSection label="Header" color={PURPLE} icon={<IconKey size={16} color={PURPLE} />} data={decoded.header} />
           <DecodedSection label="Payload" color={CYAN} icon={<IconLock size={16} color={CYAN} />} data={decoded.payload} />
 
@@ -740,41 +782,90 @@ function DebuggerTab() {
             </Paper>
           </Box>
 
-          <Divider color={BORDER} />
+          {/* "none" Algorithm Explainer — only for alg:none tokens */}
+          {hasNoneAlg && (
+            <>
+              <Divider color={BORDER} />
+              <Box>
+                <Group gap="xs" style={{ cursor: "pointer", userSelect: "none" }} onClick={() => setNoneExplainerOpen(o => !o)}>
+                  {noneExplainerOpen ? <IconChevronDown size={18} color={RED} /> : <IconChevronRight size={18} color={RED} />}
+                  <IconAlertCircle size={20} color={RED} />
+                  <Title order={3} style={{ color: "#e0e0e0", fontSize: "1.15rem" }}>The &quot;none&quot; Algorithm Attack</Title>
+                  <Badge size="xs" variant="light" color="red">this token</Badge>
+                </Group>
+                <Collapse in={noneExplainerOpen}>
+                  <Paper p="lg" mt="sm" radius="md" style={{ backgroundColor: SURFACE2, border: `1px solid ${BORDER}`, lineHeight: 1.7 }}>
+                    <Text size="sm" mb="md" style={{ color: "#c0caf5" }}>
+                      The <strong style={{ color: RED }}>algorithm &quot;none&quot;</strong> attack is one of the simplest and most dangerous JWT vulnerabilities. Here&apos;s how it works:
+                    </Text>
+                    <Stack gap="sm">
+                      {[
+                        { n: 1, t: "Server issues signed JWT", d: "The server creates a token signed with HS256 or RS256. The signature ensures nobody can tamper with the payload." },
+                        { n: 2, t: "Attacker intercepts the token", d: "Through XSS, network sniffing, or just having a normal user account." },
+                        { n: 3, t: 'Attacker changes "alg" to "none"', d: 'The JWT spec defines "none" as a valid algorithm for unsecured tokens. The attacker modifies the header to {"alg":"none","typ":"JWT"} and strips the signature entirely.' },
+                        { n: 4, t: "Attacker modifies the payload", d: 'Now that there\'s no signature, the attacker can change any claim — e.g., set "admin": true or change "sub" to another user\'s ID.' },
+                        { n: 5, t: "Vulnerable server accepts it", d: 'If the server reads the "alg" header and sees "none", it skips signature verification. The forged token is accepted as valid.' },
+                      ].map(s => (
+                        <Paper key={s.n} p="sm" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}>
+                          <Group gap="xs" mb={2}>
+                            <Badge size="sm" circle variant="filled" color="red" styles={{ root: { minWidth: 22, height: 22, padding: 0, fontWeight: 700 } }}>{s.n}</Badge>
+                            <Text size="sm" fw={600} style={{ color: "#e0e0e0" }}>{s.t}</Text>
+                          </Group>
+                          <Text size="xs" style={{ color: DIM, paddingLeft: 30, lineHeight: 1.55 }}>{s.d}</Text>
+                        </Paper>
+                      ))}
+                    </Stack>
+                    <Divider my="md" color={BORDER} />
+                    <Text size="sm" fw={600} style={{ color: GREEN }} mb="xs">Mitigations</Text>
+                    <Stack gap={4}>
+                      <Text size="sm" style={{ color: "#c0caf5" }}><span style={{ color: GREEN, marginRight: 6 }}>1.</span><strong>Never accept alg: &quot;none&quot; in production.</strong> Reject any token that specifies an unsigned algorithm.</Text>
+                      <Text size="sm" style={{ color: "#c0caf5" }}><span style={{ color: GREEN, marginRight: 6 }}>2.</span>Use a strict allowlist of accepted algorithms server-side — don&apos;t trust the token&apos;s header.</Text>
+                      <Text size="sm" style={{ color: "#c0caf5" }}><span style={{ color: GREEN, marginRight: 6 }}>3.</span>Always require a valid signature. If verification fails, reject the token unconditionally.</Text>
+                    </Stack>
+                  </Paper>
+                </Collapse>
+              </Box>
+            </>
+          )}
 
-          {/* Algorithm Confusion Explainer */}
-          <Box>
-            <Group gap="xs" style={{ cursor: "pointer", userSelect: "none" }} onClick={() => setExplainerOpen(o => !o)}>
-              {explainerOpen ? <IconChevronDown size={18} color={PURPLE} /> : <IconChevronRight size={18} color={PURPLE} />}
-              <IconAlertTriangle size={20} color={AMBER} />
-              <Title order={3} style={{ color: "#e0e0e0", fontSize: "1.15rem" }}>Algorithm Confusion — Explainer</Title>
-              {hasAlgoConfusion && <Badge size="xs" variant="light" color="yellow">relevant</Badge>}
-            </Group>
-            <Collapse in={explainerOpen}>
-              <Paper p="lg" mt="sm" radius="md" style={{ backgroundColor: SURFACE2, border: `1px solid ${BORDER}`, lineHeight: 1.7 }}>
-                <Text size="sm" mb="md" style={{ color: "#c0caf5" }}>
-                  The <strong style={{ color: AMBER }}>RS256 → HS256</strong> attack exploits servers that trust the <Code style={{ backgroundColor: SURFACE, color: PURPLE, padding: "1px 4px" }}>alg</Code> header:
-                </Text>
-                <Stack gap="sm">
-                  {[
-                    { n: 1, t: "Server signs with RS256", d: "Uses RSA private key to sign, public key to verify." },
-                    { n: 2, t: "Attacker gets public key", d: "From JWKS endpoint, certificate, or other public source." },
-                    { n: 3, t: 'Changes alg to HS256', d: "Switches from asymmetric to symmetric verification." },
-                    { n: 4, t: "Signs with public key as HMAC secret", d: "HS256 uses one key for both signing and verifying." },
-                    { n: 5, t: "Server accepts the forged token", d: 'Reads alg=HS256, uses the "key" (public key) for HMAC — signature matches.' },
-                  ].map(s => (
-                    <Paper key={s.n} p="sm" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}>
-                      <Group gap="xs" mb={2}>
-                        <Badge size="sm" circle variant="filled" color="violet" styles={{ root: { minWidth: 22, height: 22, padding: 0, fontWeight: 700 } }}>{s.n}</Badge>
-                        <Text size="sm" fw={600} style={{ color: "#e0e0e0" }}>{s.t}</Text>
-                      </Group>
-                      <Text size="xs" style={{ color: DIM, paddingLeft: 30 }}>{s.d}</Text>
-                    </Paper>
-                  ))}
-                </Stack>
-              </Paper>
-            </Collapse>
-          </Box>
+          {/* Algorithm Confusion Explainer — only for RSA tokens */}
+          {hasAlgoConfusion && (
+            <>
+              <Divider color={BORDER} />
+              <Box>
+                <Group gap="xs" style={{ cursor: "pointer", userSelect: "none" }} onClick={() => setExplainerOpen(o => !o)}>
+                  {explainerOpen ? <IconChevronDown size={18} color={PURPLE} /> : <IconChevronRight size={18} color={PURPLE} />}
+                  <IconAlertTriangle size={20} color={AMBER} />
+                  <Title order={3} style={{ color: "#e0e0e0", fontSize: "1.15rem" }}>Algorithm Confusion — Explainer</Title>
+                  <Badge size="xs" variant="light" color="yellow">this token</Badge>
+                </Group>
+                <Collapse in={explainerOpen}>
+                  <Paper p="lg" mt="sm" radius="md" style={{ backgroundColor: SURFACE2, border: `1px solid ${BORDER}`, lineHeight: 1.7 }}>
+                    <Text size="sm" mb="md" style={{ color: "#c0caf5" }}>
+                      The <strong style={{ color: AMBER }}>RS256 → HS256</strong> attack exploits servers that trust the <Code style={{ backgroundColor: SURFACE, color: PURPLE, padding: "1px 4px" }}>alg</Code> header:
+                    </Text>
+                    <Stack gap="sm">
+                      {[
+                        { n: 1, t: "Server signs with RS256", d: "Uses RSA private key to sign, public key to verify." },
+                        { n: 2, t: "Attacker gets public key", d: "From JWKS endpoint, certificate, or other public source." },
+                        { n: 3, t: 'Changes alg to HS256', d: "Switches from asymmetric to symmetric verification." },
+                        { n: 4, t: "Signs with public key as HMAC secret", d: "HS256 uses one key for both signing and verifying." },
+                        { n: 5, t: "Server accepts the forged token", d: 'Reads alg=HS256, uses the "key" (public key) for HMAC — signature matches.' },
+                      ].map(s => (
+                        <Paper key={s.n} p="sm" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}>
+                          <Group gap="xs" mb={2}>
+                            <Badge size="sm" circle variant="filled" color="violet" styles={{ root: { minWidth: 22, height: 22, padding: 0, fontWeight: 700 } }}>{s.n}</Badge>
+                            <Text size="sm" fw={600} style={{ color: "#e0e0e0" }}>{s.t}</Text>
+                          </Group>
+                          <Text size="xs" style={{ color: DIM, paddingLeft: 30 }}>{s.d}</Text>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  </Paper>
+                </Collapse>
+              </Box>
+            </>
+          )}
         </>
       )}
 
