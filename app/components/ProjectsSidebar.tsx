@@ -85,7 +85,7 @@ export default function ProjectsSidebar({ tree }: { tree: ProjectTreeItem[] }) {
       {/* Mobile menu button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden fixed top-[4.25rem] right-4 z-50 p-2 rounded-lg transition-colors"
+        className="md:hidden fixed top-[4.25rem] right-4 z-30 p-2 rounded-lg transition-colors"
         style={{
           backgroundColor: '#1a1b26',
           border: '1px solid rgba(255,255,255,0.06)',

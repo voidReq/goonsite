@@ -221,7 +221,8 @@ export default function NavBar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-black/60 md:hidden"
+              className="fixed inset-0 z-40 md:hidden"
+              style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
@@ -229,11 +230,12 @@ export default function NavBar() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-72 p-6 md:hidden overflow-y-auto"
+              className="fixed top-0 right-0 z-50 w-72 p-6 md:hidden overflow-y-auto"
               style={{
                 backgroundColor: 'rgba(26, 27, 38, 0.98)',
                 backdropFilter: 'blur(20px)',
                 borderLeft: '1px solid rgba(255,255,255,0.06)',
+                height: '100dvh',
                 paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))',
               }}
             >

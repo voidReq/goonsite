@@ -109,8 +109,13 @@ export default function GoonHub() {
   const inputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom when history changes
+  // Scroll to bottom when history changes (skip initial mount)
+  const hasInteracted = useRef(false);
   useEffect(() => {
+    if (!hasInteracted.current) {
+      hasInteracted.current = history.length > 0;
+      return;
+    }
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [history]);
 
