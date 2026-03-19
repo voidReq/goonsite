@@ -57,3 +57,6 @@ vmi/house2/light          # Toggle house 2 light
 vmi/house2/fan            # Toggle house 2 fan
 vmi/water/toggle          # 0/1 for water, 2/3 for solar
 ```
+
+
+![SmartGrid IoT System Diagram](/projects/whiteboard.png)
