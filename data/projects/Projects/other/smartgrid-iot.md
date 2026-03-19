@@ -18,7 +18,7 @@ description: IoT smart grid cybersecurity testbed built during a CCI internship 
 
 ## System Architecture
 
-![SmartGrid IoT System Diagram](/projects/smartgrid-diagram.png)
+![SmartGrid IoT System Diagram](/images/smartgrid-diagram.png)
 
 The testbed consists of three main layers:
 
@@ -59,4 +59,4 @@ vmi/water/toggle          # 0/1 for water, 2/3 for solar
 ```
 
 
-![SmartGrid IoT System Diagram](/projects/whiteboard.png)
+![SmartGrid IoT System Diagram](/images/whiteboard.png)

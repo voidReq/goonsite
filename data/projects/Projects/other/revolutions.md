@@ -10,7 +10,7 @@ description: 3D revolution surface visualizer for non-polynomial equations using
 **GitHub:** [voidReq/revolutions](https://github.com/voidReq/revolutions)
 
 
-![Rotations](/projects/rotation.png)
+![Rotations](/images/rotation.png)
 ## Tech Stack
 
 - **Language:** Python
