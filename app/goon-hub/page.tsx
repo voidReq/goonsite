@@ -4,6 +4,8 @@ import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import Link from 'next/link';
 import { IconArrowLeft } from '@tabler/icons-react';
+import { useState, useRef, useEffect, useCallback, KeyboardEvent } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface TreeEntry {
   href: string;
@@ -26,6 +28,20 @@ const siteTree: TreeEntry[] = [
   { href: '/projects', name: 'projects/', color: '#7dcfff' },
   { href: '/revolutions', name: 'revolutions', color: '#ff9e64' },
 ];
+
+// Flatten tree into a lookup for matching names to hrefs
+function flattenTree(entries: TreeEntry[]): { name: string; href: string }[] {
+  const result: { name: string; href: string }[] = [];
+  for (const entry of entries) {
+    result.push({ name: entry.name.replace(/\/$/, ''), href: entry.href });
+    if (entry.children) {
+      result.push(...flattenTree(entry.children));
+    }
+  }
+  return result;
+}
+
+const allPages = flattenTree(siteTree);
 
 function TreeLines({ entries, depth = 0, parentPrefixes = [] }: { entries: TreeEntry[]; depth?: number; parentPrefixes?: string[] }) {
   return (
@@ -59,7 +75,159 @@ function TreeLines({ entries, depth = 0, parentPrefixes = [] }: { entries: TreeE
   );
 }
 
+interface HistoryLine {
+  type: 'command' | 'output' | 'error';
+  text: string;
+}
+
+function Prompt() {
+  return (
+    <>
+      <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
+      <span style={{ color: '#7dcfff' }}>:</span>
+      <span style={{ color: '#c0caf5' }}>~</span>
+      <span style={{ color: '#7dcfff' }}>$ </span>
+    </>
+  );
+}
+
 export default function GoonHub() {
+  const router = useRouter();
+  const [input, setInput] = useState('');
+  const [history, setHistory] = useState<HistoryLine[]>([]);
+  const [cmdHistory, setCmdHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [ghost, setGhost] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to bottom when history changes
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [history]);
+
+  // Focus input on mount
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  // Compute tab-completion ghost text
+  const updateGhost = useCallback((value: string) => {
+    const trimmed = value.trimStart();
+    const cdMatch = trimmed.match(/^cd\s+(.+)/i);
+    if (cdMatch) {
+      const partial = cdMatch[1].replace(/^\//, '').toLowerCase();
+      if (partial.length > 0) {
+        const match = allPages.find(p => p.name.toLowerCase().startsWith(partial) && p.name.toLowerCase() !== partial);
+        if (match) {
+          setGhost(match.name.slice(partial.length));
+          return;
+        }
+      }
+    }
+    setGhost('');
+  }, []);
+
+  const handleInputChange = (value: string) => {
+    setInput(value);
+    setHistoryIndex(-1);
+    updateGhost(value);
+  };
+
+  const resolveTarget = (arg: string): { href: string; name: string } | null => {
+    const clean = arg.replace(/^\//, '').replace(/\/$/, '').toLowerCase();
+    return allPages.find(p => p.name.toLowerCase() === clean) || null;
+  };
+
+  const executeCommand = (cmd: string) => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return;
+
+    // Save to command history
+    setCmdHistory(prev => [trimmed, ...prev]);
+    setHistoryIndex(-1);
+
+    // Add command line to visual history
+    setHistory(prev => [...prev, { type: 'command', text: trimmed }]);
+
+    const parts = trimmed.split(/\s+/);
+    const command = parts[0].toLowerCase();
+    const args = parts.slice(1).join(' ');
+
+    if (command === 'cd') {
+      if (!args || args === '~' || args === '/' || args === 'home') {
+        setHistory(prev => [...prev, { type: 'output', text: 'Navigating to ~/' }]);
+        setTimeout(() => router.push('/'), 400);
+      } else if (args === '..') {
+        setHistory(prev => [...prev, { type: 'output', text: 'Navigating to ~/' }]);
+        setTimeout(() => router.push('/'), 400);
+      } else {
+        const target = resolveTarget(args);
+        if (target) {
+          setHistory(prev => [...prev, { type: 'output', text: `Navigating to ${target.href}` }]);
+          setTimeout(() => router.push(target.href), 400);
+        } else {
+          setHistory(prev => [...prev, { type: 'error', text: `cd: no such directory: ${args}` }]);
+        }
+      }
+    } else if (command === 'ls') {
+      const names = allPages.map(p => p.name);
+      setHistory(prev => [...prev, { type: 'output', text: names.join('  ') }]);
+    } else if (command === 'tree') {
+      setHistory(prev => [...prev, { type: 'output', text: '__tree__' }]);
+    } else if (command === 'help') {
+      setHistory(prev => [...prev, {
+        type: 'output',
+        text: 'Available commands:\n  cd <dir>     Navigate to a page (tab to autocomplete)\n  cd ..        Go back home\n  cd ~         Go home\n  ls           List all pages\n  tree         Show the sitemap tree\n  clear        Clear the terminal\n  help         Show this message'
+      }]);
+    } else if (command === 'clear') {
+      setHistory([]);
+    } else {
+      setHistory(prev => [...prev, { type: 'error', text: `command not found: ${command}. Type 'help' for available commands.` }]);
+    }
+
+    setInput('');
+    setGhost('');
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      if (ghost) {
+        const newValue = input + ghost;
+        setInput(newValue);
+        setGhost('');
+      }
+    } else if (e.key === 'Enter') {
+      executeCommand(input);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (cmdHistory.length > 0) {
+        const newIndex = Math.min(historyIndex + 1, cmdHistory.length - 1);
+        setHistoryIndex(newIndex);
+        const cmd = cmdHistory[newIndex];
+        setInput(cmd);
+        updateGhost(cmd);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        const newIndex = historyIndex - 1;
+        setHistoryIndex(newIndex);
+        const cmd = cmdHistory[newIndex];
+        setInput(cmd);
+        updateGhost(cmd);
+      } else {
+        setHistoryIndex(-1);
+        setInput('');
+        setGhost('');
+      }
+    } else if (e.key === 'l' && e.ctrlKey) {
+      e.preventDefault();
+      setHistory([]);
+    }
+  };
+
   return (
     <MantineProvider forceColorScheme="dark">
       <div className="min-h-screen flex items-start md:items-center justify-center p-4 py-8 md:p-8">
@@ -72,7 +240,11 @@ export default function GoonHub() {
           </Link>
 
           {/* Terminal window */}
-          <div className="rounded-xl overflow-hidden border border-white/10" style={{ backgroundColor: '#1a1b26' }}>
+          <div
+            className="rounded-xl overflow-hidden border border-white/10 cursor-text"
+            style={{ backgroundColor: '#1a1b26' }}
+            onClick={() => inputRef.current?.focus()}
+          >
 
             {/* Title bar */}
             <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5" style={{ backgroundColor: '#16161e' }}>
@@ -83,37 +255,81 @@ export default function GoonHub() {
             </div>
 
             {/* Terminal body */}
-            <div className="p-4 md:p-6 lg:p-8 font-mono text-sm md:text-base lg:text-lg">
+            <div className="p-4 md:p-6 lg:p-8 font-mono text-sm md:text-base lg:text-lg max-h-[70vh] overflow-y-auto">
 
-              {/* Prompt + command */}
+              {/* Initial tree output */}
               <div className="mb-1">
-                <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
-                <span style={{ color: '#7dcfff' }}>:</span>
-                <span style={{ color: '#c0caf5' }}>~</span>
-                <span style={{ color: '#7dcfff' }}>$ </span>
+                <Prompt />
                 <span style={{ color: '#c0caf5' }}>tree --sitemap</span>
               </div>
-
-              {/* Output header */}
               <div className="mt-3 mb-1 text-[#565f89]">.</div>
-
-              {/* Tree */}
               <TreeLines entries={siteTree} />
-
-              {/* Summary line */}
-              <div className="mt-3 text-[#565f89] text-xs md:text-sm">
+              <div className="mt-3 mb-1 text-[#565f89] text-xs md:text-sm">
                 {siteTree.length} directories, {siteTree.reduce((acc, e) => acc + (e.children?.length || 0), 0)} subdirectories
               </div>
 
-              {/* Next prompt (idle cursor) */}
-              <div className="mt-4">
-                <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
-                <span style={{ color: '#7dcfff' }}>:</span>
-                <span style={{ color: '#c0caf5' }}>~</span>
-                <span style={{ color: '#7dcfff' }}>$ </span>
-                <span className="inline-block w-2 h-4 bg-[#c0caf5] animate-pulse align-middle" />
+              {/* Command history */}
+              {history.map((line, i) => (
+                <div key={i}>
+                  {line.type === 'command' ? (
+                    <div className="mt-3">
+                      <Prompt />
+                      <span style={{ color: '#c0caf5' }}>{line.text}</span>
+                    </div>
+                  ) : line.type === 'error' ? (
+                    <div style={{ color: '#f7768e' }} className="whitespace-pre-wrap">{line.text}</div>
+                  ) : line.text === '__tree__' ? (
+                    <div className="mt-1">
+                      <div className="mb-1 text-[#565f89]">.</div>
+                      <TreeLines entries={siteTree} />
+                      <div className="mt-1 text-[#565f89] text-xs md:text-sm">
+                        {siteTree.length} directories, {siteTree.reduce((acc, e) => acc + (e.children?.length || 0), 0)} subdirectories
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ color: '#9ece6a' }} className="whitespace-pre-wrap">{line.text}</div>
+                  )}
+                </div>
+              ))}
+
+              {/* Active input line */}
+              <div className="mt-3 flex items-center">
+                <Prompt />
+                <div className="relative flex-1">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={input}
+                    onChange={e => handleInputChange(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    className="bg-transparent outline-none border-none w-full caret-[#c0caf5]"
+                    style={{ color: '#c0caf5', fontFamily: 'inherit', fontSize: 'inherit' }}
+                    spellCheck={false}
+                    autoCapitalize="off"
+                    autoCorrect="off"
+                    autoComplete="off"
+                  />
+                  {/* Ghost autocomplete overlay */}
+                  {ghost && (
+                    <div
+                      className="absolute top-0 left-0 pointer-events-none whitespace-pre"
+                      style={{ color: '#565f89', fontFamily: 'inherit', fontSize: 'inherit' }}
+                      aria-hidden
+                    >
+                      <span className="invisible">{input}</span>
+                      <span>{ghost}</span>
+                    </div>
+                  )}
+                </div>
               </div>
+
+              <div ref={bottomRef} />
             </div>
+          </div>
+
+          {/* Hint */}
+          <div className="mt-3 text-center text-xs font-mono text-white/20">
+            type <span className="text-white/35">help</span> for commands · <span className="text-white/35">tab</span> to autocomplete
           </div>
 
         </div>
