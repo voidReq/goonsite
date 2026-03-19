@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --goon-bg: #0a0a0a;
+  --goon-bg: #0f0f14;
   --goon-surface: #1a1b26;
   --goon-surface-hover: #1e2030;
   --goon-surface-bright: #24283b;
@@ -17,7 +17,7 @@
   --goon-blue: #7aa2f7;
   --goon-text: #c0caf5;
   --goon-text-dim: #565f89;
-  --background: #0a0a0a;
+  --background: #0f0f14;
   --foreground: #ededed;
   color-scheme: dark;
 }

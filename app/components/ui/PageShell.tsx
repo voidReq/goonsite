@@ -64,7 +64,7 @@ export default function PageShell({ children, maxWidth = 'lg', noPadding = false
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className={noPadding ? '' : `${maxWidthClass} mx-auto px-4 md:px-6 pb-16`}
+        className={noPadding ? 'min-h-[calc(100vh-3.5rem)]' : `${maxWidthClass} mx-auto px-4 md:px-6 pb-16 min-h-[calc(100vh-3.5rem)]`}
       >
         {children}
       </motion.div>

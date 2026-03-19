@@ -62,7 +62,7 @@ const COLORS: Record<string, string> = {
   red: "#f7768e",
   green: "#9ece6a",
   amber: "#e0af68",
-  bg: "#0a0a0a",
+  bg: "#0f0f14",
   surface: "#1a1b26",
   surfaceLight: "#24283b",
   muted: "#565f89",
@@ -953,7 +953,7 @@ export default function HttpHeaderAnalyzer() {
                 leftSection={<IconAnalyze size={16} />}
                 style={{
                   backgroundColor: COLORS.purple,
-                  color: "#0a0a0a",
+                  color: "#0f0f14",
                   fontWeight: 700,
                   "&:hover": { backgroundColor: "#a98de0" },
                 }}

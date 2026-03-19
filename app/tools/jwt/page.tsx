@@ -51,7 +51,7 @@ const CYAN = "#7dcfff";
 const RED = "#f7768e";
 const GREEN = "#9ece6a";
 const AMBER = "#e0af68";
-const BG = "#0a0a0a";
+const BG = "#0f0f14";
 const SURFACE = "#141414";
 const SURFACE2 = "#1a1a2e";
 const BORDER = "#222240";
@@ -696,7 +696,7 @@ function DebuggerTab() {
                     style={{
                       cursor: "pointer",
                       borderColor: p.color,
-                      color: hoveredPart === p.idx ? "#0a0a0a" : p.color,
+                      color: hoveredPart === p.idx ? "#0f0f14" : p.color,
                       backgroundColor: hoveredPart === p.idx ? p.color : "transparent",
                       transition: "all 0.15s",
                     }}

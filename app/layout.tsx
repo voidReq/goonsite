@@ -59,7 +59,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${GeistSans.className} dark`} style={{ colorScheme: 'dark', backgroundColor: '#0a0a0a' }} suppressHydrationWarning>
+    <html lang="en" className={`${GeistSans.className} dark`} style={{ colorScheme: 'dark', backgroundColor: '#0f0f14' }} suppressHydrationWarning>
       <head>
         <ColorSchemeScript defaultColorScheme="dark" />
         <script

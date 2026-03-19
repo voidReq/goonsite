@@ -224,7 +224,7 @@ function MessageCard({
           size={isPinned ? 'md' : 'sm'}
           fw={isPinned ? 600 : 400}
           style={{
-            color: isPinned ? (isHovered ? '#422006' : '#fde68a') : (isHovered ? '#0a0a0a' : '#e2e8f0'),
+            color: isPinned ? (isHovered ? '#422006' : '#fde68a') : (isHovered ? '#0f0f14' : '#e2e8f0'),
             lineHeight: 1.6,
             marginBottom: '12px',
             wordBreak: 'break-word',
@@ -416,7 +416,7 @@ export default function MessageBoardPage() {
       <div
         style={{
           minHeight: 'calc(100vh - 3.5rem)',
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.08) 0%, #0a0a0a 70%)',
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.08) 0%, #0f0f14 70%)',
           position: 'relative',
           overflow: 'hidden',
         }}

@@ -423,7 +423,7 @@ function guessDecoding(input: string): { algo: string; label: string } | null {
 // Styles
 // ---------------------------------------------------------------------------
 const COLORS = {
-  bg: "#0a0a0a",
+  bg: "#0f0f14",
   surface: "#141418",
   surfaceHover: "#1a1a20",
   border: "#2a2a35",
