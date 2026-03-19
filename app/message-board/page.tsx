@@ -406,7 +406,7 @@ export default function MessageBoardPage() {
     const offset = cardsPerPage - 1 + (page - 1) * cardsPerPage;
     return descending.slice(offset, offset + cardsPerPage);
   }, [messages, pinned, descending, page, isMobile, cardsPerPage]);
-  const boardHeight = isMobile ? 'auto' : `${Math.max(230, Math.ceil(displayMessages.length / 3) * 230 + 40)}px`;
+  const boardHeight = isMobile ? 'auto' : `${Math.max(230, Math.ceil(displayMessages.length / 3) * 230 + 80)}px`;
 
   return (
     <MantineProvider forceColorScheme="dark">
@@ -494,7 +494,7 @@ export default function MessageBoardPage() {
             perspectiveOrigin: '50% 30%',
             maxWidth: isMobile ? '100%' : '1100px',
             margin: '0 auto',
-            padding: isMobile ? '0 16px' : '0 20px',
+            padding: isMobile ? '0 16px 40px' : '0 20px',
           }}
         >
           <div
