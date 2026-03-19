@@ -42,8 +42,10 @@ export default function AdminInsightsPage() {
   const [locations, setLocations] = useState<LocationStat[]>([]);
   const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
 
+  const MAX_ZOOM = 800;
+
   const handleZoomIn = () => {
-    if (position.zoom >= 100) return;
+    if (position.zoom >= MAX_ZOOM) return;
     setPosition((pos) => ({ ...pos, zoom: pos.zoom * 1.5 }));
   };
 
@@ -136,16 +138,52 @@ export default function AdminInsightsPage() {
   useEffect(() => {
     const el = mapRef.current;
     if (!el) return;
+
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       setPosition((pos) => {
         const factor = e.deltaY < 0 ? 1.2 : 1 / 1.2;
-        const newZoom = Math.min(100, Math.max(1, pos.zoom * factor));
+        const newZoom = Math.min(MAX_ZOOM, Math.max(1, pos.zoom * factor));
         return { ...pos, zoom: newZoom };
       });
     };
+
+    let lastPinchDist = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        lastPinchDist = Math.sqrt(dx * dx + dy * dy);
+      }
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (lastPinchDist > 0) {
+          const scale = dist / lastPinchDist;
+          setPosition((pos) => ({
+            ...pos,
+            zoom: Math.min(MAX_ZOOM, Math.max(1, pos.zoom * scale)),
+          }));
+        }
+        lastPinchDist = dist;
+      }
+    };
+    const onTouchEnd = () => { lastPinchDist = 0; };
+
     el.addEventListener('wheel', onWheel, { passive: false });
-    return () => el.removeEventListener('wheel', onWheel);
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd);
+    return () => {
+      el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+    };
   }, []);
 
   if (!authed) {
@@ -257,7 +295,20 @@ export default function AdminInsightsPage() {
                         return (
                           <Marker key={i} coordinates={[loc.lng, loc.lat]}>
                             <Tooltip label={tooltipLabel} withArrow position="top">
-                              <circle r={radius} fill="#7c3aed" fillOpacity={0.7} stroke="#fff" strokeWidth={0.5 / position.zoom} style={{ cursor: 'pointer' }} />
+                              <circle
+                                r={radius}
+                                fill="#7c3aed"
+                                fillOpacity={0.7}
+                                stroke="#fff"
+                                strokeWidth={0.5 / position.zoom}
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => {
+                                  setPosition((pos) => ({
+                                    coordinates: [loc.lng, loc.lat],
+                                    zoom: Math.min(MAX_ZOOM, pos.zoom * 3),
+                                  }));
+                                }}
+                              />
                             </Tooltip>
                           </Marker>
                         );
