@@ -65,7 +65,7 @@ export default function ProjectsIndexPage() {
             </h1>
           </div>
           <p className="text-sm font-mono" style={{ color: '#565f89' }}>
-            Cybersecurity tools, IoT exploits, and vulnerability disclosures
+            Cybersecurity tools, IoT smartgrids, and vulnerability disclosures
           </p>
         </motion.div>
 
