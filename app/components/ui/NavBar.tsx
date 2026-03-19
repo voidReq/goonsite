@@ -234,6 +234,7 @@ export default function NavBar() {
                 backgroundColor: 'rgba(26, 27, 38, 0.98)',
                 backdropFilter: 'blur(20px)',
                 borderLeft: '1px solid rgba(255,255,255,0.06)',
+                paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))',
               }}
             >
               <button
