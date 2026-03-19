@@ -189,7 +189,9 @@ function MessageCard({
       >
         <div
           style={{
-            background: PASTEL_COLORS[colorIdx],
+            background: isHovered
+              ? PASTEL_COLORS[colorIdx].replace('0.15)', '0.95)')
+              : PASTEL_COLORS[colorIdx],
             border: `1px solid ${BORDER_COLORS[colorIdx]}`,
             borderRadius: '12px',
             padding: '20px',
@@ -197,7 +199,7 @@ function MessageCard({
             boxShadow: isHovered
               ? `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${BORDER_COLORS[colorIdx]}`
               : '0 8px 32px rgba(0,0,0,0.2)',
-            transition: 'box-shadow 0.3s ease',
+            transition: 'box-shadow 0.3s ease, background 0.3s ease',
           }}
         >
         <Text
