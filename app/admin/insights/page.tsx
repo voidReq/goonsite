@@ -96,10 +96,40 @@ export default function AdminInsightsPage() {
     return [...locations].sort((a, b) => b.totalVisits - a.totalVisits).slice(0, 10);
   }, [locations]);
 
-  // Find max visits for circle scaling
-  const maxVisits = useMemo(() => {
-    return Math.max(...locations.map(l => l.totalVisits), 1);
-  }, [locations]);
+  // Cluster nearby locations based on zoom level
+  const clusteredLocations = useMemo(() => {
+    // Distance threshold in degrees — shrinks as zoom increases
+    const threshold = 15 / position.zoom;
+    const used = new Array(locations.length).fill(false);
+    const clusters: LocationStat[] = [];
+
+    for (let i = 0; i < locations.length; i++) {
+      if (used[i]) continue;
+      used[i] = true;
+
+      const group = [locations[i]];
+      for (let j = i + 1; j < locations.length; j++) {
+        if (used[j]) continue;
+        const dLat = locations[i].lat - locations[j].lat;
+        const dLng = locations[i].lng - locations[j].lng;
+        if (Math.sqrt(dLat * dLat + dLng * dLng) < threshold) {
+          used[j] = true;
+          group.push(locations[j]);
+        }
+      }
+
+      // Merge group into a single cluster
+      const totalVisits = group.reduce((s, l) => s + l.totalVisits, 0);
+      const uniqueVisitors = group.reduce((s, l) => s + l.uniqueVisitors, 0);
+      const avgLat = group.reduce((s, l) => s + l.lat, 0) / group.length;
+      const avgLng = group.reduce((s, l) => s + l.lng, 0) / group.length;
+      const label = group.length === 1
+        ? `${group[0].city}, ${group[0].country}`
+        : `${group.length} locations`;
+      clusters.push({ lat: avgLat, lng: avgLng, city: label, country: '', totalVisits, uniqueVisitors });
+    }
+    return clusters;
+  }, [locations, position.zoom]);
 
   if (!authed) {
     return (
@@ -200,14 +230,15 @@ export default function AdminInsightsPage() {
                           ))
                         }
                       </Geographies>
-                      {locations.map((loc, i) => {
-                        const baseRadius = Math.max(4, Math.min(20, (loc.totalVisits / maxVisits) * 20));
-                        // scale down the dot as user zooms in to make overlapping dots clearer
-                        const radius = baseRadius / (position.zoom * 0.7);
+                      {clusteredLocations.map((loc, i) => {
+                        const radius = 4 / position.zoom;
+                        const tooltipLabel = loc.country
+                          ? `${loc.city}, ${loc.country} — ${loc.totalVisits} visits (${loc.uniqueVisitors} unique)`
+                          : `${loc.city} — ${loc.totalVisits} visits (${loc.uniqueVisitors} unique)`;
                         return (
                           <Marker key={i} coordinates={[loc.lng, loc.lat]}>
-                            <Tooltip label={`${loc.city}, ${loc.country} - ${loc.totalVisits} visits (${loc.uniqueVisitors} unique)`} withArrow position="top">
-                              <circle r={radius} fill="#7c3aed" fillOpacity={0.7} stroke="#fff" strokeWidth={1 / position.zoom} style={{ cursor: 'pointer', transition: 'all 0.3s ease' }} />
+                            <Tooltip label={tooltipLabel} withArrow position="top">
+                              <circle r={radius} fill="#7c3aed" fillOpacity={0.8} stroke="#fff" strokeWidth={0.5 / position.zoom} style={{ cursor: 'pointer' }} />
                             </Tooltip>
                           </Marker>
                         );
