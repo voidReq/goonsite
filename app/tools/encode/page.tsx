@@ -370,6 +370,64 @@ function identifyHash(input: string): HashMatch[] {
 }
 
 // ---------------------------------------------------------------------------
+// Guess encoding
+// ---------------------------------------------------------------------------
+function guessEncoding(input: string): { op: EncodingOp; label: string } | null {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+
+  // Base64: valid chars, length divisible by 4 (or close with padding), and decodes cleanly
+  if (/^[A-Za-z0-9+/=\n\r]+$/.test(trimmed) && trimmed.length >= 4) {
+    const stripped = trimmed.replace(/\s/g, '');
+    try {
+      const decoded = atob(stripped);
+      // Check if result is mostly printable ASCII — strong signal it's base64
+      const printable = decoded.split('').filter(c => c.charCodeAt(0) >= 32 && c.charCodeAt(0) < 127).length;
+      if (printable / decoded.length > 0.8) {
+        return { op: 'base64-decode', label: 'Looks like Base64 → decoding' };
+      }
+    } catch { /* not base64 */ }
+  }
+
+  // URL encoded: has %XX patterns
+  if (/%[0-9A-Fa-f]{2}/.test(trimmed)) {
+    return { op: 'url-decode', label: 'Looks like URL encoding → decoding' };
+  }
+
+  // HTML entities: has &...; patterns
+  if (/&(#\d+|#x[0-9a-fA-F]+|[a-zA-Z]+);/.test(trimmed)) {
+    return { op: 'html-decode', label: 'Looks like HTML entities → decoding' };
+  }
+
+  // Unicode escapes: has \uXXXX patterns
+  if (/\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}/.test(trimmed)) {
+    return { op: 'unicode-unescape', label: 'Looks like Unicode escapes → unescaping' };
+  }
+
+  // Hex string: even-length, only hex chars, long enough to be encoded text
+  if (/^[0-9a-fA-F]+$/.test(trimmed) && trimmed.length >= 4 && trimmed.length % 2 === 0) {
+    try {
+      const bytes = [];
+      for (let i = 0; i < trimmed.length; i += 2) {
+        bytes.push(parseInt(trimmed.substring(i, i + 2), 16));
+      }
+      const decoded = new TextDecoder().decode(new Uint8Array(bytes));
+      const printable = decoded.split('').filter(c => c.charCodeAt(0) >= 32 && c.charCodeAt(0) < 127).length;
+      if (printable / decoded.length > 0.8) {
+        return { op: 'hex-decode', label: 'Looks like hex-encoded text → decoding' };
+      }
+    } catch { /* not hex */ }
+  }
+
+  // Plain text with special chars → suggest base64 encode
+  if (/[^\x20-\x7E]/.test(trimmed) || trimmed.includes('\n')) {
+    return { op: 'base64-encode', label: 'Plain text with special chars → Base64 encoding' };
+  }
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
 // Styles
 // ---------------------------------------------------------------------------
 const COLORS = {
@@ -400,6 +458,7 @@ export default function EncodePage() {
   const [encInput, setEncInput] = useState("");
   const [encOutput, setEncOutput] = useState("");
   const [encOp, setEncOp] = useState<EncodingOp>("base64-encode");
+  const [guessMsg, setGuessMsg] = useState<string | null>(null);
 
   // -- Hash state --
   const [hashInput, setHashInput] = useState("");
@@ -561,22 +620,49 @@ export default function EncodePage() {
             {/* ===================== TAB 1: Encode/Decode ===================== */}
             <Tabs.Panel value="encode">
               <Stack gap="md">
-                {/* Operation selector */}
-                <Select
-                  label="Operation"
-                  data={opOptions}
-                  value={encOp}
-                  onChange={(v) => v && setEncOp(v as EncodingOp)}
-                  allowDeselect={false}
-                  styles={{
-                    label: { color: COLORS.textSecondary, marginBottom: 4 },
-                    input: {
-                      backgroundColor: COLORS.surface,
-                      borderColor: COLORS.border,
-                      color: COLORS.textPrimary,
-                    },
-                  }}
-                />
+                {/* Operation selector + Guess */}
+                <Group gap="sm" align="flex-end">
+                  <Select
+                    label="Operation"
+                    data={opOptions}
+                    value={encOp}
+                    onChange={(v) => { v && setEncOp(v as EncodingOp); setGuessMsg(null); }}
+                    allowDeselect={false}
+                    style={{ flex: 1 }}
+                    styles={{
+                      label: { color: COLORS.textSecondary, marginBottom: 4 },
+                      input: {
+                        backgroundColor: COLORS.surface,
+                        borderColor: COLORS.border,
+                        color: COLORS.textPrimary,
+                      },
+                    }}
+                  />
+                  <Tooltip label="Auto-detect encoding and decode" withArrow>
+                    <Button
+                      variant="light"
+                      color="violet"
+                      size="sm"
+                      leftSection={<IconSearch size={14} />}
+                      onClick={() => {
+                        const guess = guessEncoding(encInput);
+                        if (guess) {
+                          setEncOp(guess.op);
+                          setGuessMsg(guess.label);
+                        } else {
+                          setGuessMsg(encInput.trim() ? "Can\u2019t guess \u2014 try selecting manually" : "Enter some text first");
+                        }
+                      }}
+                    >
+                      Guess
+                    </Button>
+                  </Tooltip>
+                </Group>
+                {guessMsg && (
+                  <Text size="xs" style={{ color: guessMsg.startsWith("Can") || guessMsg.startsWith("Enter") ? COLORS.amber : COLORS.green }}>
+                    {guessMsg}
+                  </Text>
+                )}
 
                 {/* Input */}
                 <Textarea
