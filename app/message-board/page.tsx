@@ -207,6 +207,14 @@ function MessageCard({
             lineHeight: 1.6,
             marginBottom: '12px',
             wordBreak: 'break-word',
+            ...(isHovered
+              ? {}
+              : {
+                  display: '-webkit-box',
+                  WebkitLineClamp: 5,
+                  WebkitBoxOrient: 'vertical' as const,
+                  overflow: 'hidden',
+                }),
           }}
         >
           &ldquo;{message.text}&rdquo;
@@ -345,8 +353,35 @@ export default function MessageBoardPage() {
   };
 
   const cardsPerPage = 9; // 3 rows of 3
-  const totalPages = Math.ceil(messages.length / cardsPerPage);
-  const displayMessages = isMobile ? messages : messages.slice(page * cardsPerPage, (page + 1) * cardsPerPage);
+
+  // Pin the earliest message, then show the rest newest-first
+  const { pinned, descending } = useMemo(() => {
+    if (messages.length === 0) return { pinned: null, descending: [] };
+    const sorted = [...messages].sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
+    return { pinned: sorted[0], descending: sorted.slice(1).reverse() };
+  }, [messages]);
+
+  // Page 0 has pinned + (cardsPerPage-1) items; remaining pages have cardsPerPage items each
+  const totalPages = messages.length === 0
+    ? 0
+    : 1 + Math.ceil(Math.max(0, descending.length - (cardsPerPage - 1)) / cardsPerPage);
+
+  const displayMessages = useMemo(() => {
+    if (messages.length === 0) return [];
+    if (isMobile) {
+      return pinned ? [pinned, ...descending] : descending;
+    }
+    // Page 0: pinned + first (cardsPerPage - 1) descending
+    // Page N: next cardsPerPage descending
+    if (page === 0) {
+      const rest = descending.slice(0, cardsPerPage - 1);
+      return pinned ? [pinned, ...rest] : rest;
+    }
+    const offset = cardsPerPage - 1 + (page - 1) * cardsPerPage;
+    return descending.slice(offset, offset + cardsPerPage);
+  }, [messages, pinned, descending, page, isMobile, cardsPerPage]);
   const boardHeight = isMobile ? 'auto' : `${Math.max(230, Math.ceil(displayMessages.length / 3) * 230 + 40)}px`;
 
   return (
