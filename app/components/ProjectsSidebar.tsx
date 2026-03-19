@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import type { ProjectTreeItem } from '@/lib/projects';
-import { IconChevronRight, IconChevronDown, IconFile, IconFolder, IconFolderOpen, IconMenu2, IconX } from '@tabler/icons-react';
+import { IconChevronRight, IconChevronDown, IconFile, IconFolder, IconFolderOpen, IconLayoutSidebar, IconX } from '@tabler/icons-react';
 
 function TreeNode({
   item,
@@ -93,7 +93,7 @@ export default function ProjectsSidebar({ tree }: { tree: ProjectTreeItem[] }) {
         }}
         aria-label="Toggle navigation"
       >
-        {isOpen ? <IconX size={18} /> : <IconMenu2 size={18} />}
+        {isOpen ? <IconX size={18} /> : <IconLayoutSidebar size={18} />}
       </button>
 
       {/* Overlay for mobile */}
