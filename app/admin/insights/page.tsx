@@ -354,6 +354,8 @@ export default function AdminInsightsPage() {
                     </defs>
                     <ZoomableGroup
                       zoom={position.zoom}
+                      minZoom={1}
+                      maxZoom={MAX_ZOOM}
                       center={position.coordinates as [number, number]}
                       onMoveEnd={handleMoveEnd}
                     >
