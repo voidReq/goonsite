@@ -327,6 +327,7 @@ function WalkthroughTab({ onGoToDebugger }: { onGoToDebugger: () => void }) {
   const [noneAttackOn, setNoneAttackOn] = useState(false);
   const [confusionStep, setConfusionStep] = useState(0);
   const [expBypassOn, setExpBypassOn] = useState(false);
+  const [structureHover, setStructureHover] = useState(-1);
 
   const current = WALKTHROUGH_STEPS[step];
   const isLast = step === WALKTHROUGH_STEPS.length - 1;
@@ -412,17 +413,42 @@ function WalkthroughTab({ onGoToDebugger }: { onGoToDebugger: () => void }) {
       {/* Visual area */}
       {current.visual === "structure" && (
         <Paper p="lg" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}>
-          <TokenVisual parts={demoParts} highlightPart={-1} labels />
+          <TokenVisual parts={demoParts} highlightPart={structureHover} labels />
           <Divider my="md" color={BORDER} />
-          <Group gap="lg" justify="center">
-            {[{ label: "Header", color: PURPLE, desc: "Algorithm & type" }, { label: "Payload", color: CYAN, desc: "Claims & data" }, { label: "Signature", color: AMBER, desc: "Integrity check" }].map((p) => (
-              <div key={p.label} style={{ textAlign: "center" }}>
+          <Group gap="md" justify="center">
+            {[{ label: "Header", color: PURPLE, desc: "Algorithm & type", idx: 0 }, { label: "Payload", color: CYAN, desc: "Claims & data", idx: 1 }, { label: "Signature", color: AMBER, desc: "Integrity check", idx: 2 }].map((p) => (
+              <div
+                key={p.label}
+                style={{
+                  textAlign: "center",
+                  cursor: "pointer",
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  border: `1px solid ${structureHover === p.idx ? p.color : "transparent"}`,
+                  backgroundColor: structureHover === p.idx ? `${p.color}15` : "transparent",
+                  transition: "all 0.15s",
+                }}
+                onMouseEnter={() => setStructureHover(p.idx)}
+                onMouseLeave={() => setStructureHover(-1)}
+                onClick={() => setStructureHover(structureHover === p.idx ? -1 : p.idx)}
+              >
                 <div style={{ width: 12, height: 12, borderRadius: "50%", backgroundColor: p.color, margin: "0 auto 6px" }} />
                 <Text size="sm" fw={600} style={{ color: p.color }}>{p.label}</Text>
                 <Text size="xs" c="dimmed">{p.desc}</Text>
               </div>
             ))}
           </Group>
+          {structureHover >= 0 && (
+            <>
+              <Divider my="sm" color={BORDER} />
+              <Text size="xs" fw={600} mb={4} style={{ color: structureHover === 0 ? PURPLE : structureHover === 1 ? CYAN : AMBER }}>
+                {structureHover === 0 ? "Decoded Header:" : structureHover === 1 ? "Decoded Payload:" : "Raw Signature (base64url):"}
+              </Text>
+              <Code block style={{ backgroundColor: BG, border: `1px solid ${BORDER}`, padding: "0.5rem", borderRadius: 6, fontSize: 12, color: structureHover === 0 ? PURPLE : structureHover === 1 ? CYAN : AMBER }}>
+                {structureHover === 2 ? demoParts[2] : JSON.stringify(structureHover === 0 ? demoHeader : demoPayload, null, 2)}
+              </Code>
+            </>
+          )}
         </Paper>
       )}
 
