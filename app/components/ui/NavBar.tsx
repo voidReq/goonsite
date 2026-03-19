@@ -47,15 +47,21 @@ export default function NavBar() {
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-        style={{
-          backgroundColor: scrolled ? 'rgba(15, 15, 20, 0.95)' : 'rgba(15, 15, 20, 0.85)',
-          backdropFilter: 'blur(16px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(16px) saturate(180%)',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
-        }}
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{ backgroundColor: 'transparent' }}
       >
-        <div className="max-w-6xl mx-auto px-4 md:px-6">
+        {/* Visual backdrop — absolute so Safari doesn't sample it for toolbar tinting */}
+        <div
+          className="absolute inset-0 transition-all duration-300"
+          style={{
+            backgroundColor: scrolled ? 'rgba(15, 15, 20, 0.95)' : 'rgba(15, 15, 20, 0.85)',
+            backdropFilter: 'blur(16px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+            borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+          }}
+          aria-hidden="true"
+        />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-6">
           <div className="flex items-center justify-between h-14">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group shrink-0">
@@ -222,10 +228,7 @@ export default function NavBar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-40 md:hidden"
-              style={{
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                marginBottom: 'calc(-1 * env(safe-area-inset-bottom, 0px))',
-              }}
+              style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
@@ -235,11 +238,9 @@ export default function NavBar() {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               className="fixed top-0 right-0 bottom-0 z-50 w-72 p-6 md:hidden overflow-y-auto"
               style={{
-                backgroundColor: 'rgba(26, 27, 38, 0.98)',
-                backdropFilter: 'blur(20px)',
+                backgroundColor: '#1a1b26',
                 borderLeft: '1px solid rgba(255,255,255,0.06)',
                 paddingBottom: 'calc(3rem + env(safe-area-inset-bottom, 0px))',
-                marginBottom: 'calc(-1 * env(safe-area-inset-bottom, 0px))',
               }}
             >
               <button
