@@ -12,8 +12,8 @@ const SECTIONS = [
     icon: IconShieldLock,
     color: '#f7768e',
     items: [
-      { name: 'discord-remote-access', desc: 'Discord-based remote access tool', lang: 'C', href: '/projects/security/discord-remote-access' },
-      { name: 't-watch-evil-portal', desc: 'Evil portal for LILYGO T-Watch S3', lang: 'HTML/C++', href: '/projects/security/t-watch-evil-portal' },
+      { name: 'discord-remote-access', desc: 'Discord-based remote access tool', lang: 'C', href: '/projects/projects/security/discord-remote-access' },
+      { name: 't-watch-evil-portal', desc: 'Evil portal for LILYGO T-Watch S3', lang: 'HTML/C++', href: '/projects/projects/security/t-watch-evil-portal' },
     ],
   },
   {
@@ -22,7 +22,7 @@ const SECTIONS = [
     color: '#7dcfff',
     items: [
       { name: 'revolutions', desc: '3D revolution surface visualizer', lang: 'Python', href: '/projects/other/revolutions' },
-      { name: 'smartgrid-iot', desc: 'Smart grid cybersecurity testbed', lang: 'C++', href: '/projects/other/smartgrid-iot' },
+      { name: 'smartgrid-iot', desc: 'Smart grid cybersecurity testbed', lang: 'C++', href: '/projects/projects/other/smartgrid-iot' },
     ],
   },
   {
@@ -30,7 +30,7 @@ const SECTIONS = [
     icon: IconBug,
     color: '#9ece6a',
     items: [
-      { name: 'march_5_2026', desc: 'Critical IDOR PII Exposure', lang: 'Writeup', href: '/projects/writeups/march_5_2026' },
+      { name: 'march_5_2026', desc: 'Critical IDOR PII Exposure', lang: 'Writeup', href: '/projects/writeups/critical-idor-pii-exposure' },
       { name: 'other-vulnerabilities', desc: 'Coming soon...', lang: '???', href: '#' },
     ],
   },
