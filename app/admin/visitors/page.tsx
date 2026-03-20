@@ -220,12 +220,13 @@ export default function AdminVisitorsPage() {
   if (!authed) {
     return (
       <MantineProvider forceColorScheme="dark">
-        <Container size="xs" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center' }}>
+        <Container size="xs" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Paper
             p="xl"
             radius="md"
             style={{
               width: '100%',
+              maxWidth: 400,
               backgroundColor: '#141414',
               border: '1px solid #2a2a2a',
             }}

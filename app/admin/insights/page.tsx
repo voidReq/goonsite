@@ -266,8 +266,8 @@ export default function AdminInsightsPage() {
   if (!authed) {
     return (
       <MantineProvider forceColorScheme="dark">
-        <Container size="xs" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center' }}>
-          <Paper p="xl" radius="md" style={{ width: '100%', backgroundColor: '#141414', border: '1px solid #2a2a2a' }}>
+        <Container size="xs" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Paper p="xl" radius="md" style={{ width: '100%', maxWidth: 400, backgroundColor: '#141414', border: '1px solid #2a2a2a' }}>
             <Stack gap="md" align="center">
               <IconLock size={48} style={{ color: '#7c3aed' }} />
               <Title order={3} style={{ color: '#ededed' }}>Insights</Title>
