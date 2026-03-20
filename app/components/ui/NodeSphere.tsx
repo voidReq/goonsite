@@ -260,7 +260,8 @@ function OrbitScene({
   const orbitQuat = useRef(new THREE.Quaternion());
   const velAxis = useRef(new THREE.Vector3(0, 1, 0));
   const velAngle = useRef(0);
-  const autoRotate = useRef(0.12);
+  const autoRotateSpeed = useRef(0.12);
+  const autoRotateAxis = useRef(new THREE.Vector3(0, 1, 0));
   const ORBIT_RADIUS = 8;
 
   useEffect(() => {
@@ -320,7 +321,11 @@ function OrbitScene({
         doClick(e);
       }
 
-      setTimeout(() => { autoRotate.current = 0.12; }, 1500);
+      // Resume auto-rotate in the direction the user was spinning
+      if (velAngle.current > 0.0001) {
+        autoRotateAxis.current.copy(velAxis.current);
+      }
+      setTimeout(() => { autoRotateSpeed.current = 0.12; }, 1500);
     };
 
     // Pointer down on canvas starts drag
@@ -329,7 +334,7 @@ function OrbitScene({
       totalDragDist.current = 0;
       prevMouse.current = { x: e.clientX, y: e.clientY };
       velAngle.current = 0;
-      autoRotate.current = 0;
+      autoRotateSpeed.current = 0;
       document.body.style.cursor = 'grabbing';
     };
 
@@ -415,16 +420,18 @@ function OrbitScene({
   }, [adjacency]);
 
   useFrame((_, delta) => {
-    if (autoRotate.current > 0) {
-      const autoQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), autoRotate.current * delta);
-      orbitQuat.current.premultiply(autoQ);
-    }
-
+    // Apply momentum first (decays toward zero)
     if (!orbiting.current && velAngle.current > 0.0001) {
       const momentumQ = new THREE.Quaternion().setFromAxisAngle(velAxis.current, velAngle.current);
       orbitQuat.current.premultiply(momentumQ);
       orbitQuat.current.normalize();
       velAngle.current *= 0.94;
+    }
+
+    // Auto-rotate along the last spin direction (kicks in after momentum fades)
+    if (autoRotateSpeed.current > 0) {
+      const autoQ = new THREE.Quaternion().setFromAxisAngle(autoRotateAxis.current, autoRotateSpeed.current * delta);
+      orbitQuat.current.premultiply(autoQ);
     }
 
     const basePos = new THREE.Vector3(0, 0, ORBIT_RADIUS);
