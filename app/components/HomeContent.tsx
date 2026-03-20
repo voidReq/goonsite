@@ -180,9 +180,12 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
             </motion.div>
           )}
 
+        </div>
+
+        {/* Notifications — below the grid so they don't overlap on mobile */}
+        <div className="relative z-10 pointer-events-auto mt-4" style={{ width: '100%', maxWidth: '810px' }}>
           {goodGooner && (
             <motion.div
-              className="col-span-2 md:col-span-3 pointer-events-auto"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -205,7 +208,6 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
 
           {notificationVisible && (
             <motion.div
-              className="col-span-2 md:col-span-3 pointer-events-auto"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -221,6 +223,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
             </motion.div>
           )}
         </div>
+      </div>
     </PageShell>
   );
 }
