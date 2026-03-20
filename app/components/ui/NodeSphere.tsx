@@ -321,11 +321,11 @@ function OrbitScene({
         doClick(e);
       }
 
-      // Resume auto-rotate in the direction the user was spinning
+      // Capture spin direction for auto-rotate to continue seamlessly
       if (velAngle.current > 0.0001) {
         autoRotateAxis.current.copy(velAxis.current);
       }
-      setTimeout(() => { autoRotateSpeed.current = 0.12; }, 1500);
+      autoRotateSpeed.current = 0.12;
     };
 
     // Pointer down on canvas starts drag
@@ -420,18 +420,24 @@ function OrbitScene({
   }, [adjacency]);
 
   useFrame((_, delta) => {
-    // Apply momentum first (decays toward zero)
-    if (!orbiting.current && velAngle.current > 0.0001) {
-      const momentumQ = new THREE.Quaternion().setFromAxisAngle(velAxis.current, velAngle.current);
-      orbitQuat.current.premultiply(momentumQ);
-      orbitQuat.current.normalize();
-      velAngle.current *= 0.94;
-    }
+    if (!orbiting.current) {
+      const cruiseSpeed = autoRotateSpeed.current * delta;
 
-    // Auto-rotate along the last spin direction (kicks in after momentum fades)
-    if (autoRotateSpeed.current > 0) {
-      const autoQ = new THREE.Quaternion().setFromAxisAngle(autoRotateAxis.current, autoRotateSpeed.current * delta);
-      orbitQuat.current.premultiply(autoQ);
+      if (velAngle.current > cruiseSpeed + 0.0001) {
+        // Still decelerating — apply momentum and decay toward cruise speed
+        const momentumQ = new THREE.Quaternion().setFromAxisAngle(velAxis.current, velAngle.current);
+        orbitQuat.current.premultiply(momentumQ);
+        orbitQuat.current.normalize();
+        // Decay toward cruise speed, not toward zero
+        velAngle.current = cruiseSpeed + (velAngle.current - cruiseSpeed) * 0.94;
+      } else {
+        // At or below cruise speed — just auto-rotate
+        velAngle.current = 0;
+        if (autoRotateSpeed.current > 0) {
+          const autoQ = new THREE.Quaternion().setFromAxisAngle(autoRotateAxis.current, cruiseSpeed);
+          orbitQuat.current.premultiply(autoQ);
+        }
+      }
     }
 
     const basePos = new THREE.Vector3(0, 0, ORBIT_RADIUS);
