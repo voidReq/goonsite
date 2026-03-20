@@ -179,41 +179,48 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
               </div>
             </motion.div>
           )}
+
+          {goodGooner && (
+            <motion.div
+              className="col-span-2 md:col-span-3 pointer-events-auto"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <Alert
+                variant="light"
+                color="grape"
+                icon={<IconInfoCircle />}
+                onClose={() => setGoodGooner(false)}
+                withCloseButton
+              >
+                <Text size="sm" mb={10}>Good, very very good.</Text>
+                <Link href="macbook" style={{ textDecoration: 'none' }}>
+                  <Button size="xs" variant="light" leftSection={<IconHeart size={12} />} rightSection={<IconArrowRight size={12} />}>
+                    Visit the goon center
+                  </Button>
+                </Link>
+              </Alert>
+            </motion.div>
+          )}
+
+          {notificationVisible && (
+            <motion.div
+              className="col-span-2 md:col-span-3 pointer-events-auto"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <Notification
+                title={
+                  <>
+                    <Text size="sm">Perhaps you should goon better.</Text>
+                    <Text style={{ color: '#f7768e' }} fw={700} size="sm">Do better.</Text>
+                  </>
+                }
+                onClose={() => setNotificationVisible(false)}
+              />
+            </motion.div>
+          )}
         </div>
-      </div>
-
-      {goodGooner && (
-        <Alert
-          variant="light"
-          color="grape"
-          className="pointer-events-auto"
-          style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1000, maxWidth: '280px', width: 'calc(100% - 32px)' }}
-          icon={<IconInfoCircle />}
-          onClose={() => setGoodGooner(false)}
-          withCloseButton
-        >
-          <Text size="sm" mb={10}>Good, very very good.</Text>
-          <Link href="macbook" style={{ textDecoration: 'none' }}>
-            <Button size="xs" variant="light" leftSection={<IconHeart size={12} />} rightSection={<IconArrowRight size={12} />}>
-              Visit the goon center
-            </Button>
-          </Link>
-        </Alert>
-      )}
-
-      {notificationVisible && (
-        <Notification
-          title={
-            <>
-              <Text size="sm">Perhaps you should goon better.</Text>
-              <Text style={{ color: '#f7768e' }} fw={700} size="sm">Do better.</Text>
-            </>
-          }
-          onClose={() => setNotificationVisible(false)}
-          className="pointer-events-auto"
-          style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1000, maxWidth: '320px', width: 'calc(100% - 32px)' }}
-        />
-      )}
     </PageShell>
   );
 }
