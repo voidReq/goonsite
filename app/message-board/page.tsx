@@ -199,8 +199,8 @@ function MessageCard({
         <div
           style={{
             background: isPinned
-              ? (isHovered ? 'rgba(234, 179, 8, 0.35)' : 'rgba(234, 179, 8, 0.15)')
-              : (isHovered ? `rgba(${msgColor.rgb}, 0.35)` : msgColor.bg),
+              ? (isHovered ? 'rgba(30, 25, 10, 0.98)' : 'rgba(234, 179, 8, 0.15)')
+              : (isHovered ? `rgba(20, 20, 30, 0.98)` : msgColor.bg),
             border: isPinned
               ? '1.5px solid rgba(234, 179, 8, 0.6)'
               : `1px solid ${msgColor.border}`,
