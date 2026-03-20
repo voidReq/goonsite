@@ -79,7 +79,7 @@ export default function RootLayout({
         <Providers>
           <VisitorBeacon />
           <NavBar />
-          <main className="pt-14">
+          <main className="pt-14" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
             {children}
           </main>
         </Providers>
