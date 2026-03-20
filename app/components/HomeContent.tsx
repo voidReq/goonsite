@@ -187,7 +187,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
           variant="light"
           color="grape"
           className="pointer-events-auto"
-          style={{ position: 'fixed', top: '5rem', bottom: 'auto', left: '50%', transform: 'translateX(-50%)', zIndex: 1000, maxWidth: '280px', width: 'calc(100% - 32px)' }}
+          style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1000, maxWidth: '280px', width: 'calc(100% - 32px)' }}
           icon={<IconInfoCircle />}
           onClose={() => setGoodGooner(false)}
           withCloseButton
@@ -211,7 +211,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
           }
           onClose={() => setNotificationVisible(false)}
           className="pointer-events-auto"
-          style={{ position: 'fixed', top: '5rem', bottom: 'auto', left: '50%', transform: 'translateX(-50%)', zIndex: 1000, maxWidth: '320px', width: 'calc(100% - 32px)' }}
+          style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1000, maxWidth: '320px', width: 'calc(100% - 32px)' }}
         />
       )}
     </PageShell>
