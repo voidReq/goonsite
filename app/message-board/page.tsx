@@ -160,8 +160,8 @@ function MessageCard({
 
   return (
     <div
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onPointerEnter={onMouseEnter}
+      onPointerLeave={onMouseLeave}
       style={{
         position: 'absolute',
         left: `calc(50% + ${xOffset}px - 150px)`,
@@ -169,8 +169,6 @@ function MessageCard({
         width: '300px',
         height: '250px',
         cursor: 'default',
-        zIndex: isHovered ? 100 : 1,
-        // Oversized invisible hit-area so 3D transforms don't cause flicker
       }}
     >
       <motion.div
@@ -179,15 +177,16 @@ function MessageCard({
           opacity: 1,
           y: 0,
           rotateX: 0,
-          z: isHovered ? 80 : zOffset,
+          z: isHovered ? 60 : zOffset,
           rotateY: isHovered ? 0 : rotation,
-          scale: isHovered ? 1.08 : 1,
+          scale: isHovered ? 1.05 : 1,
         }}
         transition={{
           delay: index * 0.08,
-          duration: 0.6,
+          duration: 0.5,
           type: 'spring',
-          stiffness: 100,
+          stiffness: 120,
+          damping: 15,
         }}
         style={{
           transformStyle: 'preserve-3d',
