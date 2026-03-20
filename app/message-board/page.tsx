@@ -197,26 +197,22 @@ function MessageCard({
         <div
           style={{
             background: isPinned
-              ? (isHovered ? 'rgba(234, 179, 8, 0.95)' : 'rgba(234, 179, 8, 0.15)')
-              : (isHovered ? `rgba(${msgColor.rgb}, 0.95)` : msgColor.bg),
+              ? (isHovered ? 'rgba(234, 179, 8, 0.25)' : 'rgba(234, 179, 8, 0.15)')
+              : (isHovered ? `rgba(${msgColor.rgb}, 0.25)` : msgColor.bg),
             border: isPinned
               ? '1.5px solid rgba(234, 179, 8, 0.6)'
-              : `1px solid ${msgColor.border}`,
+              : `1px solid ${isHovered ? msgColor.border : msgColor.border}`,
             borderRadius: '12px',
             padding: '20px',
             backdropFilter: 'blur(12px)',
-            boxShadow: isPinned
-              ? (isHovered
-                ? '0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(234, 179, 8, 0.4)'
-                : '0 8px 32px rgba(0,0,0,0.2), 0 0 16px rgba(234, 179, 8, 0.15)')
-              : (isHovered
-                ? `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${msgColor.border}`
-                : '0 8px 32px rgba(0,0,0,0.2)'),
+            boxShadow: isHovered
+              ? `0 12px 40px rgba(0,0,0,0.3), 0 0 20px ${isPinned ? 'rgba(234, 179, 8, 0.3)' : msgColor.border}`
+              : '0 8px 32px rgba(0,0,0,0.2)',
             transition: 'box-shadow 0.3s ease, background 0.3s ease',
           }}
         >
         {isPinned && (
-          <Text size="xs" fw={700} mb={6} style={{ color: isHovered ? '#422006' : '#eab308', letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
+          <Text size="xs" fw={700} mb={6} style={{ color: '#eab308', letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
             📌 First message
           </Text>
         )}
@@ -224,24 +220,20 @@ function MessageCard({
           size={isPinned ? 'md' : 'sm'}
           fw={isPinned ? 600 : 400}
           style={{
-            color: isPinned ? (isHovered ? '#422006' : '#fde68a') : (isHovered ? '#0f0f14' : '#e2e8f0'),
+            color: isPinned ? '#fde68a' : '#e2e8f0',
             lineHeight: 1.6,
             marginBottom: '12px',
             wordBreak: 'break-word',
-            ...(isHovered
-              ? {}
-              : {
-                  display: '-webkit-box',
-                  WebkitLineClamp: 5,
-                  WebkitBoxOrient: 'vertical' as const,
-                  overflow: 'hidden',
-                }),
+            display: '-webkit-box',
+            WebkitLineClamp: 5,
+            WebkitBoxOrient: 'vertical' as const,
+            overflow: 'hidden',
           }}
         >
           &ldquo;{message.text}&rdquo;
         </Text>
         <Group justify="space-between" align="center">
-          <Text size="xs" style={{ color: isPinned ? (isHovered ? '#5c3a0a' : '#d4a017') : (isHovered ? '#1e293b' : '#94a3b8'), fontStyle: 'italic' }}>
+          <Text size="xs" style={{ color: isPinned ? '#d4a017' : '#94a3b8', fontStyle: 'italic' }}>
             &mdash; {message.author}
           </Text>
           <Group gap={6} align="center">
@@ -250,7 +242,7 @@ function MessageCard({
                 {GAME_ICONS[message.game]}
               </span>
             )}
-            <Text size="xs" style={{ color: isPinned ? (isHovered ? '#5c3a0a' : '#b8860b') : (isHovered ? '#334155' : '#64748b') }}>
+            <Text size="xs" style={{ color: isPinned ? '#b8860b' : '#64748b' }}>
               {new Date(message.timestamp).toLocaleDateString()}
             </Text>
           </Group>
