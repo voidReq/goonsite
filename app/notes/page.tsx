@@ -135,7 +135,7 @@ export default function NotesIndexPage() {
           className="mt-8 text-center"
         >
           <p className="text-xs font-mono" style={{ color: '#565f89' }}>
-            <span style={{ color: '#bb9af7' }}>←</span> Select a note from the sidebar
+            <span style={{ color: '#bb9af7' }}></span> Select a note from the sidebar
           </p>
         </motion.div>
       </div>
