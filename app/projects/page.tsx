@@ -21,7 +21,7 @@ const SECTIONS = [
     icon: IconCpu,
     color: '#7dcfff',
     items: [
-      { name: 'revolutions', desc: '3D revolution surface visualizer', lang: 'Python', href: '/projects/other/revolutions' },
+      { name: 'revolutions', desc: '3D revolution surface visualizer', lang: 'Python', href: '/projects/projects/other/revolutions' },
       { name: 'smartgrid-iot', desc: 'Smart grid cybersecurity testbed', lang: 'C++', href: '/projects/projects/other/smartgrid-iot' },
     ],
   },
