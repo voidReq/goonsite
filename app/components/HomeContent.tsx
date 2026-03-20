@@ -16,7 +16,7 @@ const NodeSphere = dynamic(() => import('./ui/NodeSphere'), { ssr: false });
 const CODE_FRAGMENTS = [
   'nmap -sV -sC', 'SELECT * FROM', '0xDEADBEEF', 'chmod 777',
   'curl -X POST', 'ssh root@', '#!/bin/bash', 'import os',
-  'while True:', 'sudo rm -rf', '0x41414141', 'grep -r "flag"',
+  'msfconsole', 'sudo rm -rf', '0x41414141', 'grep -r "flag"',
   'nc -lvnp 4444', 'hashcat -m 0', 'python3 exploit.py', 'gobuster dir',
 ];
 
