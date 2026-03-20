@@ -164,13 +164,13 @@ function MessageCard({
       onMouseLeave={onMouseLeave}
       style={{
         position: 'absolute',
-        left: `calc(50% + ${xOffset}px - 140px)`,
-        top: `${yBase}px`,
-        width: '280px',
+        left: `calc(50% + ${xOffset}px - 150px)`,
+        top: `${yBase - 10}px`,
+        width: '300px',
+        height: '250px',
         cursor: 'default',
         zIndex: isHovered ? 100 : 1,
-        // Flat 2D box for hit-testing — no 3D transforms here
-        transformStyle: 'flat',
+        // Oversized invisible hit-area so 3D transforms don't cause flicker
       }}
     >
       <motion.div
@@ -192,6 +192,7 @@ function MessageCard({
         style={{
           transformStyle: 'preserve-3d',
           pointerEvents: 'none',
+          margin: '10px',
         }}
       >
         <div
