@@ -321,9 +321,12 @@ function OrbitScene({
         doClick(e);
       }
 
-      // Capture spin direction for auto-rotate to continue seamlessly
+      // Sync axes: momentum direction becomes auto-rotate direction
       if (velAngle.current > 0.0001) {
         autoRotateAxis.current.copy(velAxis.current);
+      } else {
+        // No momentum — use existing auto-rotate axis for velAxis
+        velAxis.current.copy(autoRotateAxis.current);
       }
       autoRotateSpeed.current = 0.12;
     };
@@ -423,20 +426,17 @@ function OrbitScene({
     if (!orbiting.current) {
       const cruiseSpeed = autoRotateSpeed.current * delta;
 
-      if (velAngle.current > cruiseSpeed + 0.0001) {
-        // Still decelerating — apply momentum and decay toward cruise speed
-        const momentumQ = new THREE.Quaternion().setFromAxisAngle(velAxis.current, velAngle.current);
-        orbitQuat.current.premultiply(momentumQ);
+      // Decay momentum toward cruise speed
+      velAngle.current = cruiseSpeed + (velAngle.current - cruiseSpeed) * 0.94;
+
+      // Clamp: never go below cruise speed
+      if (velAngle.current < cruiseSpeed) velAngle.current = cruiseSpeed;
+
+      // Always rotate on the momentum axis (which equals autoRotateAxis after release)
+      if (velAngle.current > 0.00001) {
+        const q = new THREE.Quaternion().setFromAxisAngle(velAxis.current, velAngle.current);
+        orbitQuat.current.premultiply(q);
         orbitQuat.current.normalize();
-        // Decay toward cruise speed, not toward zero
-        velAngle.current = cruiseSpeed + (velAngle.current - cruiseSpeed) * 0.94;
-      } else {
-        // At or below cruise speed — just auto-rotate
-        velAngle.current = 0;
-        if (autoRotateSpeed.current > 0) {
-          const autoQ = new THREE.Quaternion().setFromAxisAngle(autoRotateAxis.current, cruiseSpeed);
-          orbitQuat.current.premultiply(autoQ);
-        }
       }
     }
 
