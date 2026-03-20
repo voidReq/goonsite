@@ -254,7 +254,7 @@ export default function GoonHub() {
   return (
     <PageShell maxWidth="lg">
       <div className="flex items-start md:items-center justify-center min-h-[calc(100vh-5rem)]">
-        <div className="w-full max-w-2xl lg:max-w-4xl">
+        <div className="w-full" style={{ maxWidth: '1020px' }}>
 
           {/* Terminal window */}
           <div
