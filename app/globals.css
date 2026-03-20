@@ -192,7 +192,7 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
   max-width: 100% !important;
 }
 
-.prose * {
+.prose *:not(pre):not(pre code):not(pre *) {
   max-width: 100% !important;
 }
 
@@ -213,6 +213,8 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 .prose pre {
   background-color: #16161e !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  overflow-x: auto !important;
+  max-width: 100% !important;
 }
 
 .prose code {
@@ -229,6 +231,8 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
   background-color: transparent !important;
   padding: 0 !important;
   color: #c0caf5 !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
 }
 
 /* List styling */
@@ -385,6 +389,8 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 .prose table {
   border-collapse: collapse !important;
   width: 100% !important;
+  display: block !important;
+  overflow-x: auto !important;
 }
 
 .prose th,

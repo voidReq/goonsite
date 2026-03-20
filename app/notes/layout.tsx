@@ -13,7 +13,7 @@ export default function NotesLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex" style={{ color: '#c0caf5', minHeight: 'calc(100dvh - 3.5rem)' }}>
       <NotesSidebar tree={tree} />
-      <main className="flex-1">
+      <main className="flex-1 min-w-0">
         {children}
       </main>
     </div>
