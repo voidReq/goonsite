@@ -30,8 +30,8 @@ const SECTIONS = [
     icon: IconBug,
     color: '#9ece6a',
     items: [
-      { name: 'march_5_2026', desc: 'Critical IDOR PII Exposure', lang: 'Writeup', href: '/projects/writeups/critical-idor-pii-exposure' },
-      { name: 'other-vulnerabilities', desc: 'Coming soon...', lang: '???', href: '#' },
+      { name: 'critical-IDOR-PII-Exposure', desc: 'march_5_2026', lang: 'Writeup', href: '/projects/writeups/critical-idor-pii-exposure' },
+      { name: 'critical-XSS', desc: 'december_20_2024', lang: 'Writeup', href: '/projects/writeups/critical-xss' },
     ],
   },
 ];
