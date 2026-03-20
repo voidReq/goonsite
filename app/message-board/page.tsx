@@ -192,23 +192,25 @@ function MessageCard({
           transformStyle: 'preserve-3d',
           pointerEvents: 'none',
           margin: '10px',
+          position: 'relative',
+          zIndex: isHovered ? 50 : 0,
         }}
       >
         <div
           style={{
             background: isPinned
-              ? (isHovered ? 'rgba(234, 179, 8, 0.25)' : 'rgba(234, 179, 8, 0.15)')
-              : (isHovered ? `rgba(${msgColor.rgb}, 0.25)` : msgColor.bg),
+              ? (isHovered ? 'rgba(234, 179, 8, 0.35)' : 'rgba(234, 179, 8, 0.15)')
+              : (isHovered ? `rgba(${msgColor.rgb}, 0.35)` : msgColor.bg),
             border: isPinned
               ? '1.5px solid rgba(234, 179, 8, 0.6)'
-              : `1px solid ${isHovered ? msgColor.border : msgColor.border}`,
+              : `1px solid ${msgColor.border}`,
             borderRadius: '12px',
             padding: '20px',
-            backdropFilter: 'blur(12px)',
+            backdropFilter: isHovered ? 'blur(20px) saturate(180%)' : 'blur(12px)',
             boxShadow: isHovered
-              ? `0 12px 40px rgba(0,0,0,0.3), 0 0 20px ${isPinned ? 'rgba(234, 179, 8, 0.3)' : msgColor.border}`
+              ? `0 12px 40px rgba(0,0,0,0.5), 0 0 20px ${isPinned ? 'rgba(234, 179, 8, 0.3)' : msgColor.border}`
               : '0 8px 32px rgba(0,0,0,0.2)',
-            transition: 'box-shadow 0.3s ease, background 0.3s ease',
+            transition: 'box-shadow 0.3s ease, background 0.3s ease, backdrop-filter 0.3s ease',
           }}
         >
         {isPinned && (
@@ -224,10 +226,12 @@ function MessageCard({
             lineHeight: 1.6,
             marginBottom: '12px',
             wordBreak: 'break-word',
-            display: '-webkit-box',
-            WebkitLineClamp: 5,
-            WebkitBoxOrient: 'vertical' as const,
-            overflow: 'hidden',
+            ...(isHovered ? {} : {
+              display: '-webkit-box',
+              WebkitLineClamp: 5,
+              WebkitBoxOrient: 'vertical' as const,
+              overflow: 'hidden',
+            }),
           }}
         >
           &ldquo;{message.text}&rdquo;
