@@ -78,6 +78,15 @@ const DEV_MESSAGES: Message[] = [
   { id: '18', text: 'The particles floating in the background are mesmerizing. I have been staring at them for 10 minutes.', author: 'easily_distracted', timestamp: '2026-03-16T23:00:00Z', game: 'tictactoe', color: 'cyan' },
 ];
 
+function formatMessageDate(timestamp: string) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'numeric',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(timestamp));
+}
+
 function MessageCard({
   message,
   index,
@@ -98,8 +107,6 @@ function MessageCard({
   const msgColor = message.color && COLOR_MAP[message.color]
     ? COLOR_MAP[message.color]
     : { bg: PASTEL_COLORS[index % PASTEL_COLORS.length], border: BORDER_COLORS[index % BORDER_COLORS.length], rgb: '124, 58, 237' };
-  const rotation = ((index * 13) % 10) - 5;
-  const zOffset = ((index * 37) % 80) - 40;
 
   if (isMobile) {
     return (
@@ -144,7 +151,7 @@ function MessageCard({
                 </span>
               )}
               <Text size="xs" style={{ color: isPinned ? '#b8860b' : '#64748b' }}>
-                {new Date(message.timestamp).toLocaleDateString()}
+                {formatMessageDate(message.timestamp)}
               </Text>
             </Group>
           </Group>
@@ -153,33 +160,36 @@ function MessageCard({
     );
   }
 
+
   const row = Math.floor(index / 3);
   const col = index % 3;
-  const xOffset = (col - 1) * 310;
-  const yBase = row * 230;
+  const xOffset = (col - 1) * 320;
+  const yBase = row * 260;
+  const rotation = ((index * 13) % 10) - 5;
 
   return (
     <div
-      onPointerEnter={onMouseEnter}
-      onPointerLeave={onMouseLeave}
       style={{
         position: 'absolute',
         left: `calc(50% + ${xOffset}px - 150px)`,
-        top: `${yBase - 10}px`,
+        top: `${yBase}px`,
         width: '300px',
-        height: '250px',
         cursor: 'default',
+        padding: '10px',
+        boxSizing: 'border-box',
       }}
     >
       <motion.div
+        onHoverStart={onMouseEnter}
+        onHoverEnd={onMouseLeave}
         initial={{ opacity: 0, y: 60, rotateX: -15 }}
         animate={{
           opacity: 1,
           y: 0,
           rotateX: 0,
-          z: isHovered ? 60 : zOffset,
           rotateY: isHovered ? 0 : rotation,
-          scale: isHovered ? 1.05 : 1,
+          scale: isHovered ? 1.03 : 1,
+          z: isHovered ? 60 : 0,
         }}
         transition={{
           delay: index * 0.08,
@@ -190,17 +200,16 @@ function MessageCard({
         }}
         style={{
           transformStyle: 'preserve-3d',
-          pointerEvents: 'none',
-          margin: '10px',
           position: 'relative',
-          zIndex: isHovered ? 50 : 0,
+          zIndex: isHovered ? 50 : 1,
+          willChange: 'transform',
         }}
       >
         <div
           style={{
             background: isPinned
               ? (isHovered ? 'rgba(30, 25, 10, 0.98)' : 'rgba(234, 179, 8, 0.15)')
-              : (isHovered ? `rgba(20, 20, 30, 0.98)` : msgColor.bg),
+              : (isHovered ? 'rgba(20, 20, 30, 0.98)' : msgColor.bg),
             border: isPinned
               ? '1.5px solid rgba(234, 179, 8, 0.6)'
               : `1px solid ${msgColor.border}`,
@@ -211,55 +220,87 @@ function MessageCard({
               ? `0 12px 40px rgba(0,0,0,0.5), 0 0 20px ${isPinned ? 'rgba(234, 179, 8, 0.3)' : msgColor.border}`
               : '0 8px 32px rgba(0,0,0,0.2)',
             transition: 'box-shadow 0.3s ease, background 0.3s ease, backdrop-filter 0.3s ease',
+            minHeight: '120px',
+            maxHeight: isHovered ? 'none' : '250px',
+            overflow: 'hidden',
           }}
         >
-        {isPinned && (
-          <Text size="xs" fw={700} mb={6} style={{ color: '#eab308', letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
-            📌 First message
-          </Text>
-        )}
-        <Text
-          size={isPinned ? 'md' : 'sm'}
-          fw={isPinned ? 600 : 400}
-          style={{
-            color: isPinned ? '#fde68a' : '#e2e8f0',
-            lineHeight: 1.6,
-            marginBottom: '12px',
-            wordBreak: 'break-word',
-            ...(isHovered ? {} : {
-              display: '-webkit-box',
-              WebkitLineClamp: 5,
-              WebkitBoxOrient: 'vertical' as const,
-              overflow: 'hidden',
-            }),
-          }}
-        >
-          &ldquo;{message.text}&rdquo;
-        </Text>
-        <Group justify="space-between" align="center">
-          <Text size="xs" style={{ color: isPinned ? '#d4a017' : '#94a3b8', fontStyle: 'italic' }}>
-            &mdash; {message.author}
-          </Text>
-          <Group gap={6} align="center">
-            {message.game && GAME_ICONS[message.game] && (
-              <span title={message.game} style={{ fontSize: '12px', lineHeight: 1 }}>
-                {GAME_ICONS[message.game]}
-              </span>
-            )}
-            <Text size="xs" style={{ color: isPinned ? '#b8860b' : '#64748b' }}>
-              {new Date(message.timestamp).toLocaleDateString()}
+          {isPinned && (
+            <Text
+              size="xs"
+              fw={700}
+              mb={6}
+              style={{
+                color: '#eab308',
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase' as const,
+              }}
+            >
+              📌 First message
             </Text>
+          )}
+
+          <Text
+            size={isPinned ? 'md' : 'sm'}
+            fw={isPinned ? 600 : 400}
+            style={{
+              color: isPinned ? '#fde68a' : '#e2e8f0',
+              lineHeight: 1.6,
+              marginBottom: '12px',
+              wordBreak: 'break-word',
+              overflowWrap: 'anywhere',
+              ...(isHovered
+                ? {}
+                : {
+                    display: '-webkit-box',
+                    WebkitLineClamp: 5,
+                    WebkitBoxOrient: 'vertical' as const,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }),
+            }}
+          >
+            &ldquo;{message.text}&rdquo;
+          </Text>
+
+          <Group justify="space-between" align="center">
+            <Text
+              size="xs"
+              style={{
+                color: isPinned ? '#d4a017' : '#94a3b8',
+                fontStyle: 'italic',
+              }}
+            >
+              &mdash; {message.author}
+            </Text>
+            <Group gap={6} align="center">
+              {message.game && GAME_ICONS[message.game] && (
+                <span title={message.game} style={{ fontSize: '12px', lineHeight: 1 }}>
+                  {GAME_ICONS[message.game]}
+                </span>
+              )}
+              <Text size="xs" style={{ color: isPinned ? '#b8860b' : '#64748b' }}>
+                {formatMessageDate(message.timestamp)}
+              </Text>
+            </Group>
           </Group>
-        </Group>
         </div>
       </motion.div>
     </div>
   );
 }
 
-function FloatingParticle({ delay, duration }: { delay: number; duration: number }) {
-  const size = 2 + Math.random() * 3;
-  const startX = Math.random() * 100;
+function FloatingParticle({
+  delay,
+  duration,
+  size,
+  startX,
+}: {
+  delay: number;
+  duration: number;
+  size: number;
+  startX: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, x: `${startX}vw`, y: '100vh' }}
@@ -286,6 +327,8 @@ function FloatingParticle({ delay, duration }: { delay: number; duration: number
   );
 }
 
+// the guy who owns goonsite is so cool honestly one could even say they're the King of Goon, Came Too Soon
+
 export default function MessageBoardPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -300,6 +343,9 @@ export default function MessageBoardPage() {
   const [selectedGame, setSelectedGame] = useState<GameChoice | null>(null);
   const [page, setPage] = useState(0);
   const [selectedColor, setSelectedColor] = useState<MessageColor>('violet');
+  const [particleData, setParticleData] = useState<
+    { delay: number; duration: number; size: number; startX: number }[]
+  >([]);
   const sceneRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -312,6 +358,18 @@ export default function MessageBoardPage() {
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   }, []);
+
+  useEffect(() => {
+    const count = isMobile ? 6 : 15;
+    setParticleData(
+      Array.from({ length: count }, (_, i) => ({
+        delay: i * 1.2,
+        duration: 8 + Math.random() * 6,
+        size: 2 + Math.random() * 3,
+        startX: Math.random() * 100,
+      }))
+    );
+  }, [isMobile]);
 
   useEffect(() => {
     fetch('/api/messages')
@@ -334,7 +392,7 @@ export default function MessageBoardPage() {
   const lastMoveRef = useRef(0);
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     const now = Date.now();
-    if (now - lastMoveRef.current < 50) return; // throttle to ~20fps
+    if (now - lastMoveRef.current < 50) return;
     lastMoveRef.current = now;
     if (!sceneRef.current) return;
     const rect = sceneRef.current.getBoundingClientRect();
@@ -370,9 +428,8 @@ export default function MessageBoardPage() {
     }
   };
 
-  const cardsPerPage = 9; // 3 rows of 3
+  const cardsPerPage = 9; 
 
-  // Pin the earliest message, then show the rest newest-first
   const { pinned, descending } = useMemo(() => {
     if (messages.length === 0) return { pinned: null, descending: [] };
     const sorted = [...messages].sort(
@@ -381,7 +438,6 @@ export default function MessageBoardPage() {
     return { pinned: sorted[0], descending: sorted.slice(1).reverse() };
   }, [messages]);
 
-  // Page 0 has pinned + (cardsPerPage-1) items; remaining pages have cardsPerPage items each
   const totalPages = messages.length === 0
     ? 0
     : 1 + Math.ceil(Math.max(0, descending.length - (cardsPerPage - 1)) / cardsPerPage);
@@ -391,8 +447,6 @@ export default function MessageBoardPage() {
     if (isMobile) {
       return pinned ? [pinned, ...descending] : descending;
     }
-    // Page 0: pinned + first (cardsPerPage - 1) descending
-    // Page N: next cardsPerPage descending
     if (page === 0) {
       const rest = descending.slice(0, cardsPerPage - 1);
       return pinned ? [pinned, ...rest] : rest;
@@ -404,9 +458,14 @@ export default function MessageBoardPage() {
 
   return (
     <>
-      {/* Floating particles — fewer on mobile */}
-      {Array.from({ length: isMobile ? 6 : 15 }).map((_, i) => (
-        <FloatingParticle key={i} delay={i * 1.2} duration={8 + Math.random() * 6} />
+      {particleData.map((particle, i) => (
+        <FloatingParticle
+          key={i}
+          delay={particle.delay}
+          duration={particle.duration}
+          size={particle.size}
+          startX={particle.startX}
+        />
       ))}
 
       <div
@@ -474,7 +533,6 @@ export default function MessageBoardPage() {
           </motion.div>
         </div>
 
-        {/* 3D Message Scene (desktop) / Stacked cards (mobile) */}
         <div
           ref={sceneRef}
           onMouseMove={isMobile ? undefined : handleMouseMove}
