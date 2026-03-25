@@ -522,10 +522,21 @@ export default function MessageBoardPage() {
                 animate={{ y: [0, 4, 0] }}
                 transition={{ duration: 2, repeat: Infinity, repeatType: 'loop', ease: 'easeInOut' }}
               >
-                <Text size="xs" c="dimmed" style={{ cursor: 'pointer' }} onClick={() => {
-                  document.getElementById('game-challenge')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }}>
-                  ↓ Scroll down to fight the bot ↓
+                <Text
+                  size="md"
+                  fw={600}
+                  style={{
+                    cursor: 'pointer',
+                    background: 'linear-gradient(135deg, #7c3aed, #ec4899)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    letterSpacing: '0.02em',
+                  }}
+                  onClick={() => {
+                    document.getElementById('game-challenge')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }}
+                >
+                  ↓ Tap to scroll to bottom ↓
                 </Text>
               </motion.div>
               </motion.div>
