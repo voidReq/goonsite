@@ -31,7 +31,9 @@
     "react-simple-maps": "^3.0.0",
     "react-simple-typewriter": "^5.0.1",
     "react-syntax-highlighter": "^16.1.0",
+    "sharp": "^0.34.5",
     "showdown": "^2.1.0",
+    "stockfish": "^18.0.5",
     "tailwind-merge": "^2.1.0",
     "three": "^0.183.2"
   },
@@ -43,6 +45,7 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/react-simple-maps": "^3.0.6",
+    "@types/sharp": "^0.32.0",
     "@types/showdown": "^2.0.6",
     "@types/three": "^0.183.1",
     "@vitejs/plugin-react": "^5.1.4",

@@ -20,6 +20,7 @@ const TOOL_ITEMS = [
   { href: '/tools/encode', label: 'Encode/Hash', color: '#9ece6a' },
   { href: '/tools/jwt', label: 'JWT Debugger', color: '#bb9af7' },
   { href: '/tools/headers', label: 'Header Analyzer', color: '#7dcfff' },
+  { href: '/tools/chess', label: 'Chess Analyzer', color: '#e0af68' },
 ];
 
 export default function NavBar() {
