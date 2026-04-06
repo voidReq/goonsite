@@ -40,8 +40,8 @@ export default function ProjectsIndexPage() {
   return (
     <div className="relative min-h-[calc(100dvh-3.5rem)] overflow-hidden">
       {/* Animated background */}
-      <div className="absolute inset-0 mesh-gradient-cyan pointer-events-none" />
-      <div className="absolute inset-0 grid-bg-cyan pointer-events-none" />
+      <div className="absolute inset-0 mesh-gradient-purple pointer-events-none" />
+      <div className="absolute inset-0 grid-bg pointer-events-none" />
       <div className="absolute inset-0 scanline-overlay pointer-events-none" />
 
       {/* Floating orbs */}

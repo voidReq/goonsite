@@ -19,7 +19,6 @@ export default function NotesIndexPage() {
   return (
     <motion.div
       className="relative min-h-[calc(100dvh-3.5rem)] overflow-hidden"
-      style={{ backgroundColor: '#0f0f14' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}

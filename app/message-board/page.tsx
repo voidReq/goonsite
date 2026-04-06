@@ -471,11 +471,13 @@ export default function MessageBoardPage() {
       <div
         style={{
           minHeight: 'calc(100vh - 3.5rem)',
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.08) 0%, #0f0f14 70%)',
           position: 'relative',
           overflow: 'hidden',
         }}
       >
+        <div className="absolute inset-0 mesh-gradient-purple pointer-events-none" />
+        <div className="absolute inset-0 grid-bg pointer-events-none" />
+        <div className="absolute inset-0 scanline-overlay pointer-events-none" />
         {/* Header */}
         <div style={{ padding: '30px 20px 0', maxWidth: '900px', margin: '0 auto' }}>
           <Group justify="flex-end" align="center" mb="md">

@@ -6,5 +6,14 @@ export const metadata: Metadata = {
 };
 
 export default function GoonHubLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <div className="relative min-h-[calc(100dvh-3.5rem)]">
+      <div className="absolute inset-0 mesh-gradient-purple pointer-events-none" />
+      <div className="absolute inset-0 grid-bg pointer-events-none" />
+      <div className="absolute inset-0 scanline-overlay pointer-events-none" />
+      <div className="relative z-10">
+        {children}
+      </div>
+    </div>
+  );
 }
