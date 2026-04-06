@@ -15,10 +15,7 @@ const config = {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "black",
-        foreground: "white",
-      },
+      colors: {},
       animation: {
         "meteor-effect": "meteor 5s linear infinite",
         "rotate-3d": "rotateY 4s linear infinite",

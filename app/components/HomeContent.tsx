@@ -56,8 +56,8 @@ function NavCard({ href, accent, icon, title, desc, delay }: NavCardProps) {
             <div className="flex flex-col h-full justify-between gap-2" style={{ minHeight: '80px' }}>
               <div>
                 <div style={{ color: accent }} className="mb-2">{icon}</div>
-                <div className="font-mono font-bold text-[#c0caf5] text-base leading-tight">{title}</div>
-                <div className="text-[#565f89] text-xs mt-1">{desc}</div>
+                <div className="font-mono font-bold text-base leading-tight" style={{ color: 'var(--goon-text)' }}>{title}</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--goon-text-dim)' }}>{desc}</div>
               </div>
               <IconChevronRight size={13} className="text-white/20 group-hover:text-white/50 transition-colors" />
             </div>
@@ -99,6 +99,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
           <div className="orb" style={{ width: 300, height: 300, background: '#9ece6a', top: '40%', right: '20%', animationDelay: '-14s', opacity: isDesktop ? 0.03 : 0.08 }} />
         </div>
 
+        <div className="absolute inset-0 mesh-gradient-purple pointer-events-none" />
         <div className="absolute inset-0 grid-bg pointer-events-none" />
 
         {mounted && CODE_FRAGMENTS.map((text, i) => (
@@ -154,7 +155,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
               exit={{ opacity: 0, height: 0 }}
             >
               <div className="rounded-xl p-4" style={{ border: '1px solid rgba(187, 154, 247, 0.2)', backgroundColor: 'rgba(187, 154, 247, 0.05)' }}>
-                <Text size="md" fw={700} mb={8} style={{ color: '#c0caf5' }}>Hello, Goon.</Text>
+                <Text size="md" fw={700} mb={8} style={{ color: 'var(--goon-text)' }}>Hello, Goon.</Text>
                 <div className="flex items-center gap-3">
                   <Text size="sm" c="dimmed">How locked in?</Text>
                   <Tooltip

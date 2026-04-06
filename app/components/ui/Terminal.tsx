@@ -8,13 +8,13 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
         <span className="terminal-dot" style={{ backgroundColor: '#f7768e' }} />
         <span className="terminal-dot" style={{ backgroundColor: '#e0af68' }} />
         <span className="terminal-dot" style={{ backgroundColor: '#9ece6a' }} />
-        <span className="ml-3 text-xs font-mono" style={{ color: '#565f89' }}>goon@goonsite: ~</span>
+        <span className="ml-3 text-xs font-mono" style={{ color: 'var(--goon-text-dim)' }}>goon@goonsite: ~</span>
       </div>
       <div className="p-5" style={{ color: '#a9b1d6' }}>
         <div style={{ marginBottom: '10px' }}>
           <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
           <span style={{ color: '#7dcfff' }}>:</span>
-          <span style={{ color: '#c0caf5' }}>~</span>
+          <span style={{ color: 'var(--goon-text)' }}>~</span>
           <span style={{ color: '#7dcfff' }}>$</span>
         </div>
         <div>

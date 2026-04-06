@@ -4,6 +4,7 @@ import { useRef, useMemo, useState, useCallback, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useRouter } from 'next/navigation';
 import * as THREE from 'three';
+import { useTheme } from '../../../src/context/ThemeContext';
 
 // ─── Site node type ─────────────────────────────────────────────────────────
 
@@ -52,7 +53,8 @@ function generateEdges(points: THREE.Vector3[], maxDist: number): [number, numbe
 // ─── Colors ─────────────────────────────────────────────────────────────────
 
 const DIM_COLOR = new THREE.Color('#565f89');
-const BASE_EDGE = new THREE.Color('#222233');
+const BASE_EDGE_DARK = new THREE.Color('#565f89');
+const BASE_EDGE_LIGHT = new THREE.Color('#a0a0b0');
 
 // ─── Edges ──────────────────────────────────────────────────────────────────
 
@@ -62,12 +64,14 @@ function Edges({
   nodeColors,
   activeNode,
   pulseNodes,
+  baseEdge,
 }: {
   points: THREE.Vector3[];
   edges: [number, number][];
   nodeColors: THREE.Color[];
   activeNode: number | null;
   pulseNodes: Set<number>;
+  baseEdge: THREE.Color;
 }) {
   const colorArray = useRef<Float32Array | null>(null);
   const prevActive = useRef<number | null>(null);
@@ -81,8 +85,8 @@ function Edges({
     edges.forEach(([a, b], i) => {
       positions[i * 6] = points[a].x; positions[i * 6 + 1] = points[a].y; positions[i * 6 + 2] = points[a].z;
       positions[i * 6 + 3] = points[b].x; positions[i * 6 + 4] = points[b].y; positions[i * 6 + 5] = points[b].z;
-      colors[i * 6] = BASE_EDGE.r; colors[i * 6 + 1] = BASE_EDGE.g; colors[i * 6 + 2] = BASE_EDGE.b;
-      colors[i * 6 + 3] = BASE_EDGE.r; colors[i * 6 + 4] = BASE_EDGE.g; colors[i * 6 + 5] = BASE_EDGE.b;
+      colors[i * 6] = baseEdge.r; colors[i * 6 + 1] = baseEdge.g; colors[i * 6 + 2] = baseEdge.b;
+      colors[i * 6 + 3] = baseEdge.r; colors[i * 6 + 4] = baseEdge.g; colors[i * 6 + 5] = baseEdge.b;
     });
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -109,9 +113,9 @@ function Edges({
       if (aActive && bActive) {
         tmpColor.copy(nodeColors[a]).lerp(nodeColors[b], 0.5);
       } else if (aActive || bActive) {
-        tmpColor.copy(nodeColors[aActive ? a : b]).lerp(BASE_EDGE, 0.4);
+        tmpColor.copy(nodeColors[aActive ? a : b]).lerp(baseEdge, 0.4);
       } else {
-        tmpColor.copy(BASE_EDGE);
+        tmpColor.copy(baseEdge);
       }
 
       colors[i * 6] = tmpColor.r; colors[i * 6 + 1] = tmpColor.g; colors[i * 6 + 2] = tmpColor.b;
@@ -229,11 +233,13 @@ function OrbitScene({
   nodeColors,
   onHover,
   onClick,
+  baseEdge,
 }: {
   nodeCount: number;
   nodeColors: THREE.Color[];
   onHover: (index: number | null) => void;
   onClick: (index: number) => void;
+  baseEdge: THREE.Color;
 }) {
   const { camera, gl } = useThree();
 
@@ -448,7 +454,7 @@ function OrbitScene({
 
   return (
     <>
-      <Edges points={points} edges={edges} nodeColors={nodeColors} activeNode={activeNode} pulseNodes={pulseNodes} />
+      <Edges points={points} edges={edges} nodeColors={nodeColors} activeNode={activeNode} pulseNodes={pulseNodes} baseEdge={baseEdge} />
       <Nodes points={points} nodeColors={nodeColors} activeNode={activeNode} pulseNodes={pulseNodes} />
     </>
   );
@@ -464,12 +470,14 @@ interface NodeSphereProps {
 
 export default function NodeSphere({ className = '', style, nodes }: NodeSphereProps) {
   const router = useRouter();
+  const { theme } = useTheme();
   const [hovered, setHovered] = useState<number | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
   const totalNodes = nodes.length;
 
   const nodeColors = useMemo(() => nodes.map(n => new THREE.Color(n.color)), [nodes]);
+  const baseEdge = useMemo(() => theme === 'light' ? BASE_EDGE_LIGHT : BASE_EDGE_DARK, [theme]);
 
   const handleHover = useCallback((index: number | null) => {
     setHovered(index);
@@ -506,6 +514,7 @@ export default function NodeSphere({ className = '', style, nodes }: NodeSphereP
           nodeColors={nodeColors}
           onHover={handleHover}
           onClick={handleClick}
+          baseEdge={baseEdge}
         />
       </Canvas>
 
@@ -517,14 +526,14 @@ export default function NodeSphere({ className = '', style, nodes }: NodeSphereP
           <div
             className="font-mono text-xs px-2.5 py-1.5 rounded-lg whitespace-nowrap"
             style={{
-              backgroundColor: 'rgba(22, 22, 30, 0.95)',
+              backgroundColor: 'var(--goon-surface)',
               border: `1px solid ${hoveredNode.color}40`,
               color: hoveredNode.color,
-              boxShadow: `0 4px 16px rgba(0,0,0,0.4), 0 0 8px ${hoveredNode.color}15`,
+              boxShadow: `0 4px 16px rgba(0,0,0,0.2), 0 0 8px ${hoveredNode.color}15`,
             }}
           >
             {hoveredNode.label}
-            <span className="ml-1.5 text-[#565f89]">{hoveredNode.href}</span>
+            <span className="ml-1.5" style={{ color: 'var(--goon-text-dim)' }}>{hoveredNode.href}</span>
           </div>
         </div>
       )}

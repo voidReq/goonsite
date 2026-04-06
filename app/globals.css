@@ -2,9 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root, html.dark {
   --goon-bg: #0f0f14;
   --goon-surface: #1a1b26;
+  --goon-surface-dark: #16161e;
   --goon-surface-hover: #1e2030;
   --goon-surface-bright: #24283b;
   --goon-border: rgba(255, 255, 255, 0.06);
@@ -17,9 +18,58 @@
   --goon-blue: #7aa2f7;
   --goon-text: #c0caf5;
   --goon-text-dim: #565f89;
+  --goon-overlay: rgba(0, 0, 0, 0.6);
+  --goon-nav-bg: rgba(15, 15, 20, 0.85);
+  --goon-nav-bg-scrolled: rgba(15, 15, 20, 0.95);
   --background: #0f0f14;
   --foreground: #ededed;
   color-scheme: dark;
+  /* Mesh/grid gradient colors */
+  --mesh-purple-1: rgba(187, 154, 247, 0.08);
+  --mesh-purple-2: rgba(125, 207, 255, 0.06);
+  --mesh-purple-3: rgba(158, 206, 106, 0.04);
+  --mesh-cyan-1: rgba(125, 207, 255, 0.08);
+  --mesh-cyan-2: rgba(187, 154, 247, 0.06);
+  --mesh-cyan-3: rgba(224, 175, 104, 0.03);
+  --grid-line: rgba(187, 154, 247, 0.03);
+  --grid-line-cyan: rgba(125, 207, 255, 0.03);
+  --scanline-color: rgba(187, 154, 247, 0.02);
+  --orb-opacity: 0.15;
+}
+
+html.light {
+  --goon-bg: #f5f5f7;
+  --goon-surface: #ffffff;
+  --goon-surface-dark: #e8e8ec;
+  --goon-surface-hover: #ededf0;
+  --goon-surface-bright: #d8d8de;
+  --goon-border: rgba(0, 0, 0, 0.08);
+  --goon-border-hover: rgba(0, 0, 0, 0.15);
+  --goon-purple: #7c3aed;
+  --goon-cyan: #0891b2;
+  --goon-green: #16a34a;
+  --goon-red: #dc2626;
+  --goon-amber: #d97706;
+  --goon-blue: #2563eb;
+  --goon-text: #1a1b26;
+  --goon-text-dim: #6b7280;
+  --goon-overlay: rgba(0, 0, 0, 0.3);
+  --goon-nav-bg: rgba(245, 245, 247, 0.85);
+  --goon-nav-bg-scrolled: rgba(245, 245, 247, 0.95);
+  --background: #f5f5f7;
+  --foreground: #1a1b26;
+  color-scheme: light;
+  /* Mesh/grid gradient colors — subtle tints on light bg */
+  --mesh-purple-1: rgba(124, 58, 237, 0.03);
+  --mesh-purple-2: rgba(8, 145, 178, 0.02);
+  --mesh-purple-3: rgba(22, 163, 74, 0.015);
+  --mesh-cyan-1: rgba(8, 145, 178, 0.03);
+  --mesh-cyan-2: rgba(124, 58, 237, 0.02);
+  --mesh-cyan-3: rgba(217, 119, 6, 0.015);
+  --grid-line: rgba(124, 58, 237, 0.08);
+  --grid-line-cyan: rgba(8, 145, 178, 0.08);
+  --scanline-color: rgba(124, 58, 237, 0.02);
+  --orb-opacity: 0.06;
 }
 
 html {
@@ -28,7 +78,6 @@ html {
 
 body {
   color: var(--foreground);
-  background-color: #0f0f14;
   background-color: var(--background);
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
@@ -79,16 +128,16 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 /* ─── Animated grid background ─── */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(187, 154, 247, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(187, 154, 247, 0.03) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 60px 60px;
   background-position: center center;
 }
 
 .grid-bg-cyan {
   background-image:
-    linear-gradient(rgba(125, 207, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(125, 207, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(var(--grid-line-cyan) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line-cyan) 1px, transparent 1px);
   background-size: 60px 60px;
   background-position: center center;
 }
@@ -96,16 +145,16 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 /* ─── Mesh gradient backgrounds ─── */
 .mesh-gradient-purple {
   background:
-    radial-gradient(ellipse at 20% 20%, rgba(187, 154, 247, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(125, 207, 255, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(158, 206, 106, 0.04) 0%, transparent 60%);
+    radial-gradient(ellipse at 20% 20%, var(--mesh-purple-1) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, var(--mesh-purple-2) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, var(--mesh-purple-3) 0%, transparent 60%);
 }
 
 .mesh-gradient-cyan {
   background:
-    radial-gradient(ellipse at 80% 20%, rgba(125, 207, 255, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 20% 80%, rgba(187, 154, 247, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(224, 175, 104, 0.03) 0%, transparent 60%);
+    radial-gradient(ellipse at 80% 20%, var(--mesh-cyan-1) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, var(--mesh-cyan-2) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, var(--mesh-cyan-3) 0%, transparent 60%);
 }
 
 /* ─── Floating orb animation ─── */
@@ -120,7 +169,7 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
   position: absolute;
   border-radius: 50%;
   filter: blur(60px);
-  opacity: 0.15;
+  opacity: var(--orb-opacity);
   pointer-events: none;
   animation: float-orb 20s ease-in-out infinite;
 }
@@ -139,7 +188,7 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(187, 154, 247, 0.02) 50%,
+    var(--scanline-color) 50%,
     transparent 100%
   );
   height: 200%;
@@ -152,20 +201,24 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
   background: rgba(26, 27, 38, 0.6);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--goon-border);
   border-radius: 12px;
 }
 
+html.light .glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+}
+
 .glass-panel-solid {
-  background: #1a1b26;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--goon-surface);
+  border: 1px solid var(--goon-border);
   border-radius: 12px;
 }
 
 /* ─── Terminal styling ─── */
 .terminal-window {
-  background: #1a1b26;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--goon-surface);
+  border: 1px solid var(--goon-border);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -175,8 +228,8 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  background: #16161e;
+  border-bottom: 1px solid var(--goon-border);
+  background: var(--goon-surface-dark);
 }
 
 .terminal-dot {
@@ -211,8 +264,8 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 }
 
 .prose pre {
-  background-color: #16161e !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background-color: var(--goon-surface-dark) !important;
+  border: 1px solid var(--goon-border) !important;
   overflow-x: auto !important;
   max-width: 100% !important;
 }
@@ -230,7 +283,7 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 .prose pre code {
   background-color: transparent !important;
   padding: 0 !important;
-  color: #c0caf5 !important;
+  color: var(--goon-text) !important;
   word-break: normal !important;
   overflow-wrap: normal !important;
 }
@@ -291,7 +344,7 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 .prose h2 {
   font-size: 1.875em !important;
   font-weight: 700 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-bottom: 1px solid var(--goon-border) !important;
   padding-bottom: 0.3em !important;
 }
 
@@ -317,8 +370,8 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 
 /* Prism syntax highlighting */
 .prose pre[class*="language-"] {
-  background-color: #16161e !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  background-color: var(--goon-surface-dark) !important;
+  border: 1px solid var(--goon-border) !important;
   border-radius: 0.75rem !important;
   padding: 1rem !important;
   overflow-x: auto !important;
@@ -329,7 +382,7 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 }
 
 .prose code[class*="language-"] {
-  background-color: #16161e !important;
+  background-color: var(--goon-surface-dark) !important;
   padding: 0 !important;
   font-size: 0.88em !important;
   line-height: 1.6 !important;
@@ -340,9 +393,9 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 }
 
 .prose pre[class*="language-"] code {
-  color: #c0caf5 !important;
+  color: var(--goon-text) !important;
   font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace !important;
-  background-color: #16161e !important;
+  background-color: var(--goon-surface-dark) !important;
 }
 
 .prose pre[class*="language-"] *,
@@ -355,7 +408,7 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 
 .prose pre[class*="language-"],
 .prose pre[class*="language-"] code {
-  background: #16161e !important;
+  background: var(--goon-surface-dark) !important;
 }
 
 .prose p,
@@ -373,7 +426,7 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
   height: auto !important;
   border-radius: 0.75rem !important;
   margin: 1.5em 0 !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--goon-border) !important;
 }
 
 /* Blockquotes */
@@ -395,7 +448,7 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 
 .prose th,
 .prose td {
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--goon-border) !important;
   padding: 0.5em 0.75em !important;
 }
 
@@ -406,7 +459,7 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 }
 
 .prose hr {
-  border-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: var(--goon-border) !important;
   margin: 2em 0 !important;
 }
 
@@ -435,4 +488,18 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.4; transform: scale(1); }
   50% { opacity: 0; transform: scale(2); }
+}
+
+/* ─── Light mode overrides ─── */
+
+html.light ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+html.light * {
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
 }

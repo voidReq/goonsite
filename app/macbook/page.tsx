@@ -61,7 +61,7 @@ function LeBronModel({ onLoaded }: { onLoaded?: () => void }) {
 
 function LoadingScreen({ progress }: { progress: number }) {
   return (
-    <div className="absolute inset-0 bg-black flex flex-col items-center justify-center z-20 gap-4 px-10">
+    <div className="absolute inset-0 flex flex-col items-center justify-center z-20 gap-4 px-10" style={{ backgroundColor: 'var(--goon-bg)' }}>
       <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
         Loading your experience...
       </span>
@@ -73,7 +73,7 @@ function LoadingScreen({ progress }: { progress: number }) {
         className="w-full max-w-xs"
         animated
       />
-      <span className="text-white/30 text-xs font-mono">{Math.round(progress)}%</span>
+      <span className="text-xs font-mono" style={{ color: 'var(--goon-text-dim)' }}>{Math.round(progress)}%</span>
     </div>
   );
 }
@@ -95,7 +95,7 @@ function MobileView() {
   }, [loaded]);
 
   return (
-    <div className="h-dvh bg-black flex flex-col items-center justify-center relative">
+    <div className="h-dvh flex flex-col items-center justify-center relative" style={{ backgroundColor: 'var(--goon-bg)' }}>
       {!loaded && <LoadingScreen progress={progress} />}
 
       <div className="w-full h-full">
@@ -123,7 +123,8 @@ function MobileView() {
 
       <Link
         href="/"
-        className="absolute bottom-8 text-white/50 hover:text-white transition-colors text-sm z-10"
+        className="absolute bottom-8 transition-colors text-sm z-10"
+        style={{ color: 'var(--goon-text-dim)' }}
       >
         &larr; Back home
       </Link>
@@ -143,7 +144,7 @@ export default function MacbookScrollDemo() {
   }
 
   return (
-    <div className="overflow-hidden bg-black w-full min-h-screen flex items-start justify-center">
+    <div className="overflow-hidden w-full min-h-screen flex items-start justify-center" style={{ backgroundColor: 'var(--goon-bg)' }}>
       <MacbookScroll
         title={
           <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">

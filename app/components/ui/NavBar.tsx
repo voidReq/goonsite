@@ -6,8 +6,9 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   IconNotes, IconCode, IconMap, IconMessageCircle, IconTools,
-  IconTerminal2, IconMenu2, IconX
+  IconTerminal2, IconMenu2, IconX, IconSun, IconMoon
 } from '@tabler/icons-react';
+import { useTheme } from '../../../src/context/ThemeContext';
 
 const NAV_ITEMS = [
   { href: '/notes', label: 'Notes', icon: IconNotes, color: '#bb9af7' },
@@ -24,6 +25,7 @@ const TOOL_ITEMS = [
 
 export default function NavBar() {
   const pathname = usePathname();
+  const { theme, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -54,10 +56,10 @@ export default function NavBar() {
         <div
           className="absolute inset-0 transition-all duration-300"
           style={{
-            backgroundColor: scrolled ? 'rgba(15, 15, 20, 0.95)' : 'rgba(15, 15, 20, 0.85)',
+            backgroundColor: scrolled ? 'var(--goon-nav-bg-scrolled)' : 'var(--goon-nav-bg)',
             backdropFilter: 'blur(16px) saturate(180%)',
             WebkitBackdropFilter: 'blur(16px) saturate(180%)',
-            borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+            borderBottom: scrolled ? '1px solid var(--goon-border)' : '1px solid transparent',
           }}
           aria-hidden="true"
         />
@@ -83,18 +85,18 @@ export default function NavBar() {
                   href={item.href}
                   className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
                   style={{
-                    color: isActive(item.href) ? item.color : '#565f89',
+                    color: isActive(item.href) ? item.color : 'var(--goon-text-dim)',
                     backgroundColor: isActive(item.href) ? `${item.color}10` : 'transparent',
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive(item.href)) {
-                      e.currentTarget.style.color = '#c0caf5';
-                      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)';
+                      e.currentTarget.style.color = 'var(--goon-text)';
+                      e.currentTarget.style.backgroundColor = 'var(--goon-border)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isActive(item.href)) {
-                      e.currentTarget.style.color = '#565f89';
+                      e.currentTarget.style.color = 'var(--goon-text-dim)';
                       e.currentTarget.style.backgroundColor = 'transparent';
                     }
                   }}
@@ -129,18 +131,18 @@ export default function NavBar() {
                   href="/tools/encode"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
                   style={{
-                    color: isToolsActive ? '#f7768e' : '#565f89',
+                    color: isToolsActive ? '#f7768e' : 'var(--goon-text-dim)',
                     backgroundColor: isToolsActive ? 'rgba(247,118,142,0.06)' : 'transparent',
                   }}
                   onMouseEnter={(e) => {
                     if (!isToolsActive) {
-                      e.currentTarget.style.color = '#c0caf5';
-                      e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)';
+                      e.currentTarget.style.color = 'var(--goon-text)';
+                      e.currentTarget.style.backgroundColor = 'var(--goon-border)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isToolsActive) {
-                      e.currentTarget.style.color = '#565f89';
+                      e.currentTarget.style.color = 'var(--goon-text-dim)';
                       e.currentTarget.style.backgroundColor = 'transparent';
                     }
                   }}
@@ -166,10 +168,10 @@ export default function NavBar() {
                         width: '13rem',
                         borderRadius: '12px',
                         overflow: 'visible',
-                        backgroundColor: 'rgba(22, 22, 30, 0.98)',
+                        backgroundColor: 'var(--goon-surface)',
                         backdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        boxShadow: '0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)',
+                        border: '1px solid var(--goon-border)',
+                        boxShadow: '0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px var(--goon-border)',
                         maxWidth: 'none',
                       }}
                     >
@@ -180,11 +182,11 @@ export default function NavBar() {
                             href={tool.href}
                             className="flex items-center px-4 py-2.5 text-sm transition-colors"
                             style={{
-                              color: isActive(tool.href) ? tool.color : '#c0caf5',
+                              color: isActive(tool.href) ? tool.color : 'var(--goon-text)',
                               backgroundColor: isActive(tool.href) ? `${tool.color}10` : 'transparent',
                               maxWidth: 'none',
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)'; }}
+                            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--goon-border)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = isActive(tool.href) ? `${tool.color}10` : 'transparent'; }}
                             onClick={() => setToolsOpen(false)}
                           >
@@ -198,19 +200,38 @@ export default function NavBar() {
               </div>
             </div>
 
-            {/* Status indicator */}
-            <div className="hidden md:flex items-center gap-2">
+            {/* Status indicator + Theme toggle */}
+            <div className="hidden md:flex items-center gap-3">
+              <button
+                onClick={toggleTheme}
+                className="p-1.5 rounded-lg transition-colors duration-200"
+                style={{
+                  color: 'var(--goon-text-dim)',
+                  backgroundColor: 'transparent',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = 'var(--goon-text)';
+                  e.currentTarget.style.backgroundColor = 'var(--goon-border)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = 'var(--goon-text-dim)';
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+                aria-label="Toggle theme"
+              >
+                {theme === 'dark' ? <IconSun size={16} /> : <IconMoon size={16} />}
+              </button>
               <div className="relative">
                 <div className="w-2 h-2 rounded-full bg-[#9ece6a]" />
                 <div className="absolute inset-0 w-2 h-2 rounded-full bg-[#9ece6a] animate-ping opacity-40" />
               </div>
-              <span className="text-[10px] font-mono text-[#565f89]">online</span>
+              <span className="text-[10px] font-mono" style={{ color: 'var(--goon-text-dim)' }}>online</span>
             </div>
 
             {/* Mobile hamburger */}
             <button
               className="md:hidden p-2 rounded-lg"
-              style={{ color: '#c0caf5' }}
+              style={{ color: 'var(--goon-text)' }}
               onClick={() => setMobileOpen(!mobileOpen)}
             >
               {mobileOpen ? <IconX size={20} /> : <IconMenu2 size={20} />}
@@ -228,7 +249,7 @@ export default function NavBar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-40 md:hidden"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+              style={{ backgroundColor: 'var(--goon-overlay)' }}
               onClick={() => setMobileOpen(false)}
             />
             <motion.div
@@ -238,18 +259,28 @@ export default function NavBar() {
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
               className="fixed top-0 right-0 bottom-0 z-50 w-72 p-6 md:hidden overflow-y-auto"
               style={{
-                backgroundColor: '#1a1b26',
-                borderLeft: '1px solid rgba(255,255,255,0.06)',
+                backgroundColor: 'var(--goon-surface)',
+                borderLeft: '1px solid var(--goon-border)',
                 paddingBottom: 'calc(3rem + env(safe-area-inset-bottom, 0px))',
               }}
             >
-              <button
-                className="absolute top-4 right-4 p-2 rounded-lg"
-                style={{ color: '#c0caf5' }}
-                onClick={() => setMobileOpen(false)}
-              >
-                <IconX size={20} />
-              </button>
+              <div className="absolute top-4 right-4 flex items-center gap-2">
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 rounded-lg transition-colors"
+                  style={{ color: 'var(--goon-text-dim)' }}
+                  aria-label="Toggle theme"
+                >
+                  {theme === 'dark' ? <IconSun size={20} /> : <IconMoon size={20} />}
+                </button>
+                <button
+                  className="p-2 rounded-lg"
+                  style={{ color: 'var(--goon-text)' }}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <IconX size={20} />
+                </button>
+              </div>
 
               <div className="mt-12 space-y-1">
                 {NAV_ITEMS.map(item => (
@@ -258,7 +289,7 @@ export default function NavBar() {
                     href={item.href}
                     className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
                     style={{
-                      color: isActive(item.href) ? item.color : '#c0caf5',
+                      color: isActive(item.href) ? item.color : 'var(--goon-text)',
                       backgroundColor: isActive(item.href) ? `${item.color}10` : 'transparent',
                     }}
                   >
@@ -276,7 +307,7 @@ export default function NavBar() {
                     href={tool.href}
                     className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-colors pl-8"
                     style={{
-                      color: isActive(tool.href) ? tool.color : '#c0caf5',
+                      color: isActive(tool.href) ? tool.color : 'var(--goon-text)',
                       backgroundColor: isActive(tool.href) ? `${tool.color}10` : 'transparent',
                     }}
                   >

@@ -62,13 +62,13 @@ function TreeLines({ entries, depth = 0, parentPrefixes = [] }: { entries: TreeE
         return (
           <div key={entry.href}>
             <div className="leading-relaxed">
-              <span className="text-[#565f89] select-none">
+              <span className="text-[var(--goon-text-dim)] select-none">
                 {parentPrefixes.join('')}{prefix}
               </span>
               <Link
                 href={entry.href}
                 className="hover:underline transition-colors"
-                style={{ color: entry.color || '#c0caf5' }}
+                style={{ color: entry.color || 'var(--goon-text)' }}
               >
                 {entry.name}
               </Link>
@@ -93,7 +93,7 @@ function Prompt() {
     <>
       <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
       <span style={{ color: '#7dcfff' }}>:</span>
-      <span style={{ color: '#c0caf5' }}>~</span>
+      <span style={{ color: 'var(--goon-text)' }}>~</span>
       <span style={{ color: '#7dcfff' }}>$&nbsp; </span>
     </>
   );
@@ -267,7 +267,7 @@ export default function GoonHub() {
               <span className="terminal-dot" style={{ backgroundColor: '#f7768e' }} />
               <span className="terminal-dot" style={{ backgroundColor: '#e0af68' }} />
               <span className="terminal-dot" style={{ backgroundColor: '#9ece6a' }} />
-              <span className="ml-3 text-xs font-mono" style={{ color: '#565f89' }}>goon@goonsite: ~/sitemap</span>
+              <span className="ml-3 text-xs font-mono" style={{ color: 'var(--goon-text-dim)' }}>goon@goonsite: ~/sitemap</span>
             </div>
 
             {/* Terminal body */}
@@ -276,11 +276,11 @@ export default function GoonHub() {
               {/* Initial tree output */}
               <div className="mb-1">
                 <Prompt />
-                <span style={{ color: '#c0caf5' }}>tree --sitemap</span>
+                <span style={{ color: 'var(--goon-text)' }}>tree --sitemap</span>
               </div>
-              <div className="mt-3 mb-1 text-[#565f89]">.</div>
+              <div className="mt-3 mb-1 text-[var(--goon-text-dim)]">.</div>
               <TreeLines entries={siteTree} />
-              <div className="mt-3 mb-1 text-[#565f89] text-xs md:text-sm">
+              <div className="mt-3 mb-1 text-[var(--goon-text-dim)] text-xs md:text-sm">
                 {siteTree.length} directories, {siteTree.reduce((acc, e) => acc + (e.children?.length || 0), 0)} subdirectories
               </div>
 
@@ -290,15 +290,15 @@ export default function GoonHub() {
                   {line.type === 'command' ? (
                     <div className="mt-3">
                       <Prompt />
-                      <span style={{ color: '#c0caf5' }}>{line.text}</span>
+                      <span style={{ color: 'var(--goon-text)' }}>{line.text}</span>
                     </div>
                   ) : line.type === 'error' ? (
                     <div style={{ color: '#f7768e' }} className="whitespace-pre-wrap">{line.text}</div>
                   ) : line.text === '__tree__' ? (
                     <div className="mt-1">
-                      <div className="mb-1 text-[#565f89]">.</div>
+                      <div className="mb-1 text-[var(--goon-text-dim)]">.</div>
                       <TreeLines entries={siteTree} />
-                      <div className="mt-1 text-[#565f89] text-xs md:text-sm">
+                      <div className="mt-1 text-[var(--goon-text-dim)] text-xs md:text-sm">
                         {siteTree.length} directories, {siteTree.reduce((acc, e) => acc + (e.children?.length || 0), 0)} subdirectories
                       </div>
                     </div>
@@ -318,8 +318,8 @@ export default function GoonHub() {
                     value={input}
                     onChange={e => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="bg-transparent outline-none border-none w-full caret-[#c0caf5]"
-                    style={{ color: '#c0caf5', fontFamily: 'inherit', fontSize: 'inherit' }}
+                    className="bg-transparent outline-none border-none w-full caret-[var(--goon-text)]"
+                    style={{ color: 'var(--goon-text)', fontFamily: 'inherit', fontSize: 'inherit' }}
                     spellCheck={false}
                     autoCapitalize="off"
                     autoCorrect="off"
@@ -329,7 +329,7 @@ export default function GoonHub() {
                   {ghost && (
                     <div
                       className="absolute top-0 left-0 pointer-events-none whitespace-pre"
-                      style={{ color: '#565f89', fontFamily: 'inherit', fontSize: 'inherit' }}
+                      style={{ color: 'var(--goon-text-dim)', fontFamily: 'inherit', fontSize: 'inherit' }}
                       aria-hidden
                     >
                       <span className="invisible">{input}</span>
