@@ -17,7 +17,13 @@ const PLANNED = [
 
 export default function NotesIndexPage() {
   return (
-    <div className="relative min-h-[calc(100dvh-3.5rem)] overflow-hidden">
+    <motion.div
+      className="relative min-h-[calc(100dvh-3.5rem)] overflow-hidden"
+      style={{ backgroundColor: '#0f0f14' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Animated background */}
       <div className="absolute inset-0 mesh-gradient-purple pointer-events-none" />
       <div className="absolute inset-0 grid-bg pointer-events-none" />
@@ -138,6 +144,6 @@ export default function NotesIndexPage() {
           </p>
         </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
