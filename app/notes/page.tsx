@@ -91,15 +91,12 @@ export default function NotesIndexPage() {
 
           <div className="space-y-3">
             {PLANNED.map((item, i) => (
-              <motion.div
+              <div
                 key={item.name}
-                initial={{ opacity: 0, x: -15 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.35 + i * 0.08, duration: 0.4 }}
                 className="rounded-xl p-4 transition-all duration-200"
                 style={{
                   opacity: 0,
-                  transform: 'translateX(-15px)',
+                  animation: `planned-slide-in 0.4s ease ${0.35 + i * 0.08}s forwards`,
                   backgroundColor: 'rgba(26, 27, 38, 0.6)',
                   border: '1px solid rgba(255, 255, 255, 0.04)',
                   backdropFilter: 'blur(8px)',
@@ -124,7 +121,7 @@ export default function NotesIndexPage() {
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </motion.div>

@@ -425,6 +425,12 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
   }
 }
 
+/* Planned-additions slide-in */
+@keyframes planned-slide-in {
+  from { opacity: 0; transform: translateX(-15px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 /* Pulsing animation for status dot */
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.4; transform: scale(1); }
