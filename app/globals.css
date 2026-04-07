@@ -35,6 +35,10 @@
   --grid-line-cyan: rgba(125, 207, 255, 0.03);
   --scanline-color: rgba(187, 154, 247, 0.02);
   --orb-opacity: 0.15;
+  --pinned-label: #eab308;
+  --pinned-text: #fde68a;
+  --pinned-author: #d4a017;
+  --pinned-date: #b8860b;
 }
 
 html.light {
@@ -70,6 +74,10 @@ html.light {
   --grid-line-cyan: rgba(8, 145, 178, 0.08);
   --scanline-color: rgba(124, 58, 237, 0.02);
   --orb-opacity: 0.06;
+  --pinned-label: #92400e;
+  --pinned-text: #78350f;
+  --pinned-author: #92400e;
+  --pinned-date: #a16207;
 }
 
 html {

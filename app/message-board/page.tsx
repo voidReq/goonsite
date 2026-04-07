@@ -129,19 +129,19 @@ function MessageCard({
           }}
         >
           {isPinned && (
-            <Text size="xs" fw={700} mb={6} style={{ color: '#eab308', letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
+            <Text size="xs" fw={700} mb={6} style={{ color: 'var(--pinned-label)', letterSpacing: '0.05em', textTransform: 'uppercase' as const }}>
               📌 First message
             </Text>
           )}
           <Text
             size={isPinned ? 'md' : 'sm'}
             fw={isPinned ? 600 : 400}
-            style={{ color: isPinned ? '#fde68a' : '#e2e8f0', lineHeight: 1.6, marginBottom: '10px', wordBreak: 'break-word' }}
+            style={{ color: isPinned ? 'var(--pinned-text)' : 'var(--goon-text)', lineHeight: 1.6, marginBottom: '10px', wordBreak: 'break-word' }}
           >
             &ldquo;{message.text}&rdquo;
           </Text>
           <Group justify="space-between" align="center">
-            <Text size="xs" style={{ color: isPinned ? '#d4a017' : '#94a3b8', fontStyle: 'italic' }}>
+            <Text size="xs" style={{ color: isPinned ? 'var(--pinned-author)' : 'var(--goon-text-dim)', fontStyle: 'italic' }}>
               &mdash; {message.author}
             </Text>
             <Group gap={6} align="center">
@@ -150,7 +150,7 @@ function MessageCard({
                   {GAME_ICONS[message.game]}
                 </span>
               )}
-              <Text size="xs" style={{ color: isPinned ? '#b8860b' : '#64748b' }}>
+              <Text size="xs" style={{ color: isPinned ? 'var(--pinned-date)' : 'var(--goon-text-dim)' }}>
                 {formatMessageDate(message.timestamp)}
               </Text>
             </Group>
@@ -208,8 +208,8 @@ function MessageCard({
         <div
           style={{
             background: isPinned
-              ? (isHovered ? 'rgba(30, 25, 10, 0.98)' : 'rgba(234, 179, 8, 0.15)')
-              : (isHovered ? 'rgba(20, 20, 30, 0.98)' : msgColor.bg),
+              ? (isHovered ? 'var(--goon-surface)' : 'rgba(234, 179, 8, 0.15)')
+              : (isHovered ? 'var(--goon-surface)' : msgColor.bg),
             border: isPinned
               ? '1.5px solid rgba(234, 179, 8, 0.6)'
               : `1px solid ${msgColor.border}`,
@@ -231,7 +231,7 @@ function MessageCard({
               fw={700}
               mb={6}
               style={{
-                color: '#eab308',
+                color: 'var(--pinned-label)',
                 letterSpacing: '0.05em',
                 textTransform: 'uppercase' as const,
               }}
@@ -244,7 +244,7 @@ function MessageCard({
             size={isPinned ? 'md' : 'sm'}
             fw={isPinned ? 600 : 400}
             style={{
-              color: isPinned ? '#fde68a' : '#e2e8f0',
+              color: isPinned ? 'var(--pinned-text)' : 'var(--goon-text)',
               lineHeight: 1.6,
               marginBottom: '12px',
               wordBreak: 'break-word',
@@ -267,7 +267,7 @@ function MessageCard({
             <Text
               size="xs"
               style={{
-                color: isPinned ? '#d4a017' : '#94a3b8',
+                color: isPinned ? 'var(--pinned-author)' : 'var(--goon-text-dim)',
                 fontStyle: 'italic',
               }}
             >
@@ -279,7 +279,7 @@ function MessageCard({
                   {GAME_ICONS[message.game]}
                 </span>
               )}
-              <Text size="xs" style={{ color: isPinned ? '#b8860b' : '#64748b' }}>
+              <Text size="xs" style={{ color: isPinned ? 'var(--pinned-date)' : 'var(--goon-text-dim)' }}>
                 {formatMessageDate(message.timestamp)}
               </Text>
             </Group>
@@ -657,7 +657,7 @@ export default function MessageBoardPage() {
                 backdropFilter: 'blur(16px)',
               }}
             >
-              <Text fw={600} size="lg" mb="xs" ta="center" style={{ color: '#e2e8f0' }}>
+              <Text fw={600} size="lg" mb="xs" ta="center" style={{ color: 'var(--goon-text)' }}>
                 Want to leave a message?
               </Text>
               <Text size="xs" c="dimmed" ta="center" mb={selectedGame ? 'md' : 'lg'}>
@@ -700,7 +700,7 @@ export default function MessageBoardPage() {
                         }}
                       >
                         <span style={{ fontSize: '1.6rem' }}>{game.emoji}</span>
-                        <Text size="sm" fw={600} style={{ color: '#e2e8f0' }}>
+                        <Text size="sm" fw={600} style={{ color: 'var(--goon-text)' }}>
                           {game.label}
                         </Text>
                         <Text size="xs" c="dimmed">{game.desc}</Text>
@@ -823,7 +823,7 @@ export default function MessageBoardPage() {
                 </Group>
 
                 <div style={{ marginBottom: '16px' }}>
-                  <Text size="sm" fw={500} mb={6} style={{ color: '#c9d1d9' }}>
+                  <Text size="sm" fw={500} mb={6} style={{ color: 'var(--goon-text)' }}>
                     Card color
                   </Text>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>

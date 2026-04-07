@@ -11,28 +11,25 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType>({ theme: 'dark', toggleTheme: () => {} });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark');
-  const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('goon-theme') as Theme | null;
+      return stored === 'light' ? 'light' : 'dark';
+    }
+    return 'dark';
+  });
 
   useEffect(() => {
-    const stored = localStorage.getItem('goon-theme') as Theme | null;
-    if (stored === 'light' || stored === 'dark') {
-      setTheme(stored);
-      document.documentElement.classList.toggle('light', stored === 'light');
-      document.documentElement.classList.toggle('dark', stored === 'dark');
-    }
-    setMounted(true);
-  }, []);
+    // Sync class in case SSR default didn't match stored preference
+    document.documentElement.classList.toggle('light', theme === 'light');
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     localStorage.setItem('goon-theme', next);
-    document.documentElement.classList.toggle('light', next === 'light');
-    document.documentElement.classList.toggle('dark', next === 'dark');
   };
-
-  if (!mounted) return <>{children}</>;
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
