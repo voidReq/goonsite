@@ -75,10 +75,13 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
   const [goodGooner, setGoodGooner] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [showOrbitHint, setShowOrbitHint] = useState(true);
 
   useEffect(() => {
     setMounted(true);
     setIsDesktop(window.innerWidth >= 768);
+    const timer = setTimeout(() => setShowOrbitHint(false), 5000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -86,11 +89,32 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
       <div className="relative flex flex-col items-center justify-center p-4 pb-20 md:p-8 md:pb-20 overflow-hidden" style={{ minHeight: 'calc(100dvh - 3.5rem)' }}>
 
         {mounted && isDesktop && (
-          <div className="absolute inset-0 z-0" style={{ opacity: 0.7 }}>
+          <div className="absolute inset-0 z-0" style={{ opacity: 0.7 }} onPointerDown={() => setShowOrbitHint(false)}>
             <Suspense fallback={null}>
               <NodeSphere className="w-full h-full" nodes={siteNodes} />
             </Suspense>
           </div>
+        )}
+
+        {mounted && isDesktop && showOrbitHint && (
+          <motion.div
+            className="absolute top-4 inset-x-0 flex justify-center z-20 pointer-events-none"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+          >
+            <div
+              className="font-mono text-xs px-3 py-1.5 rounded-full"
+              style={{
+                backgroundColor: 'var(--goon-surface)',
+                border: '1px solid var(--goon-border)',
+                color: 'var(--goon-text-dim)',
+              }}
+            >
+              drag to orbit · click a node to visit
+            </div>
+          </motion.div>
         )}
 
         <div className="absolute inset-0 pointer-events-none overflow-hidden">

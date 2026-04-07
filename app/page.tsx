@@ -4,8 +4,8 @@ import HomeContent from './components/HomeContent';
 import type { SiteNode } from './components/ui/NodeSphere';
 
 // Color palette for dynamic content nodes
-const NOTE_COLORS = ['#bb9af7', '#9d7cd8', '#c0a8e8'];
-const PROJECT_COLORS = ['#7dcfff', '#7aa2f7', '#89b4fa'];
+const NOTE_COLORS = ['#bb9af7', '#9ece6a', '#7dcfff', '#f7768e', '#e0af68', '#9d7cd8', '#7aa2f7', '#ff9e64'];
+const PROJECT_COLORS = ['#7dcfff', '#f7768e', '#9ece6a', '#bb9af7', '#e0af68', '#7aa2f7', '#ff9e64', '#9d7cd8'];
 
 // Static pages — always present
 const STATIC_NODES: SiteNode[] = [
