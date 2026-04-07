@@ -52,7 +52,7 @@ function generateEdges(points: THREE.Vector3[], maxDist: number): [number, numbe
 
 // ─── Colors ─────────────────────────────────────────────────────────────────
 
-const DIM_COLOR = new THREE.Color('#565f89');
+const DIM_COLOR = new THREE.Color('#0f0f14');
 const BASE_EDGE_DARK = new THREE.Color('#565f89');
 const BASE_EDGE_LIGHT = new THREE.Color('#a0a0b0');
 
@@ -93,7 +93,7 @@ function Edges({
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     colorArray.current = colors;
     return geo;
-  }, [points, edges]);
+  }, [points, edges, baseEdge]);
 
   // Reusable color object to avoid allocations
   const tmpColor = useMemo(() => new THREE.Color(), []);
@@ -126,7 +126,7 @@ function Edges({
 
   return (
     <lineSegments geometry={geometry}>
-      <lineBasicMaterial vertexColors transparent opacity={0.25} />
+      <lineBasicMaterial vertexColors transparent opacity={0.4} />
     </lineSegments>
   );
 }
@@ -151,6 +151,12 @@ function Nodes({
   const prevActive = useRef<number | null>(null);
   const prevPulseSize = useRef(0);
   const needsUpdate = useRef(true);
+  // Force a full update whenever nodeColors changes (e.g. theme toggle)
+  const prevNodeColors = useRef(nodeColors);
+  if (prevNodeColors.current !== nodeColors) {
+    prevNodeColors.current = nodeColors;
+    needsUpdate.current = true;
+  }
   const tmpColor = useMemo(() => new THREE.Color(), []);
 
   useFrame((_, delta) => {
@@ -176,8 +182,8 @@ function Nodes({
 
       if (Math.abs(diff) > 0.01) stillAnimating = true;
 
-      const intensity = isActive ? 1.0 : isPulsing ? 0.6 : 0.25;
-      tmpColor.copy(nodeColors[i]).lerp(DIM_COLOR, 1 - intensity);
+      const boost = isActive ? 1.2 : isPulsing ? 1.1 : 0.85;
+      tmpColor.copy(nodeColors[i]).multiplyScalar(boost);
       colorArr[i * 3] = tmpColor.r; colorArr[i * 3 + 1] = tmpColor.g; colorArr[i * 3 + 2] = tmpColor.b;
 
       dummy.position.copy(points[i]);
@@ -196,7 +202,7 @@ function Nodes({
       <sphereGeometry args={[0.04, 6, 6]}>
         <instancedBufferAttribute attach="attributes-color" args={[colorArr, 3]} />
       </sphereGeometry>
-      <meshBasicMaterial vertexColors transparent opacity={0.85} />
+      <meshBasicMaterial vertexColors transparent opacity={1} />
     </instancedMesh>
   );
 }
@@ -264,17 +270,27 @@ function OrbitScene({
   const prevMouse = useRef({ x: 0, y: 0 });
   const totalDragDist = useRef(0);
   const orbitQuat = useRef(new THREE.Quaternion());
+  // velAxis is the current rotation axis; autoRotateAxis is the steady-state axis
+  // after drag release they converge so the cloud settles into a consistent spin
   const velAxis = useRef(new THREE.Vector3(0, 1, 0));
-  const velAngle = useRef(0);
-  const autoRotateSpeed = useRef(0.12);
-  const autoRotateAxis = useRef(new THREE.Vector3(0, 1, 0));
+  const velSpeed = useRef(0);           // radians/second (frame-rate independent)
+  const AUTO_SPEED = 0.12;              // radians/second cruise speed
   const ORBIT_RADIUS = 8;
+  // Pre-allocated to avoid GC pressure during drag and per-frame
+  const _rotQ  = useRef(new THREE.Quaternion());
+  const _qH    = useRef(new THREE.Quaternion());
+  const _qV    = useRef(new THREE.Quaternion());
+  const _dragQ = useRef(new THREE.Quaternion());
+  const _camRight = useRef(new THREE.Vector3());
+  const _camUp    = useRef(new THREE.Vector3());
+  const _axis     = useRef(new THREE.Vector3());
+  const _basePos  = useRef(new THREE.Vector3());
 
   useEffect(() => {
     camera.position.set(0, 0, ORBIT_RADIUS);
     camera.lookAt(0, 0, 0);
     orbitQuat.current.identity();
-    velAngle.current = 0;
+    velSpeed.current = AUTO_SPEED;
   }, [camera]);
 
   useEffect(() => {
@@ -282,24 +298,24 @@ function OrbitScene({
 
     const applyDrag = (dx: number, dy: number) => {
       const sens = 0.003;
-      const camRight = new THREE.Vector3();
-      const camUp = new THREE.Vector3();
-      camera.getWorldDirection(new THREE.Vector3());
-      camRight.setFromMatrixColumn(camera.matrixWorld, 0).normalize();
-      camUp.setFromMatrixColumn(camera.matrixWorld, 1).normalize();
+      _camRight.current.setFromMatrixColumn(camera.matrixWorld, 0).normalize();
+      _camUp.current.setFromMatrixColumn(camera.matrixWorld, 1).normalize();
 
-      const qH = new THREE.Quaternion().setFromAxisAngle(camUp, -dx * sens);
-      const qV = new THREE.Quaternion().setFromAxisAngle(camRight, -dy * sens);
-      const dragQ = new THREE.Quaternion().multiplyQuaternions(qH, qV);
+      _qH.current.setFromAxisAngle(_camUp.current, -dx * sens);
+      _qV.current.setFromAxisAngle(_camRight.current, -dy * sens);
+      _dragQ.current.multiplyQuaternions(_qH.current, _qV.current);
 
-      orbitQuat.current.premultiply(dragQ);
+      orbitQuat.current.premultiply(_dragQ.current);
       orbitQuat.current.normalize();
 
-      const combinedAxis = camUp.clone().multiplyScalar(-dx).add(camRight.clone().multiplyScalar(-dy));
-      const len = combinedAxis.length();
+      // Combined axis for velocity — reuse _axis
+      _axis.current
+        .copy(_camUp.current).multiplyScalar(-dx)
+        .addScaledVector(_camRight.current, -dy);
+      const len = _axis.current.length();
       if (len > 0.001) {
-        velAxis.current.copy(combinedAxis).normalize();
-        velAngle.current = len * sens;
+        velAxis.current.copy(_axis.current).normalize();
+        velSpeed.current = Math.min(len * sens * 60, 6);
       }
     };
 
@@ -323,18 +339,15 @@ function OrbitScene({
 
       // Click threshold: total drag distance < 5px
       if (totalDragDist.current < 5) {
-        velAngle.current = 0;
+        velSpeed.current = 0;
         doClick(e);
       }
 
-      // Sync axes: momentum direction becomes auto-rotate direction
-      if (velAngle.current > 0.0001) {
-        autoRotateAxis.current.copy(velAxis.current);
-      } else {
-        // No momentum — use existing auto-rotate axis for velAxis
-        velAxis.current.copy(autoRotateAxis.current);
+      // If there's meaningful momentum keep that axis; otherwise restore Y-axis drift
+      if (velSpeed.current < AUTO_SPEED * 0.5) {
+        velAxis.current.set(0, 1, 0);
       }
-      autoRotateSpeed.current = 0.12;
+      // velSpeed naturally decays in useFrame back to AUTO_SPEED
     };
 
     // Pointer down on canvas starts drag
@@ -342,8 +355,7 @@ function OrbitScene({
       orbiting.current = true;
       totalDragDist.current = 0;
       prevMouse.current = { x: e.clientX, y: e.clientY };
-      velAngle.current = 0;
-      autoRotateSpeed.current = 0;
+      velSpeed.current = 0;
       document.body.style.cursor = 'grabbing';
     };
 
@@ -428,27 +440,26 @@ function OrbitScene({
     setTimeout(() => { setPulseNodes(new Set()); setActiveNode(null); }, 800);
   }, [adjacency]);
 
-  useFrame((_, delta) => {
+  useFrame((_, rawDelta) => {
+    // Clamp delta to max 50ms (20fps floor) so tab-switch spikes don't cause jumps
+    const dt = Math.min(rawDelta, 0.05);
+
     if (!orbiting.current) {
-      const cruiseSpeed = autoRotateSpeed.current * delta;
+      // Exponential decay toward AUTO_SPEED — frame-rate independent
+      const decay = Math.exp(-dt * 1.733);
+      velSpeed.current = AUTO_SPEED + (velSpeed.current - AUTO_SPEED) * decay;
 
-      // Decay momentum toward cruise speed
-      velAngle.current = cruiseSpeed + (velAngle.current - cruiseSpeed) * 0.94;
-
-      // Clamp: never go below cruise speed
-      if (velAngle.current < cruiseSpeed) velAngle.current = cruiseSpeed;
-
-      // Always rotate on the momentum axis (which equals autoRotateAxis after release)
-      if (velAngle.current > 0.00001) {
-        const q = new THREE.Quaternion().setFromAxisAngle(velAxis.current, velAngle.current);
-        orbitQuat.current.premultiply(q);
+      const angle = velSpeed.current * dt;
+      if (angle > 0.00001) {
+        _rotQ.current.setFromAxisAngle(velAxis.current, angle);
+        orbitQuat.current.premultiply(_rotQ.current);
         orbitQuat.current.normalize();
       }
     }
 
-    const basePos = new THREE.Vector3(0, 0, ORBIT_RADIUS);
-    basePos.applyQuaternion(orbitQuat.current);
-    camera.position.copy(basePos);
+    _basePos.current.set(0, 0, ORBIT_RADIUS);
+    _basePos.current.applyQuaternion(orbitQuat.current);
+    camera.position.copy(_basePos.current);
     camera.lookAt(0, 0, 0);
   });
 
