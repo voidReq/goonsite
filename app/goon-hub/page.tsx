@@ -107,16 +107,19 @@ export default function GoonHub() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [ghost, setGhost] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const termBodyRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom when history changes (skip initial mount)
+  // Scroll terminal body to bottom when history changes (skip initial mount)
   const hasInteracted = useRef(false);
   useEffect(() => {
     if (!hasInteracted.current) {
       hasInteracted.current = history.length > 0;
       return;
     }
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = termBodyRef.current;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
   }, [history]);
 
   // Focus input on mount
@@ -252,18 +255,18 @@ export default function GoonHub() {
   };
 
   return (
-    <PageShell maxWidth="lg">
-      <div className="flex items-start md:items-center justify-center min-h-[calc(100vh-5rem)]">
-        <div className="w-full" style={{ maxWidth: '1020px' }}>
+    <PageShell maxWidth="lg" noPadding>
+      <div className="flex items-start md:items-center justify-center h-[calc(100dvh-3.5rem)] overflow-hidden px-4 md:px-6">
+        <div className="w-full flex flex-col" style={{ maxWidth: '1020px', maxHeight: 'calc(100dvh - 5rem)' }}>
 
           {/* Terminal window */}
           <div
-            className="terminal-window cursor-text"
+            className="terminal-window cursor-text flex flex-col min-h-0"
             onClick={() => inputRef.current?.focus()}
           >
 
             {/* Title bar */}
-            <div className="terminal-titlebar">
+            <div className="terminal-titlebar shrink-0">
               <span className="terminal-dot" style={{ backgroundColor: '#f7768e' }} />
               <span className="terminal-dot" style={{ backgroundColor: '#e0af68' }} />
               <span className="terminal-dot" style={{ backgroundColor: '#9ece6a' }} />
@@ -271,7 +274,7 @@ export default function GoonHub() {
             </div>
 
             {/* Terminal body */}
-            <div className="p-4 md:p-6 lg:p-8 font-mono text-sm md:text-base lg:text-lg max-h-[70vh] overflow-y-auto">
+            <div ref={termBodyRef} className="p-4 md:p-6 lg:p-8 font-mono text-sm md:text-base lg:text-lg flex-1 min-h-0 overflow-y-auto">
 
               {/* Initial tree output */}
               <div className="mb-1">
@@ -339,12 +342,11 @@ export default function GoonHub() {
                 </div>
               </div>
 
-              <div ref={bottomRef} />
             </div>
           </div>
 
           {/* Hint */}
-          <div className="mt-3 text-center text-xs font-mono text-white/20">
+          <div className="mt-3 shrink-0 text-center text-xs font-mono text-white/20">
             type <span className="text-white/35">help</span> for commands · <span className="text-white/35">tab</span> to autocomplete
           </div>
 
