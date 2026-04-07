@@ -246,6 +246,72 @@ html.light .glass-panel {
   border-radius: 50%;
 }
 
+.terminal-dot-red,
+.terminal-dot-yellow,
+.terminal-dot-green {
+  position: relative;
+  transition: transform 0.15s ease;
+}
+
+.terminal-dot-red::after,
+.terminal-dot-yellow::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.terminal-dot-red:hover,
+.terminal-dot-yellow:hover {
+  transform: scale(1.15);
+}
+
+.terminal-dot-red::after {
+  content: '×';
+  margin-top: -1.5px;
+}
+
+.terminal-dot-yellow::after {
+  content: '−';
+}
+
+.terminal-dot-red:hover::after,
+.terminal-dot-yellow:hover::after {
+  opacity: 1;
+}
+
+.terminal-dot-green {
+  cursor: pointer;
+}
+
+.terminal-dot-green:hover {
+  transform: scale(1.15);
+}
+
+.terminal-dot-green::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border: 1.5px solid rgba(0, 0, 0, 0.5);
+  border-radius: 1px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.terminal-dot-green:hover::after {
+  opacity: 1;
+}
+
 /* ─── Markdown / Prose styling ─── */
 .prose {
   word-wrap: break-word !important;

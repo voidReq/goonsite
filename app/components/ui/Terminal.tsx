@@ -1,13 +1,21 @@
 "use client";
+import { useRouter } from 'next/navigation'
 import { Typewriter } from 'react-simple-typewriter'
 
 export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
+  const router = useRouter()
+
   return (
     <div style={{ width: '100%', height: '100%', maxWidth: fullWidth ? 'none' : '600px' }}>
       <div className="terminal-titlebar">
-        <span className="terminal-dot" style={{ backgroundColor: '#f7768e' }} />
-        <span className="terminal-dot" style={{ backgroundColor: '#e0af68' }} />
-        <span className="terminal-dot" style={{ backgroundColor: '#9ece6a' }} />
+        <span className="terminal-dot terminal-dot-red" style={{ backgroundColor: '#f7768e' }} />
+        <span className="terminal-dot terminal-dot-yellow" style={{ backgroundColor: '#e0af68' }} />
+        <span
+          className="terminal-dot terminal-dot-green"
+          style={{ backgroundColor: '#9ece6a' }}
+          onClick={() => router.push('/goon-hub')}
+          title="Maximize"
+        />
         <span className="ml-3 text-xs font-mono" style={{ color: 'var(--goon-text-dim)' }}>goon@goonsite: ~</span>
       </div>
       <div className="p-5" style={{ color: '#a9b1d6' }}>
