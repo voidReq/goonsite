@@ -3,7 +3,7 @@
 This was the first critical/high severity vulnerability I found on a public website. It was a stored XSS vulnerability that allowed for exfiltration of cookies
 
 ### Process 
-- I joked to a friend who was on a website that the website looked ancient---it did. Jokingly, I entered into the search bar a simple `"><p>hi</p>`
+- I joked to a friend who was on a website that the website looked ancient, and I entered into the search bar a simple `"><p>hi</p>`
 - Funnily enough, this actually worked, and this was the search result: `hi" style="width: 220px;">`
 - Next, I tried executing an alert: `"><script>alert("hi!")</script>`
     - This was caught by website security
