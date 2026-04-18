@@ -289,6 +289,10 @@ function OrbitScene({
   // EMA over drag samples so a noisy final pointermove can't flip the
   // post-release spin direction.
   const _velVec   = useRef(new THREE.Vector3());
+  // Snapshot of spin state taken at pointer-down — restored on tap so a
+  // grab-and-release pause doesn't revert rotation to the default Y axis.
+  const _preGrabAxis  = useRef(new THREE.Vector3(0, 1, 0));
+  const _preGrabSpeed = useRef(AUTO_SPEED);
 
   useEffect(() => {
     camera.position.set(0, 0, ORBIT_RADIUS);
@@ -344,11 +348,13 @@ function OrbitScene({
       orbiting.current = false;
       document.body.style.cursor = '';
 
-      // Click threshold: total drag distance < 5px
+      // Click threshold: total drag distance < 5px — restore the pre-grab
+      // spin so a tap-to-pause resumes the existing direction instead of
+      // snapping back to the default Y-axis cruise.
       if (totalDragDist.current < 5) {
-        velSpeed.current = 0;
+        velAxis.current.copy(_preGrabAxis.current);
+        velSpeed.current = _preGrabSpeed.current;
         _velVec.current.set(0, 0, 0);
-        velAxis.current.set(0, 1, 0);
         doClick(e);
         return;
       }
@@ -369,6 +375,8 @@ function OrbitScene({
       orbiting.current = true;
       totalDragDist.current = 0;
       prevMouse.current = { x: e.clientX, y: e.clientY };
+      _preGrabAxis.current.copy(velAxis.current);
+      _preGrabSpeed.current = velSpeed.current;
       velSpeed.current = 0;
       _velVec.current.set(0, 0, 0);
       document.body.style.cursor = 'grabbing';
