@@ -285,10 +285,14 @@ function OrbitScene({
   const _camUp    = useRef(new THREE.Vector3());
   const _axis     = useRef(new THREE.Vector3());
   const _basePos  = useRef(new THREE.Vector3());
+  // Smoothed angular-velocity vector (axis * speed) in world space.
+  // EMA over drag samples so a noisy final pointermove can't flip the
+  // post-release spin direction.
+  const _velVec   = useRef(new THREE.Vector3());
 
   useEffect(() => {
     camera.position.set(0, 0, ORBIT_RADIUS);
-    camera.lookAt(0, 0, 0);
+    camera.quaternion.identity();
     orbitQuat.current.identity();
     velSpeed.current = AUTO_SPEED;
   }, [camera]);
@@ -308,14 +312,17 @@ function OrbitScene({
       orbitQuat.current.premultiply(_dragQ.current);
       orbitQuat.current.normalize();
 
-      // Combined axis for velocity — reuse _axis
+      // Instantaneous angular velocity vector in world space (axis * speed),
+      // EMA'd into _velVec so release direction reflects the flick as a whole
+      // rather than the final twitchy sample.
       _axis.current
         .copy(_camUp.current).multiplyScalar(-dx)
         .addScaledVector(_camRight.current, -dy);
       const len = _axis.current.length();
       if (len > 0.001) {
-        velAxis.current.copy(_axis.current).normalize();
-        velSpeed.current = Math.min(len * sens * 60, 6);
+        const instSpeed = Math.min(len * sens * 60, 6);
+        _axis.current.multiplyScalar(instSpeed / len);
+        _velVec.current.lerp(_axis.current, 0.25);
       }
     };
 
@@ -340,14 +347,21 @@ function OrbitScene({
       // Click threshold: total drag distance < 5px
       if (totalDragDist.current < 5) {
         velSpeed.current = 0;
+        _velVec.current.set(0, 0, 0);
+        velAxis.current.set(0, 1, 0);
         doClick(e);
+        return;
       }
 
-      // If there's meaningful momentum keep that axis; otherwise restore Y-axis drift
-      if (velSpeed.current < AUTO_SPEED * 0.5) {
+      // Derive spin from smoothed velocity, not the last noisy pointermove.
+      const speed = _velVec.current.length();
+      if (speed < AUTO_SPEED * 0.5) {
         velAxis.current.set(0, 1, 0);
+        velSpeed.current = speed;
+      } else {
+        velAxis.current.copy(_velVec.current).multiplyScalar(1 / speed);
+        velSpeed.current = speed;
       }
-      // velSpeed naturally decays in useFrame back to AUTO_SPEED
     };
 
     // Pointer down on canvas starts drag
@@ -356,6 +370,7 @@ function OrbitScene({
       totalDragDist.current = 0;
       prevMouse.current = { x: e.clientX, y: e.clientY };
       velSpeed.current = 0;
+      _velVec.current.set(0, 0, 0);
       document.body.style.cursor = 'grabbing';
     };
 
@@ -460,7 +475,9 @@ function OrbitScene({
     _basePos.current.set(0, 0, ORBIT_RADIUS);
     _basePos.current.applyQuaternion(orbitQuat.current);
     camera.position.copy(_basePos.current);
-    camera.lookAt(0, 0, 0);
+    // Orient camera directly from orbitQuat instead of lookAt(0,0,0) —
+    // avoids the up-vector flip when the orbit crosses the world ±Y pole.
+    camera.quaternion.copy(orbitQuat.current);
   });
 
   return (
