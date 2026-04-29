@@ -577,3 +577,33 @@ html.light ::-webkit-scrollbar-thumb:hover {
 html.light * {
   scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
 }
+
+/* ─── @uiw/react-md-editor preview list rendering (Tailwind preflight resets defaults) ─── */
+.wmde-markdown ul,
+.w-md-editor-preview ul,
+.md-editor-wrapper .wmde-markdown ul {
+  list-style: disc outside !important;
+  padding-left: 1.5em !important;
+  margin: 0.5em 0 !important;
+}
+
+.wmde-markdown ol,
+.w-md-editor-preview ol,
+.md-editor-wrapper .wmde-markdown ol {
+  list-style: decimal outside !important;
+  padding-left: 1.5em !important;
+  margin: 0.5em 0 !important;
+}
+
+.wmde-markdown li,
+.w-md-editor-preview li {
+  display: list-item !important;
+  margin: 0.25em 0 !important;
+}
+
+.wmde-markdown ul ul,
+.wmde-markdown ol ol,
+.wmde-markdown ul ol,
+.wmde-markdown ol ul {
+  margin: 0.25em 0 !important;
+}
