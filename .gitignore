@@ -53,9 +53,12 @@ next-env.d.ts
 dist/
 build/
 
-# data folder (notes are per-server, projects are shared)
+# data folder (notes and project writeups are per-server)
+# already-tracked files under /data/projects/ stay tracked; new uploads stay local-only
 /data/*
-!/data/projects/
 
 # visitor logs (never commit)
 /data/visitors/
+
+# admin-uploaded project images (per-server, not synced via git)
+/public/uploads/

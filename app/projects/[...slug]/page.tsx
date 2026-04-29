@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 import { getProjectBySlug, getAllProjects } from '@/lib/projects';
 import MarkdownRenderer from '@/app/components/MarkdownRenderer';
 
+export const dynamicParams = true;
+export const revalidate = 0;
+
 export async function generateStaticParams() {
   const projects = getAllProjects();
   return projects.map((project) => ({
