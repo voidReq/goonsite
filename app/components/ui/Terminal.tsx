@@ -8,11 +8,11 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
   return (
     <div style={{ width: '100%', height: '100%', maxWidth: fullWidth ? 'none' : '600px' }}>
       <div className="terminal-titlebar">
-        <span className="terminal-dot terminal-dot-red" style={{ backgroundColor: '#f7768e' }} />
-        <span className="terminal-dot terminal-dot-yellow" style={{ backgroundColor: '#e0af68' }} />
+        <span className="terminal-dot terminal-dot-red" style={{ backgroundColor: 'var(--goon-red)' }} />
+        <span className="terminal-dot terminal-dot-yellow" style={{ backgroundColor: 'var(--goon-amber)' }} />
         <span
           className="terminal-dot terminal-dot-green"
-          style={{ backgroundColor: '#9ece6a' }}
+          style={{ backgroundColor: 'var(--goon-green)' }}
           onClick={() => router.push('/goon-hub')}
           title="Maximize"
         />
@@ -20,10 +20,10 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
       </div>
       <div className="p-5" style={{ color: '#a9b1d6' }}>
         <div style={{ marginBottom: '10px' }}>
-          <span style={{ color: '#bb9af7' }}>goon@goonsite</span>
-          <span style={{ color: '#7dcfff' }}>:</span>
+          <span style={{ color: 'var(--goon-purple)' }}>goon@goonsite</span>
+          <span style={{ color: 'var(--goon-cyan)' }}>:</span>
           <span style={{ color: 'var(--goon-text)' }}>~</span>
-          <span style={{ color: '#7dcfff' }}>$</span>
+          <span style={{ color: 'var(--goon-cyan)' }}>$</span>
         </div>
         <div>
           <Typewriter

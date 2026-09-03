@@ -117,13 +117,14 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
           </motion.div>
         )}
 
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="orb" style={{ width: 500, height: 500, background: '#bb9af7', top: '-15%', left: '-10%', animationDelay: '0s', opacity: isDesktop ? 0.06 : undefined }} />
-          <div className="orb" style={{ width: 400, height: 400, background: '#7dcfff', bottom: '-10%', right: '-10%', animationDelay: '-7s', opacity: isDesktop ? 0.04 : undefined }} />
-          <div className="orb" style={{ width: 300, height: 300, background: '#9ece6a', top: '40%', right: '20%', animationDelay: '-14s', opacity: isDesktop ? 0.03 : 0.08 }} />
-        </div>
+        {mounted && !isDesktop && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="orb" style={{ width: 500, height: 500, background: '#bb9af7', top: '-15%', left: '-10%', animationDelay: '0s' }} />
+            <div className="orb" style={{ width: 400, height: 400, background: '#7dcfff', bottom: '-10%', right: '-10%', animationDelay: '-7s' }} />
+            <div className="orb" style={{ width: 300, height: 300, background: '#9ece6a', top: '40%', right: '20%', animationDelay: '-14s', opacity: 0.08 }} />
+          </div>
+        )}
 
-        <div className="absolute inset-0 mesh-gradient-purple pointer-events-none" />
         <div className="absolute inset-0 grid-bg pointer-events-none" />
 
         {mounted && CODE_FRAGMENTS.map((text, i) => (
