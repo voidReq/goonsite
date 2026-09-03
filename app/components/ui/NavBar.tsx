@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   IconNotes, IconCode, IconMap, IconMessageCircle, IconTools,
-  IconTerminal2, IconMenu2, IconX, IconSun, IconMoon
+  IconMenu2, IconX, IconSun, IconMoon
 } from '@tabler/icons-react';
 import { useTheme } from '../../../src/context/ThemeContext';
 
@@ -66,15 +66,10 @@ export default function NavBar() {
         <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-6">
           <div className="flex items-center justify-between h-14">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group shrink-0">
-              <IconTerminal2 size={20} className="text-[#bb9af7] group-hover:text-[#7dcfff] transition-colors" />
-              <span className="font-mono font-bold text-sm tracking-tight" style={{
-                background: 'linear-gradient(135deg, #bb9af7, #7dcfff)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}>
-                goonsite
-              </span>
+            <Link href="/" className="flex items-center gap-1 group shrink-0 font-mono text-sm tracking-tight">
+              <span style={{ color: 'var(--goon-text-dim)' }}>~/</span>
+              <span className="font-bold" style={{ color: 'var(--goon-purple)' }}>goonsite</span>
+              <span className="opacity-60 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--goon-cyan)' }}>$</span>
             </Link>
 
             {/* Desktop Nav */}
@@ -200,7 +195,7 @@ export default function NavBar() {
               </div>
             </div>
 
-            {/* Status indicator + Theme toggle */}
+            {/* Theme toggle */}
             <div className="hidden md:flex items-center gap-3">
               <button
                 onClick={toggleTheme}
@@ -221,11 +216,6 @@ export default function NavBar() {
               >
                 {theme === 'dark' ? <IconSun size={16} /> : <IconMoon size={16} />}
               </button>
-              <div className="relative">
-                <div className="w-2 h-2 rounded-full bg-[#9ece6a]" />
-                <div className="absolute inset-0 w-2 h-2 rounded-full bg-[#9ece6a] animate-ping opacity-40" />
-              </div>
-              <span className="text-[10px] font-mono" style={{ color: 'var(--goon-text-dim)' }}>online</span>
             </div>
 
             {/* Mobile hamburger */}

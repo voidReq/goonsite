@@ -558,12 +558,6 @@ html.light .glass-panel {
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* Pulsing animation for status dot */
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0; transform: scale(2); }
-}
-
 /* ─── Light mode overrides ─── */
 
 html.light ::-webkit-scrollbar-thumb {
