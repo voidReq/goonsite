@@ -535,7 +535,7 @@ export default function MessageBoardPage() {
                     letterSpacing: '0.02em',
                   }}
                   onClick={() => {
-                    document.getElementById('game-challenge')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    document.getElementById('game-challenge')?.scrollIntoView({ behavior: 'smooth', block: 'end' });
                   }}
                 >
                   ↓ Tap to scroll to bottom ↓
@@ -730,7 +730,7 @@ export default function MessageBoardPage() {
                         onWin={() => {
                           setHasWon(true);
                           setTimeout(() => {
-                            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
                           }, 300);
                         }}
                       />
@@ -740,7 +740,7 @@ export default function MessageBoardPage() {
                         onWin={() => {
                           setHasWon(true);
                           setTimeout(() => {
-                            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
                           }, 300);
                         }}
                       />
@@ -750,7 +750,7 @@ export default function MessageBoardPage() {
                         onWin={() => {
                           setHasWon(true);
                           setTimeout(() => {
-                            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
                           }, 300);
                         }}
                       />
