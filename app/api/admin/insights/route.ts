@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync, existsSync, readdirSync } from 'fs';
-import { join } from 'path';
 import { rateLimit } from '@/lib/rate-limit';
 import { getGeoCache } from '@/lib/geo-cache';
 import { sendAdminAlert } from '@/lib/notify';
 import { getIp } from '@/lib/request';
+import {
+  computeAnalytics,
+  resolveRange,
+  CALENDAR_PRESETS,
+  type Bucket,
+  type RangePreset,
+} from '@/lib/analytics';
 
-const VISITORS_DIR = join(process.cwd(), 'data', 'visitors');
+const PRESETS: RangePreset[] = [
+  '1h', '24h', '7d', '30d', '90d',
+  'day', 'week', 'month', 'quarter', 'year',
+  '12m', 'all',
+];
+
+const BUCKETS: Bucket[] = ['tenmin', 'hour', 'day', 'week', 'month'];
 
 function isAuthorized(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
@@ -15,8 +26,20 @@ function isAuthorized(request: NextRequest): boolean {
   return token === process.env.ADMIN_PASSWORD;
 }
 
+/** Hostnames that count as "us", so self-referrals are reported as Direct. */
+function selfHosts(request: NextRequest): string[] {
+  const hosts = [
+    request.headers.get('host'),
+    request.headers.get('x-forwarded-host'),
+    process.env.NEXT_PUBLIC_SITE_HOST,
+    process.env.VERCEL_URL,
+  ];
+  return hosts
+    .filter((h): h is string => !!h)
+    .map((h) => h.replace(/^https?:\/\//, '').split(':')[0].toLowerCase().replace(/^www\./, ''));
+}
+
 export async function GET(request: NextRequest) {
-  // Rate limit
   const ip = getIp(request);
   const userAgent = request.headers.get('user-agent') || 'Unknown';
 
@@ -30,108 +53,38 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  const range = searchParams.get('range') || 'all'; // 1h, 24h, 3d, 7d, 30d, all
 
-  // Treat 'all' as the initial load request for alert purposes, to avoid spam
-  if (range === 'all') {
+  // Only alert on the initial load, so browsing ranges doesn't spam notifications.
+  if (searchParams.get('initial') === '1') {
     await sendAdminAlert({ ip, status: 'SUCCESS', userAgent, path: '/api/admin/insights' });
   }
-  
-  const now = new Date();
-  let cutoff: Date | null = null;
-  
-  if (range === '1h') cutoff = new Date(now.getTime() - 60 * 60 * 1000);
-  else if (range === '24h') cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-  else if (range === '3d') cutoff = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
-  else if (range === '7d') cutoff = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  else if (range === '30d') cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  // We can filter which log files to read based on the cutoff date.
-  let filesToRead: string[] = [];
-  if (existsSync(VISITORS_DIR)) {
-    const files = readdirSync(VISITORS_DIR).filter(f => f.endsWith('.jsonl'));
-    if (cutoff) {
-      // Subtract 1 day to account for potential timezone differences
-      const cutoffDateStr = new Date(cutoff.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-      filesToRead = files.filter(f => {
-        const fileDate = f.replace('.jsonl', '');
-        return fileDate >= cutoffDateStr;
-      });
-    } else {
-      filesToRead = files;
-    }
+  const rawPreset = searchParams.get('range') || '30d';
+  const preset = (PRESETS as string[]).includes(rawPreset) ? (rawPreset as RangePreset) : '30d';
+
+  const rawOffset = Number(searchParams.get('offset') || '0');
+  const offset = CALENDAR_PRESETS.includes(preset) && Number.isFinite(rawOffset)
+    ? Math.min(240, Math.max(0, Math.floor(rawOffset)))
+    : 0;
+
+  const rawBucket = searchParams.get('bucket');
+  const bucket = rawBucket && (BUCKETS as string[]).includes(rawBucket) ? (rawBucket as Bucket) : null;
+
+  const includeBots = searchParams.get('bots') === '1';
+
+  try {
+    const range = resolveRange(preset, offset, bucket);
+    const analytics = computeAnalytics({
+      range,
+      geo: getGeoCache(),
+      selfHosts: selfHosts(request),
+      includeBots,
+    });
+    return NextResponse.json(analytics, {
+      headers: { 'Cache-Control': 'no-store' },
+    });
+  } catch (error) {
+    console.error('[admin-insights] Failed to compute analytics:', error);
+    return NextResponse.json({ error: 'Failed to compute analytics' }, { status: 500 });
   }
-
-  const geoCache = getGeoCache();
-  
-  // Track stats per location
-  // Key: "lat,lon"
-  const locationStats: Record<string, {
-    lat: number;
-    lng: number;
-    city: string;
-    country: string;
-    uniqueIps: Set<string>;
-    totalVisits: number;
-  }> = {};
-
-  for (const file of filesToRead) {
-    const filePath = join(VISITORS_DIR, file);
-    if (!existsSync(filePath)) continue;
-    
-    const content = readFileSync(filePath, 'utf-8');
-    const lines = content.trim().split('\n');
-    
-    for (const line of lines) {
-      if (!line) continue;
-      try {
-        const entry = JSON.parse(line);
-        // We only care about views for locations
-        if (entry.type && entry.type !== 'view') continue;
-        
-        const timestamp = new Date(entry.timestamp);
-        if (cutoff && timestamp < cutoff) continue;
-        
-        const visitorIp = entry.ip;
-        if (!visitorIp || !geoCache[visitorIp]) continue;
-        
-        const geo = geoCache[visitorIp];
-        // Must have valid coordinates
-        if (typeof geo.latitude !== 'number' || typeof geo.longitude !== 'number' ||
-            (geo.latitude === 0 && geo.longitude === 0 && geo.city === 'Unknown')) {
-          continue;
-        }
-        
-        const locKey = `${geo.latitude},${geo.longitude}`;
-        if (!locationStats[locKey]) {
-          locationStats[locKey] = {
-            lat: geo.latitude,
-            lng: geo.longitude,
-            city: geo.city,
-            country: geo.country_name,
-            uniqueIps: new Set(),
-            totalVisits: 0
-          };
-        }
-        
-        locationStats[locKey].totalVisits++;
-        locationStats[locKey].uniqueIps.add(visitorIp);
-        
-      } catch {
-        // ignore JSON parse error for individual lines
-      }
-    }
-  }
-
-  // Format response
-  const locations = Object.values(locationStats).map(loc => ({
-    lat: loc.lat,
-    lng: loc.lng,
-    city: loc.city,
-    country: loc.country,
-    uniqueVisitors: loc.uniqueIps.size,
-    totalVisits: loc.totalVisits
-  })).sort((a, b) => b.totalVisits - a.totalVisits);
-
-  return NextResponse.json({ locations });
 }

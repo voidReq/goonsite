@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readFileSync, existsSync, readdirSync } from 'fs';
-import { join } from 'path';
 import { rateLimit } from '@/lib/rate-limit';
 import { getGeoCache, getGeoErrors } from '@/lib/geo-cache';
 import { sendAdminAlert } from '@/lib/notify';
 import { getIp } from '@/lib/request';
+import {
+  listLogDates,
+  readEntriesInRange,
+  resolveRange,
+  tzDateKey,
+  tzTime,
+  CALENDAR_PRESETS,
+  REPORT_TZ,
+  type RangePreset,
+} from '@/lib/analytics';
 
-const VISITORS_DIR = join(process.cwd(), 'data', 'visitors');
+/** Hard ceiling on entries returned in one response, to keep payloads sane. */
+const MAX_ENTRIES = 5000;
+
+const PERIODS: RangePreset[] = ['day', 'week', 'month', 'quarter', 'year', 'all'];
 
 function isAuthorized(request: NextRequest): boolean {
   const authHeader = request.headers.get('authorization');
@@ -35,19 +46,8 @@ export async function GET(request: NextRequest) {
   if (searchParams.get('dates') === 'list') {
     // We only alert on the initial login check to prevent spamming on subsequent data requests
     await sendAdminAlert({ ip, status: 'SUCCESS', userAgent, path: '/api/admin/visitors' });
-    try {
-      if (!existsSync(VISITORS_DIR)) {
-        return NextResponse.json({ dates: [] });
-      }
-      const files = readdirSync(VISITORS_DIR)
-        .filter((f) => f.endsWith('.jsonl'))
-        .map((f) => f.replace('.jsonl', ''))
-        .sort()
-        .reverse();
-      return NextResponse.json({ dates: files });
-    } catch {
-      return NextResponse.json({ dates: [] });
-    }
+    const dates = listLogDates().reverse();
+    return NextResponse.json({ dates, timezone: REPORT_TZ });
   }
 
   // Return the geo cache and any recent API errors
@@ -58,46 +58,71 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // Get logs for a specific date (default: today)
-  const date = searchParams.get('date') || new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Los_Angeles',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).format(new Date());
+  const period = searchParams.get('period');
+
+  // Period mode: a calendar week/month/quarter/year (or all time) of raw logs.
+  if (period && (PERIODS as string[]).includes(period)) {
+    const preset = period as RangePreset;
+    const rawOffset = Number(searchParams.get('offset') || '0');
+    const offset = CALENDAR_PRESETS.includes(preset) && Number.isFinite(rawOffset)
+      ? Math.min(240, Math.max(0, Math.floor(rawOffset)))
+      : 0;
+
+    try {
+      const range = resolveRange(preset, offset);
+      const all = readEntriesInRange(range.from, range.to);
+      // Newest first, then trim — so a truncated response keeps the recent end.
+      all.reverse();
+      const entries = all.slice(0, MAX_ENTRIES);
+
+      return NextResponse.json({
+        period: preset,
+        offset,
+        label: range.label,
+        from: range.from ? range.from.toISOString() : null,
+        to: range.to.toISOString(),
+        navigable: range.navigable,
+        atLatest: range.atLatest,
+        timezone: REPORT_TZ,
+        entries,
+        count: entries.length,
+        totalCount: all.length,
+        truncated: all.length > entries.length,
+      });
+    } catch (error) {
+      console.error('[admin-visitors] Failed to read period logs:', error);
+      return NextResponse.json({ error: 'Failed to read logs' }, { status: 500 });
+    }
+  }
+
+  // Single-day mode (the original behaviour): ?date=YYYY-MM-DD, defaulting to today.
+  const date = searchParams.get('date') || tzDateKey(new Date());
 
   // Validate date format
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return NextResponse.json({ error: 'Invalid date format. Use YYYY-MM-DD.' }, { status: 400 });
   }
 
-  const filePath = join(VISITORS_DIR, `${date}.jsonl`);
-
-  if (!existsSync(filePath)) {
-    return NextResponse.json({ date, entries: [], count: 0 });
-  }
-
   try {
-    const content = readFileSync(filePath, 'utf-8');
-    const entries = content
-      .trim()
-      .split('\n')
-      .filter((line) => line.length > 0)
-      .map((line) => {
-        try {
-          return JSON.parse(line);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    // Bound the read to that calendar day in the reporting timezone.
+    const [y, m, d] = date.split('-').map(Number);
+    const from = tzTime(y, m, d);
+    const to = tzTime(y, m, d + 1);
+
+    const all = readEntriesInRange(from, to);
+    all.reverse();
+    const entries = all.slice(0, MAX_ENTRIES);
 
     return NextResponse.json({
       date,
+      timezone: REPORT_TZ,
       entries,
       count: entries.length,
+      totalCount: all.length,
+      truncated: all.length > entries.length,
     });
-  } catch {
+  } catch (error) {
+    console.error('[admin-visitors] Failed to read logs:', error);
     return NextResponse.json({ error: 'Failed to read logs' }, { status: 500 });
   }
 }
