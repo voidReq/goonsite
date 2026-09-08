@@ -25,7 +25,7 @@ import {
   IconMessage,
   IconRefresh,
 } from '@tabler/icons-react';
-import { CONTENT_MIN_HEIGHT } from '../_components/theme';
+import { VIEWPORT_CENTERED, VIEWPORT_CENTERED_CARD } from '../_components/theme';
 
 const GAME_LABELS: Record<string, string> = {
   tictactoe: '❌ Tic-Tac-Toe',
@@ -115,8 +115,8 @@ export default function AdminMessagesPage() {
   if (!authed) {
     return (
       <MantineProvider forceColorScheme="dark">
-        <Container size="xs" style={{ minHeight: CONTENT_MIN_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Paper p="xl" radius="md" style={{ width: '100%', maxWidth: 400, background: '#141414' }}>
+        <Container size="xs" style={VIEWPORT_CENTERED}>
+          <Paper p="xl" radius="md" style={{ ...VIEWPORT_CENTERED_CARD, width: '100%', maxWidth: 400, background: '#141414' }}>
             <Stack align="center" gap="md">
               <IconLock size={40} color="#7c3aed" />
               <Title order={3}>Message Moderation</Title>

@@ -17,10 +17,31 @@ export const BORDER = '#2a2a2a';
  * Height of the viewport below the fixed navbar.
  *
  * The root layout renders pages inside `<main class="pt-14">`, so a plain
- * 100vh box starts 56px down the page — it overflows by the navbar's height
- * and centres its contents that much too low.
+ * 100vh box starts 56px down the page and overflows by the navbar's height.
+ * Use this for full-height page backgrounds, which start below the navbar.
  */
 export const CONTENT_MIN_HEIGHT = 'calc(100dvh - 3.5rem)';
+
+/**
+ * Centres a lone card against the true centre of the viewport.
+ *
+ * Subtracting the navbar's height from the box (CONTENT_MIN_HEIGHT) centres
+ * within the space *below* the navbar, which still leaves the card half a
+ * navbar low. The negative margin instead cancels the layout's `pt-14`, so the
+ * box spans the whole viewport and its centre is the screen's centre.
+ *
+ * The card is centred with `margin: auto` rather than `align-items: center`:
+ * auto margins collapse to zero when space runs out, so on a very short
+ * viewport the card pins to the top and stays reachable instead of being
+ * clipped above the scroll origin.
+ */
+export const VIEWPORT_CENTERED = {
+  minHeight: '100dvh',
+  marginTop: '-3.5rem',
+  display: 'flex',
+} as const;
+
+export const VIEWPORT_CENTERED_CARD = { margin: 'auto' } as const;
 
 export const INK = '#ededed';
 export const INK_MUTED = '#8a8a8a';
