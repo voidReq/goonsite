@@ -64,6 +64,26 @@ export const STATUS = {
   critical: '#d03b3b',
 } as const;
 
+/**
+ * Magnitude ramp for map markers, low → high.
+ *
+ * A shorter, brighter slice of SEQUENTIAL. The full ramp's dark end is meant to
+ * recede toward the surface, which is right for heatmap cells (where "near
+ * zero" should fade out) but wrong for a point marker: at 1.13:1 against the
+ * map's land fill the quietest cities were effectively invisible. Every step
+ * here clears 2:1 against both the land (#1a1f2e) and the ocean (#0d1117).
+ */
+export const MARKER_RAMP = ['#6455bd', '#7c6cd8', '#9085e9', '#ada2f0'] as const;
+
+/** Pick a marker ramp step for `value` on a 0..max scale. */
+export function markerColor(value: number, max: number): string {
+  if (max <= 0) return MARKER_RAMP[0];
+  // sqrt keeps the low end distinguishable when the distribution is long-tailed.
+  const t = Math.sqrt(Math.max(0, value) / max);
+  const i = Math.min(MARKER_RAMP.length - 1, Math.max(0, Math.round(t * (MARKER_RAMP.length - 1))));
+  return MARKER_RAMP[i];
+}
+
 /** A "no data" cell, distinct from the ramp's near-zero step. */
 export const EMPTY_CELL = '#1c1c1c';
 

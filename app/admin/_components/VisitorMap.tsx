@@ -7,15 +7,27 @@ import { IconPlus, IconMinus, IconFocus2, IconMapPin, IconWorld } from '@tabler/
 import type { LocationStat } from '@/lib/analytics';
 import { REFERENCE_CITIES } from './map-cities';
 import {
-  SURFACE, BORDER, INK, INK_MUTED, SEQUENTIAL, SERIES,
-  rampColor, formatExact, formatPercent,
+  SURFACE, BORDER, INK, INK_MUTED, MARKER_RAMP, SERIES,
+  markerColor, formatExact, formatPercent,
 } from './theme';
 
 const WORLD_URL = '/countries-110m.json';
 const US_STATES_URL = '/us-states-10m.json';
 
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 64;
+/**
+ * High enough to separate cities inside one metro. Boston and Cambridge sit
+ * 0.22 projected units apart, so they only clear the cluster threshold past
+ * zoom ~128 — a lower ceiling makes them permanently inseparable.
+ */
+export const MAX_ZOOM = 400;
+
+/** Locations that would render closer together than this merge into one marker. */
+export const CLUSTER_PX = 26;
+
+/** Smallest marker radius in screen px, so a one-visit city stays visible. */
+const MIN_MARKER_PX = 4;
+const MAX_MARKER_PX = 16;
 
 const LAND = '#1a1f2e';
 const LAND_HOVER = '#232940';
@@ -24,15 +36,22 @@ const OCEAN = '#0d1117';
 
 type Metric = 'visits' | 'visitors';
 
-interface Cluster {
+export interface Cluster {
   lat: number;
   lng: number;
   label: string;
   sub: string;
+  /** Anchor city on its own, for the on-map label. */
+  city: string;
   visits: number;
   visitors: number;
   /** Locations merged into this marker. */
   count: number;
+  /**
+   * Zoom at which this cluster's closest pair clears the threshold, so a click
+   * can jump straight to where it comes apart. Null for a lone location.
+   */
+  splitZoom: number | null;
 }
 
 interface VisitorMapProps {
@@ -44,41 +63,91 @@ interface VisitorMapProps {
 }
 
 /**
- * Grid-cluster nearby locations at the current zoom, then merge each cell.
- * Visitor ids are unioned rather than summed, so a visitor who shows up in two
- * nearby cities is still counted once.
+ * Mercator projection into SVG user units, matching what ComposableMap renders
+ * with `projection="geoMercator"` at the same scale.
  */
-function clusterLocations(locations: LocationStat[], zoom: number): Cluster[] {
-  // Cell size shrinks as you zoom in, so markers separate rather than merge.
-  const cell = 12 / zoom;
-  const cells = new Map<string, LocationStat[]>();
+function projectMercator(lng: number, lat: number, scale: number): [number, number] {
+  // Clamp near the poles, where the mercator y term diverges.
+  const lat_ = Math.max(-85, Math.min(85, lat));
+  return [
+    (scale * lng * Math.PI) / 180,
+    -scale * Math.log(Math.tan(Math.PI / 4 + (lat_ * Math.PI) / 360)),
+  ];
+}
 
-  for (const loc of locations) {
-    const key = `${Math.floor(loc.lat / cell)}:${Math.floor(loc.lng / cell)}`;
-    const bucket = cells.get(key);
-    if (bucket) bucket.push(loc); else cells.set(key, [loc]);
-  }
+/**
+ * Merge locations that would render closer together than CLUSTER_PX, greedily,
+ * largest first — so the busiest location anchors each cluster and the marker
+ * sits on a real place rather than a centroid out at sea.
+ *
+ * Distances are measured in projected space, which is what the reader actually
+ * sees. A fixed degree grid (the previous approach) got this wrong twice over:
+ * it merged far-apart points at high latitudes, and whether two neighbours
+ * split depended on which side of a cell boundary they fell rather than on how
+ * far apart they looked.
+ */
+export function clusterLocations(locations: LocationStat[], zoom: number, scale: number): Cluster[] {
+  const threshold = CLUSTER_PX / zoom;
 
+  const points = locations
+    .map((loc) => {
+      const [x, y] = projectMercator(loc.lng, loc.lat, scale);
+      return { loc, x, y };
+    })
+    .sort((a, b) => b.loc.totalVisits - a.loc.totalVisits);
+
+  const taken = new Array(points.length).fill(false);
   const clusters: Cluster[] = [];
-  for (const members of cells.values()) {
-    const visits = members.reduce((s, m) => s + m.totalVisits, 0);
+
+  for (let i = 0; i < points.length; i++) {
+    if (taken[i]) continue;
+    taken[i] = true;
+
+    const anchor = points[i];
+    const group = [anchor];
+    for (let j = i + 1; j < points.length; j++) {
+      if (taken[j]) continue;
+      if (Math.hypot(anchor.x - points[j].x, anchor.y - points[j].y) <= threshold) {
+        taken[j] = true;
+        group.push(points[j]);
+      }
+    }
+    const members = group.map((g) => g.loc);
+
+    // The closest pair decides when the cluster visibly comes apart.
+    let splitZoom: number | null = null;
+    if (group.length > 1) {
+      let closest = Infinity;
+      for (let a = 0; a < group.length; a++) {
+        for (let b = a + 1; b < group.length; b++) {
+          closest = Math.min(closest, Math.hypot(group[a].x - group[b].x, group[a].y - group[b].y));
+        }
+      }
+      // Overshoot the threshold slightly so the split is unambiguous on screen.
+      if (closest > 0 && Number.isFinite(closest)) {
+        splitZoom = Math.min(MAX_ZOOM, (CLUSTER_PX / closest) * 1.25);
+      }
+    }
+
+    // Union visitor ids — summing per-location uniques would double-count
+    // anyone who shows up in two nearby cities.
     const ids = new Set<number>();
     for (const m of members) for (const id of m.visitorIds) ids.add(id);
 
-    // Weight the marker position toward where the traffic actually is.
-    const lat = members.reduce((s, m) => s + m.lat * m.totalVisits, 0) / visits;
-    const lng = members.reduce((s, m) => s + m.lng * m.totalVisits, 0) / visits;
-
-    const primary = [...members].sort((a, b) => b.totalVisits - a.totalVisits)[0];
     clusters.push({
-      lat, lng,
-      label: members.length === 1 ? primary.city : `${primary.city} + ${members.length - 1} more`,
+      lat: anchor.loc.lat,
+      lng: anchor.loc.lng,
+      label: members.length === 1
+        ? anchor.loc.city
+        : `${anchor.loc.city} + ${members.length - 1} more`,
       sub: members.length === 1
-        ? [primary.region, primary.country].filter(Boolean).join(', ')
-        : `${members.length} locations`,
-      visits,
+        ? [anchor.loc.region, anchor.loc.country].filter(Boolean).join(', ')
+        : `${members.length} locations · click to split`,
+      city: anchor.loc.city,
+      visits: members.reduce((sum, m) => sum + m.totalVisits, 0),
       visitors: ids.size,
       count: members.length,
+      splitZoom,
     });
   }
 
@@ -107,8 +176,31 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
     return () => ro.disconnect();
   }, []);
 
-  const clusters = useMemo(() => clusterLocations(locations, view.zoom), [locations, view.zoom]);
+  // Scale is tuned so the full world fills the container width at zoom 1.
+  const projectionScale = size.width / 6.6;
+
+  const clusters = useMemo(
+    () => clusterLocations(locations, view.zoom, projectionScale),
+    [locations, view.zoom, projectionScale],
+  );
   const maxMetric = Math.max(1, ...clusters.map((c) => (metric === 'visits' ? c.visits : c.visitors)));
+
+  /**
+   * Reference labels that no data marker is already speaking for.
+   *
+   * The busiest cities are exactly where markers land, so the two label sets
+   * compete for the same pixels — "London" was rendering straight through its
+   * own marker's count. The data marker wins; its neighbour's label is dropped.
+   */
+  const referenceCities = useMemo(() => {
+    const markers = clusters.map((c) => projectMercator(c.lng, c.lat, projectionScale));
+    const minGap = 44 / view.zoom;
+    return REFERENCE_CITIES.filter((city) => {
+      if (view.zoom < city.minZoom) return false;
+      const [cx, cy] = projectMercator(city.lng, city.lat, projectionScale);
+      return !markers.some(([x, y]) => Math.hypot(cx - x, cy - y) < minGap);
+    });
+  }, [clusters, view.zoom, projectionScale]);
   const geoViews = locations.reduce((s, l) => s + l.totalVisits, 0);
 
   const zoomBy = (factor: number) =>
@@ -173,9 +265,6 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
   };
 
   const clusterKey = (c: Cluster) => `${c.lat.toFixed(3)},${c.lng.toFixed(3)}`;
-
-  // Scale is tuned so the full world fills the container width at zoom 1.
-  const projectionScale = size.width / 6.6;
 
   const tipWidth = 200;
   const tipLeft = hover ? Math.min(size.width - tipWidth - 8, Math.max(8, hover.x - tipWidth / 2)) : 0;
@@ -290,24 +379,25 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
               </Geographies>
             )}
 
-            {REFERENCE_CITIES.filter((c) => view.zoom >= c.minZoom).map((city) => {
-              // Counter the zoom transform so labels hold a steady visual size.
-              const s = Math.pow(view.zoom, 0.78);
+            {referenceCities.map((city) => {
+              // Counter the zoom transform exactly, so labels hold a constant
+              // screen size at any zoom rather than ballooning when zoomed in.
+              const s = view.zoom;
               return (
                 <Marker key={city.name} coordinates={[city.lng, city.lat]}>
-                  <circle r={1.1 / s} fill="#7d7d7d" />
+                  <circle r={1.5 / s} fill="#7d7d7d" />
                   <text
                     textAnchor="middle"
-                    y={-3.6 / s}
+                    y={-4.5 / s}
                     style={{
-                      fontSize: `${7.5 / s}px`,
+                      fontSize: `${9 / s}px`,
                       fill: '#9a9a9a',
                       fontFamily: 'system-ui, sans-serif',
                       pointerEvents: 'none',
                       userSelect: 'none',
                       paintOrder: 'stroke',
                       stroke: OCEAN,
-                      strokeWidth: 1.6 / s,
+                      strokeWidth: 3 / s,
                       strokeLinejoin: 'round',
                     }}
                   >
@@ -319,10 +409,21 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
 
             {clusters.map((c) => {
               const value = metric === 'visits' ? c.visits : c.visitors;
-              // Area-proportional: radius by sqrt so a 4× value looks 4× as big.
-              const r = (3 + Math.sqrt(value / maxMetric) * 11) / view.zoom;
+              // Radius by sqrt of the value, floored so the quietest city is
+              // still findable and clickable rather than a sub-pixel speck.
+              const rPx = MIN_MARKER_PX + Math.sqrt(value / maxMetric) * (MAX_MARKER_PX - MIN_MARKER_PX);
+              const r = rPx / view.zoom;
               const key = clusterKey(c);
               const isActive = selected === key || hover?.cluster === c;
+              // Counter the zoom transform so labels hold a steady screen size.
+              const labelPx = 9 / view.zoom;
+              // Zoomed all the way out, 19 place names is mush, so markers show
+              // only a count of what they hide. Past that they name themselves —
+              // the reference-city list can't do it, since the cities with
+              // traffic are the same ones it would have labelled.
+              const label = view.zoom >= 2
+                ? (c.count > 1 ? `${c.city} +${c.count - 1}` : c.city)
+                : (c.count > 1 ? `+${c.count - 1}` : null);
               return (
                 <Marker key={key} coordinates={[c.lng, c.lat]}>
                   <g
@@ -342,7 +443,12 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
                       setSelected(key);
                       setView((v) => ({
                         coordinates: [c.lng, c.lat],
-                        zoom: Math.min(MAX_ZOOM, Math.max(v.zoom * 2.5, 4)),
+                        // Jump straight to where this cluster comes apart —
+                        // stepping by a fixed factor took many clicks to get
+                        // two same-metro cities to separate.
+                        zoom: c.splitZoom != null
+                          ? Math.max(c.splitZoom, v.zoom)
+                          : Math.min(MAX_ZOOM, Math.max(v.zoom * 2.5, 4)),
                       }));
                     }}
                   >
@@ -351,11 +457,41 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
                     <circle r={r * 2.4} fill="url(#markerGlow)" />
                     <circle
                       r={r}
-                      fill={rampColor(value, maxMetric)}
+                      fill={markerColor(value, maxMetric)}
                       fillOpacity={0.92}
                       stroke={isActive ? INK : '#c084fc'}
                       strokeWidth={(isActive ? 1.6 : 0.6) / view.zoom}
                     />
+                    {/* A second ring reads as "there is more inside this one". */}
+                    {c.count > 1 && (
+                      <circle
+                        r={r * 1.5}
+                        fill="none"
+                        stroke={markerColor(value, maxMetric)}
+                        strokeOpacity={0.55}
+                        strokeWidth={0.8 / view.zoom}
+                      />
+                    )}
+                    {label && (
+                      <text
+                        textAnchor="middle"
+                        y={r * 1.5 + labelPx * 1.5}
+                        style={{
+                          fontSize: `${labelPx}px`,
+                          fill: INK,
+                          fontFamily: 'system-ui, sans-serif',
+                          fontWeight: 600,
+                          pointerEvents: 'none',
+                          userSelect: 'none',
+                          paintOrder: 'stroke',
+                          stroke: OCEAN,
+                          strokeWidth: labelPx * 0.4,
+                          strokeLinejoin: 'round',
+                        }}
+                      >
+                        {label}
+                      </text>
+                    )}
                   </g>
                 </Marker>
               );
@@ -416,10 +552,12 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
       <Group justify="space-between" mt="sm" wrap="nowrap" align="center">
         <Group gap="xs" wrap="nowrap">
           <Text size="10px" c="dimmed">Fewer</Text>
-          {SEQUENTIAL.map((c) => (
+          {MARKER_RAMP.map((c) => (
             <span key={c} style={{ width: 12, height: 8, borderRadius: 2, backgroundColor: c }} />
           ))}
-          <Text size="10px" c="dimmed">More · marker area ∝ {metric === 'visits' ? 'views' : 'visitors'}</Text>
+          <Text size="10px" c="dimmed">
+            More · bigger = more {metric === 'visits' ? 'views' : 'visitors'} · ⊚ = several cities, click to split
+          </Text>
         </Group>
         <Text size="10px" c="dimmed">
           {formatExact(geoViews)} of {formatExact(totalViews)} views located
