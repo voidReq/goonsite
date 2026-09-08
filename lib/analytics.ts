@@ -622,6 +622,12 @@ export interface Breakdown {
 }
 
 export interface LocationStat {
+  /**
+   * Stable identity for this place — the key it was grouped under. The client
+   * uses it for React keys and selection; a rounded coordinate pair is not
+   * unique, since two distinct places can share a name and a centroid.
+   */
+  id: string;
   lat: number;
   lng: number;
   city: string;
@@ -900,7 +906,7 @@ export function aggregate(opts: AggregateOptions): Analytics {
 
   const ungeolocated = new Set<string>();
   const visitorIndex = new Map<string, number>();
-  const locationStats = new Map<string, LocationStat & { ids: Set<number> }>();
+  const locationStats = new Map<string, LocationStat & { ids: Set<number>; latSum: number; lngSum: number }>();
 
   for (const v of views) {
     bump(pages, v.path, v.ip, v.seconds);
@@ -929,23 +935,45 @@ export function aggregate(opts: AggregateOptions): Analytics {
     let id = visitorIndex.get(v.ip);
     if (id === undefined) { id = visitorIndex.size; visitorIndex.set(v.ip, id); }
 
-    const locKey = `${g.latitude},${g.longitude}`;
+    // Key on the place, not the coordinate pair. Geo providers hand back a
+    // per-subnet lat/lng, so one city arrives spread over many points —
+    // Minneapolis over 14, Chicago over 20 — and keying on coordinates split
+    // each city into fragments that individually looked like quiet towns.
+    // City + region + country keeps distinct same-named places (the several
+    // Springfields) apart; an unnamed city falls back to its coordinates so
+    // unrelated unknowns don't merge into one blob.
+    const locKey = g.city
+      ? `${g.city}|${g.region || ''}|${g.country_name || ''}`
+      : `@${g.latitude},${g.longitude}`;
+
     let loc = locationStats.get(locKey);
     if (!loc) {
       loc = {
+        id: locKey,
         lat: g.latitude, lng: g.longitude,
         city: g.city || 'Unknown', region: g.region || '',
         country: g.country_name || 'Unknown', countryCode: g.country_code || '??',
         totalVisits: 0, uniqueVisitors: 0, visitorIds: [], ids: new Set(),
+        latSum: 0, lngSum: 0,
       };
       locationStats.set(locKey, loc);
     }
     loc.totalVisits++;
     loc.ids.add(id);
+    // Visit-weighted centroid, so the marker lands where the traffic actually
+    // is rather than on whichever subnet happened to be seen first.
+    loc.latSum += g.latitude;
+    loc.lngSum += g.longitude;
   }
 
   const locations: LocationStat[] = [...locationStats.values()]
-    .map(({ ids, ...loc }) => ({ ...loc, uniqueVisitors: ids.size, visitorIds: [...ids] }))
+    .map(({ ids, latSum, lngSum, ...loc }) => ({
+      ...loc,
+      lat: latSum / loc.totalVisits,
+      lng: lngSum / loc.totalVisits,
+      uniqueVisitors: ids.size,
+      visitorIds: [...ids],
+    }))
     .sort((a, b) => b.totalVisits - a.totalVisits);
 
   // Entry pages come from sessions, not raw views.

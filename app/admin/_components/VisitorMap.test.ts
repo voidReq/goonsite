@@ -8,6 +8,7 @@ const SCALE = 1536 / 6.6;
 const loc = (
   city: string, lat: number, lng: number, visits: number, visitorIds: number[],
 ): LocationStat => ({
+  id: `${city}||United States`,
   lat, lng, city, region: '', country: 'United States', countryCode: 'US',
   totalVisits: visits, uniqueVisitors: visitorIds.length, visitorIds,
 });
@@ -134,6 +135,16 @@ describe('clusterLocations', () => {
     const [cluster] = clusterLocations([BOSTON, twin], 1, SCALE);
     expect(cluster.count).toBe(2);
     expect(cluster.splitZoom).toBeNull();
+  });
+
+  it('identifies a cluster by its anchor id, not a rounded coordinate', () => {
+    // Two distinct places can share a name and round to the same centroid;
+    // keying display on coordinates produced duplicate React keys.
+    const [cluster] = clusterLocations([BOSTON, CAMBRIDGE], 1, SCALE);
+    expect(cluster.id).toBe(BOSTON.id);
+
+    const ids = clusterLocations([BOSTON, CAMBRIDGE, LONDON, SYDNEY], 400, SCALE).map((c) => c.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
   it('handles an empty list', () => {

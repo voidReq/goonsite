@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Paper, Text, Group, Stack, Button, ActionIcon, Tooltip, SegmentedControl } from '@mantine/core';
+import {
+  Paper, Text, Group, Stack, Button, ActionIcon, Tooltip, SegmentedControl, TextInput,
+} from '@mantine/core';
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from 'react-simple-maps';
-import { IconPlus, IconMinus, IconFocus2, IconMapPin, IconWorld } from '@tabler/icons-react';
+import { IconPlus, IconMinus, IconFocus2, IconMapPin, IconWorld, IconSearch } from '@tabler/icons-react';
 import type { LocationStat } from '@/lib/analytics';
 import { REFERENCE_CITIES } from './map-cities';
 import {
@@ -43,6 +45,8 @@ export interface Cluster {
   sub: string;
   /** Anchor city on its own, for the on-map label. */
   city: string;
+  /** Anchor location's stable id — used for React keys and selection. */
+  id: string;
   visits: number;
   visitors: number;
   /** Locations merged into this marker. */
@@ -135,6 +139,7 @@ export function clusterLocations(locations: LocationStat[], zoom: number, scale:
     for (const m of members) for (const id of m.visitorIds) ids.add(id);
 
     clusters.push({
+      id: anchor.loc.id,
       lat: anchor.loc.lat,
       lng: anchor.loc.lng,
       label: members.length === 1
@@ -164,6 +169,7 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
   const [metric, setMetric] = useState<Metric>('visits');
   const [hover, setHover] = useState<{ cluster: Cluster; x: number; y: number } | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
+  const [cityFilter, setCityFilter] = useState('');
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -202,6 +208,18 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
     });
   }, [clusters, view.zoom, projectionScale]);
   const geoViews = locations.reduce((s, l) => s + l.totalVisits, 0);
+
+  /**
+   * The ranked list is the map's table view, so every place has to be reachable
+   * — a fixed top-N cap hides the long tail, which is exactly where someone
+   * looking for one specific city ends up.
+   */
+  const filteredLocations = useMemo(() => {
+    const q = cityFilter.trim().toLowerCase();
+    if (!q) return locations;
+    return locations.filter((l) =>
+      `${l.city} ${l.region} ${l.country} ${l.countryCode}`.toLowerCase().includes(q));
+  }, [locations, cityFilter]);
 
   const zoomBy = (factor: number) =>
     setView((v) => ({ ...v, zoom: Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, v.zoom * factor)) }));
@@ -263,8 +281,6 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
       y: markerBox.top - wrapBox.top,
     });
   };
-
-  const clusterKey = (c: Cluster) => `${c.lat.toFixed(3)},${c.lng.toFixed(3)}`;
 
   const tipWidth = 200;
   const tipLeft = hover ? Math.min(size.width - tipWidth - 8, Math.max(8, hover.x - tipWidth / 2)) : 0;
@@ -413,7 +429,7 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
               // still findable and clickable rather than a sub-pixel speck.
               const rPx = MIN_MARKER_PX + Math.sqrt(value / maxMetric) * (MAX_MARKER_PX - MIN_MARKER_PX);
               const r = rPx / view.zoom;
-              const key = clusterKey(c);
+              const key = c.id;
               const isActive = selected === key || hover?.cluster === c;
               // Counter the zoom transform so labels hold a steady screen size.
               const labelPx = 9 / view.zoom;
@@ -567,12 +583,32 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
 
       {/* Table view: every marker's value reachable without hovering. */}
       {locations.length > 0 && (
-        <Stack gap={6} mt="sm" style={{ maxHeight: 148, overflowY: 'auto' }}>
-          {locations.slice(0, 12).map((loc) => {
-            const key = `${loc.lat.toFixed(3)},${loc.lng.toFixed(3)}`;
+        <>
+          <Group justify="space-between" mt="sm" mb={6} wrap="nowrap" gap="xs">
+            <TextInput
+              size="xs"
+              placeholder="Find a city…"
+              value={cityFilter}
+              onChange={(e) => setCityFilter(e.currentTarget.value)}
+              leftSection={<IconSearch size={13} />}
+              style={{ flex: 1 }}
+              aria-label="Filter locations"
+            />
+            <Text size="10px" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
+              {filteredLocations.length === locations.length
+                ? `${formatExact(locations.length)} places`
+                : `${formatExact(filteredLocations.length)} of ${formatExact(locations.length)}`}
+            </Text>
+          </Group>
+          <Stack gap={6} style={{ maxHeight: 148, overflowY: 'auto' }}>
+          {filteredLocations.length === 0 && (
+            <Text size="xs" c="dimmed">No place matches “{cityFilter}” in this period.</Text>
+          )}
+          {filteredLocations.map((loc) => {
+            const key = loc.id;
             return (
               <Group
-                key={`${loc.city}-${key}`}
+                key={key}
                 justify="space-between" gap="xs" wrap="nowrap"
                 onClick={() => {
                   setSelected(key);
@@ -599,7 +635,8 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
               </Group>
             );
           })}
-        </Stack>
+          </Stack>
+        </>
       )}
 
       {selected && (

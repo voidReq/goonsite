@@ -424,6 +424,74 @@ describe('aggregate', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  it('groups a city arriving on several coordinates into one map location', () => {
+    // Real geo lookups hand back a per-subnet lat/lng, so one city shows up
+    // spread over many points. Keying the map on coordinates split each city
+    // into fragments that each looked like a quiet town.
+    const spread: Record<string, GeoInfo> = {
+      '10.0.0.1': { ...GEO['1.1.1.1'], city: 'Minneapolis', region: 'Minnesota', latitude: 44.9834, longitude: -93.2622 },
+      '10.0.0.2': { ...GEO['1.1.1.1'], city: 'Minneapolis', region: 'Minnesota', latitude: 44.9764, longitude: -93.2240 },
+      '10.0.0.3': { ...GEO['1.1.1.1'], city: 'Minneapolis', region: 'Minnesota', latitude: 44.9777, longitude: -93.2650 },
+    };
+    const a = aggregate({
+      range,
+      geo: spread,
+      entries: [
+        view('10.0.0.1', '/', '2026-09-16T17:00:00Z'),
+        view('10.0.0.1', '/notes', '2026-09-16T17:01:00Z'),
+        view('10.0.0.2', '/', '2026-09-16T17:02:00Z'),
+        view('10.0.0.3', '/', '2026-09-16T17:03:00Z'),
+      ],
+    });
+
+    expect(a.locations).toHaveLength(1);
+    const mpls = a.locations[0];
+    expect(mpls.city).toBe('Minneapolis');
+    expect(mpls.totalVisits).toBe(4);
+    expect(mpls.uniqueVisitors).toBe(3);
+    // The map total now agrees with the city breakdown.
+    const breakdown = a.cities.find((c) => c.label === 'Minneapolis')!;
+    expect(mpls.totalVisits).toBe(breakdown.views);
+    expect(mpls.uniqueVisitors).toBe(breakdown.visitors);
+    // Marker sits at the visit-weighted centroid of its coordinates.
+    expect(mpls.lat).toBeCloseTo((44.9834 * 2 + 44.9764 + 44.9777) / 4, 6);
+    expect(mpls.lng).toBeCloseTo((-93.2622 * 2 + -93.224 + -93.265) / 4, 6);
+  });
+
+  it('keeps same-named cities in different regions apart', () => {
+    const springfields: Record<string, GeoInfo> = {
+      '10.1.0.1': { ...GEO['1.1.1.1'], city: 'Springfield', region: 'Illinois', latitude: 39.78, longitude: -89.65 },
+      '10.1.0.2': { ...GEO['1.1.1.1'], city: 'Springfield', region: 'Missouri', latitude: 37.21, longitude: -93.29 },
+    };
+    const a = aggregate({
+      range,
+      geo: springfields,
+      entries: [
+        view('10.1.0.1', '/', '2026-09-16T17:00:00Z'),
+        view('10.1.0.2', '/', '2026-09-16T17:01:00Z'),
+      ],
+    });
+    expect(a.locations).toHaveLength(2);
+    expect(a.locations.map((l) => l.region).sort()).toEqual(['Illinois', 'Missouri']);
+  });
+
+  it('does not merge unrelated visitors with no city name', () => {
+    const unnamed: Record<string, GeoInfo> = {
+      '10.2.0.1': { ...GEO['1.1.1.1'], city: '', region: '', latitude: 10, longitude: 20 },
+      '10.2.0.2': { ...GEO['1.1.1.1'], city: '', region: '', latitude: -30, longitude: 140 },
+    };
+    const a = aggregate({
+      range,
+      geo: unnamed,
+      entries: [
+        view('10.2.0.1', '/', '2026-09-16T17:00:00Z'),
+        view('10.2.0.2', '/', '2026-09-16T17:01:00Z'),
+      ],
+    });
+    // Falls back to coordinates, so two unknown places stay two markers.
+    expect(a.locations).toHaveLength(2);
+  });
+
   it('reports visitors the geo cache has no entry for', () => {
     const a = aggregate({
       range,
