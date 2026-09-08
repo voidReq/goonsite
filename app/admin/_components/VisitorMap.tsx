@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Paper, Text, Group, Stack, Button, ActionIcon, Tooltip, SegmentedControl, TextInput,
 } from '@mantine/core';
@@ -67,6 +67,19 @@ interface VisitorMapProps {
 }
 
 /**
+ * Zoom value the marker set is built at, snapped to 1/8-octave steps.
+ *
+ * A wheel gesture emits a continuous stream of zoom values; rebuilding clusters
+ * for every one of them is wasted work, since the grouping only changes at
+ * meaningful scale changes. The SVG transform still uses the exact zoom, so
+ * motion stays smooth. Snapping can only round down by 2^(1/16) = 1.044, well
+ * inside the 1.25 overshoot splitZoom carries, so click-to-split still lands.
+ */
+export function clusterZoomFor(zoom: number): number {
+  return Math.pow(2, Math.round(Math.log2(zoom) * 8) / 8);
+}
+
+/**
  * Mercator projection into SVG user units, matching what ComposableMap renders
  * with `projection="geoMercator"` at the same scale.
  */
@@ -100,6 +113,18 @@ export function clusterLocations(locations: LocationStat[], zoom: number, scale:
     })
     .sort((a, b) => b.loc.totalVisits - a.loc.totalVisits);
 
+  // Spatial hash so each point only tests its own cell and the eight around it.
+  // Cell size equals the threshold, so nothing within range can be further than
+  // one cell away — same result as comparing every pair, without the O(n^2)
+  // scan that made fast zooming stutter at ~1,700 locations.
+  const grid = new Map<string, number[]>();
+  const cellOf = (x: number, y: number) => `${Math.floor(x / threshold)}:${Math.floor(y / threshold)}`;
+  points.forEach((p, i) => {
+    const key = cellOf(p.x, p.y);
+    const bucket = grid.get(key);
+    if (bucket) bucket.push(i); else grid.set(key, [i]);
+  });
+
   const taken = new Array(points.length).fill(false);
   const clusters: Cluster[] = [];
 
@@ -109,14 +134,29 @@ export function clusterLocations(locations: LocationStat[], zoom: number, scale:
 
     const anchor = points[i];
     const group = [anchor];
-    for (let j = i + 1; j < points.length; j++) {
-      if (taken[j]) continue;
-      if (Math.hypot(anchor.x - points[j].x, anchor.y - points[j].y) <= threshold) {
-        taken[j] = true;
-        group.push(points[j]);
+
+    const cx = Math.floor(anchor.x / threshold);
+    const cy = Math.floor(anchor.y / threshold);
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        const bucket = grid.get(`${cx + dx}:${cy + dy}`);
+        if (!bucket) continue;
+        for (const j of bucket) {
+          if (taken[j]) continue;
+          if (Math.hypot(anchor.x - points[j].x, anchor.y - points[j].y) <= threshold) {
+            taken[j] = true;
+            group.push(points[j]);
+          }
+        }
       }
     }
+
     const members = group.map((g) => g.loc);
+
+    // Union visitor ids — summing per-location uniques would double-count
+    // anyone who shows up in two nearby cities.
+    const ids = new Set<number>();
+    for (const m of members) for (const id of m.visitorIds) ids.add(id);
 
     // The closest pair decides when the cluster visibly comes apart.
     let splitZoom: number | null = null;
@@ -132,11 +172,6 @@ export function clusterLocations(locations: LocationStat[], zoom: number, scale:
         splitZoom = Math.min(MAX_ZOOM, (CLUSTER_PX / closest) * 1.25);
       }
     }
-
-    // Union visitor ids — summing per-location uniques would double-count
-    // anyone who shows up in two nearby cities.
-    const ids = new Set<number>();
-    for (const m of members) for (const id of m.visitorIds) ids.add(id);
 
     clusters.push({
       id: anchor.loc.id,
@@ -169,7 +204,6 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
   const [metric, setMetric] = useState<Metric>('visits');
   const [hover, setHover] = useState<{ cluster: Cluster; x: number; y: number } | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
-  const [cityFilter, setCityFilter] = useState('');
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -185,11 +219,35 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
   // Scale is tuned so the full world fills the container width at zoom 1.
   const projectionScale = size.width / 6.6;
 
+  const clusterZoom = clusterZoomFor(view.zoom);
   const clusters = useMemo(
-    () => clusterLocations(locations, view.zoom, projectionScale),
-    [locations, view.zoom, projectionScale],
+    () => clusterLocations(locations, clusterZoom, projectionScale),
+    [locations, clusterZoom, projectionScale],
   );
   const maxMetric = Math.max(1, ...clusters.map((c) => (metric === 'visits' ? c.visits : c.visitors)));
+
+  /**
+   * Only the markers actually on screen.
+   *
+   * ZoomableGroup renders whatever it is handed, so at deep zoom every one of
+   * ~1,700 markers stayed mounted while a handful were visible — roughly 8,000
+   * SVG nodes for a view containing five.
+   *
+   * The kept region is twice the viewport in each direction. ZoomableGroup only
+   * reports a new centre on move *end*, so during a drag this centre is stale;
+   * a tight margin would leave the area you pan into blank until you let go.
+   * One viewport of slack in every direction covers any realistic drag while
+   * still discarding the vast majority of markers when zoomed in.
+   */
+  const visibleClusters = useMemo(() => {
+    const [cx, cy] = projectMercator(view.coordinates[0], view.coordinates[1], projectionScale);
+    const halfW = size.width / view.zoom;
+    const halfH = size.height / view.zoom;
+    return clusters.filter((c) => {
+      const [x, y] = projectMercator(c.lng, c.lat, projectionScale);
+      return Math.abs(x - cx) <= halfW && Math.abs(y - cy) <= halfH;
+    });
+  }, [clusters, view.coordinates, view.zoom, projectionScale, size.width, size.height]);
 
   /**
    * Reference labels that no data marker is already speaking for.
@@ -199,44 +257,59 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
    * own marker's count. The data marker wins; its neighbour's label is dropped.
    */
   const referenceCities = useMemo(() => {
-    const markers = clusters.map((c) => projectMercator(c.lng, c.lat, projectionScale));
+    const markers = visibleClusters.map((c) => projectMercator(c.lng, c.lat, projectionScale));
     const minGap = 44 / view.zoom;
     return REFERENCE_CITIES.filter((city) => {
       if (view.zoom < city.minZoom) return false;
       const [cx, cy] = projectMercator(city.lng, city.lat, projectionScale);
       return !markers.some(([x, y]) => Math.hypot(cx - x, cy - y) < minGap);
     });
-  }, [clusters, view.zoom, projectionScale]);
+  }, [visibleClusters, view.zoom, projectionScale]);
   const geoViews = locations.reduce((s, l) => s + l.totalVisits, 0);
-
-  /**
-   * The ranked list is the map's table view, so every place has to be reachable
-   * — a fixed top-N cap hides the long tail, which is exactly where someone
-   * looking for one specific city ends up.
-   */
-  const filteredLocations = useMemo(() => {
-    const q = cityFilter.trim().toLowerCase();
-    if (!q) return locations;
-    return locations.filter((l) =>
-      `${l.city} ${l.region} ${l.country} ${l.countryCode}`.toLowerCase().includes(q));
-  }, [locations, cityFilter]);
 
   const zoomBy = (factor: number) =>
     setView((v) => ({ ...v, zoom: Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, v.zoom * factor)) }));
 
+  // The wheel listener is bound once, so it reads the live zoom from a ref.
+  const zoomRef = useRef(view.zoom);
+  zoomRef.current = view.zoom;
+
   const reset = () => setView({ coordinates: [10, 22], zoom: 1 });
+
+  // Stable identity, so LocationList's memo survives the parent re-rendering
+  // on every zoom change. Reads the live zoom through the state updater rather
+  // than closing over it.
+  const selectLocation = useCallback((loc: LocationStat) => {
+    setSelected(loc.id);
+    setView((v) => ({ coordinates: [loc.lng, loc.lat], zoom: Math.max(8, v.zoom) }));
+  }, []);
 
   // Wheel and pinch zoom, bound to the container so the page doesn't scroll.
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
 
+    // Wheel events outrun the display, so accumulate them and commit once per
+    // frame. Without this, a fast scroll queued a re-render per event and the
+    // map visibly stuttered.
+    let queued: number | null = null;
+    let frame: number | null = null;
+    const commit = () => {
+      frame = null;
+      const next = queued;
+      queued = null;
+      if (next != null) setView((v) => ({ ...v, zoom: next }));
+    };
+
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       // Trackpads send small deltas; scale the step by how hard the user scrolled.
       const intensity = Math.min(Math.abs(e.deltaY) / 50, 1);
       const base = 1 + 0.4 * Math.max(0.2, intensity);
-      zoomBy(e.deltaY < 0 ? base : 1 / base);
+      const factor = e.deltaY < 0 ? base : 1 / base;
+      const from = queued ?? zoomRef.current;
+      queued = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, from * factor));
+      if (frame == null) frame = requestAnimationFrame(commit);
     };
 
     let lastPinch = 0;
@@ -252,7 +325,11 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
       if (e.touches.length !== 2) return;
       e.preventDefault();
       const dist = pinchDist(e.touches);
-      if (lastPinch > 0) zoomBy(dist / lastPinch);
+      if (lastPinch > 0) {
+        const from = queued ?? zoomRef.current;
+        queued = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, from * (dist / lastPinch)));
+        if (frame == null) frame = requestAnimationFrame(commit);
+      }
       lastPinch = dist;
     };
     const onTouchEnd = () => { lastPinch = 0; };
@@ -262,6 +339,7 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
     el.addEventListener('touchmove', onTouchMove, { passive: false });
     el.addEventListener('touchend', onTouchEnd);
     return () => {
+      if (frame != null) cancelAnimationFrame(frame);
       el.removeEventListener('wheel', onWheel);
       el.removeEventListener('touchstart', onTouchStart);
       el.removeEventListener('touchmove', onTouchMove);
@@ -423,7 +501,7 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
               );
             })}
 
-            {clusters.map((c) => {
+            {visibleClusters.map((c) => {
               const value = metric === 'visits' ? c.visits : c.visitors;
               // Radius by sqrt of the value, floored so the quietest city is
               // still findable and clickable rather than a sub-pixel speck.
@@ -582,62 +660,11 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
       </Group>
 
       {/* Table view: every marker's value reachable without hovering. */}
-      {locations.length > 0 && (
-        <>
-          <Group justify="space-between" mt="sm" mb={6} wrap="nowrap" gap="xs">
-            <TextInput
-              size="xs"
-              placeholder="Find a city…"
-              value={cityFilter}
-              onChange={(e) => setCityFilter(e.currentTarget.value)}
-              leftSection={<IconSearch size={13} />}
-              style={{ flex: 1 }}
-              aria-label="Filter locations"
-            />
-            <Text size="10px" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
-              {filteredLocations.length === locations.length
-                ? `${formatExact(locations.length)} places`
-                : `${formatExact(filteredLocations.length)} of ${formatExact(locations.length)}`}
-            </Text>
-          </Group>
-          <Stack gap={6} style={{ maxHeight: 148, overflowY: 'auto' }}>
-          {filteredLocations.length === 0 && (
-            <Text size="xs" c="dimmed">No place matches “{cityFilter}” in this period.</Text>
-          )}
-          {filteredLocations.map((loc) => {
-            const key = loc.id;
-            return (
-              <Group
-                key={key}
-                justify="space-between" gap="xs" wrap="nowrap"
-                onClick={() => {
-                  setSelected(key);
-                  setView({ coordinates: [loc.lng, loc.lat], zoom: 8 });
-                }}
-                style={{
-                  cursor: 'pointer', padding: '3px 6px', borderRadius: 4,
-                  backgroundColor: selected === key ? '#1f1b33' : 'transparent',
-                }}
-              >
-                <Group gap={6} wrap="nowrap" style={{ minWidth: 0 }}>
-                  <IconMapPin size={12} style={{ color: SERIES[0], flexShrink: 0 }} />
-                  <Text size="xs" truncate>{loc.city}</Text>
-                  <Text size="10px" c="dimmed" style={{ flexShrink: 0 }}>{loc.countryCode}</Text>
-                </Group>
-                <Group gap={8} wrap="nowrap" style={{ flexShrink: 0 }}>
-                  <Text size="10px" c="dimmed" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    {formatExact(loc.uniqueVisitors)}u
-                  </Text>
-                  <Text size="xs" fw={600} style={{ fontVariantNumeric: 'tabular-nums' }}>
-                    {formatExact(loc.totalVisits)}
-                  </Text>
-                </Group>
-              </Group>
-            );
-          })}
-          </Stack>
-        </>
-      )}
+      <LocationList
+        locations={locations}
+        selectedId={selected}
+        onSelect={selectLocation}
+      />
 
       {selected && (
         <Button
@@ -650,3 +677,106 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
     </Paper>
   );
 }
+
+
+interface LocationListProps {
+  locations: LocationStat[];
+  selectedId: string | null;
+  onSelect: (loc: LocationStat) => void;
+}
+
+/**
+ * The map's table view: every place reachable without hovering a marker.
+ *
+ * Owns its own filter state so typing re-renders only this list. Held in the
+ * parent, each keystroke re-rendered the whole marker layer — which is what
+ * made the search box feel sluggish on a real dataset of ~1,700 places.
+ *
+ * Rows are uncapped and scrollable; a fixed top-N hid the long tail, which is
+ * exactly where you look when hunting one specific city.
+ */
+/**
+ * Rows rendered at once. The scroll area shows about five, so mounting all
+ * ~1,700 places just to keep them scrollable cost ~37ms per keystroke. The
+ * filter still runs over every place; only the rendering is bounded.
+ */
+const LIST_RENDER_LIMIT = 60;
+
+const LocationList = React.memo(function LocationList({
+  locations, selectedId, onSelect,
+}: LocationListProps) {
+  const [query, setQuery] = useState('');
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return locations;
+    return locations.filter((l) =>
+      `${l.city} ${l.region} ${l.country} ${l.countryCode}`.toLowerCase().includes(q));
+  }, [locations, query]);
+
+  const visible = useMemo(() => filtered.slice(0, LIST_RENDER_LIMIT), [filtered]);
+
+  if (locations.length === 0) return null;
+
+  return (
+    <>
+      <Group justify="space-between" mt="sm" mb={6} wrap="nowrap" gap="xs">
+        <TextInput
+          size="xs"
+          placeholder="Find a city…"
+          value={query}
+          onChange={(e) => setQuery(e.currentTarget.value)}
+          leftSection={<IconSearch size={13} />}
+          style={{ flex: 1 }}
+          aria-label="Filter locations"
+        />
+        <Text size="10px" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
+          {filtered.length === locations.length
+            ? `${formatExact(locations.length)} places`
+            : `${formatExact(filtered.length)} of ${formatExact(locations.length)}`}
+        </Text>
+      </Group>
+
+      <Stack gap={6} style={{ maxHeight: 148, overflowY: 'auto' }}>
+        {filtered.length === 0 && (
+          <Text size="xs" c="dimmed">No place matches “{query}” in this period.</Text>
+        )}
+        {visible.map((loc) => (
+          <Group
+            key={loc.id}
+            justify="space-between" gap="xs" wrap="nowrap"
+            onClick={() => onSelect(loc)}
+            style={{
+              cursor: 'pointer', padding: '3px 6px', borderRadius: 4,
+              backgroundColor: selectedId === loc.id ? '#1f1b33' : 'transparent',
+            }}
+          >
+            <Group gap={6} wrap="nowrap" style={{ minWidth: 0 }}>
+              <IconMapPin size={12} style={{ color: SERIES[0], flexShrink: 0 }} />
+              <Text size="xs" truncate>{loc.city}</Text>
+              {/* Region disambiguates same-named places — three Rochesters,
+                  three Portlands — which read identically without it. */}
+              {loc.region && loc.region !== loc.city && (
+                <Text size="10px" c="dimmed" truncate style={{ minWidth: 0 }}>{loc.region}</Text>
+              )}
+              <Text size="10px" c="dimmed" style={{ flexShrink: 0 }}>{loc.countryCode}</Text>
+            </Group>
+            <Group gap={8} wrap="nowrap" style={{ flexShrink: 0 }}>
+              <Text size="10px" c="dimmed" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                {formatExact(loc.uniqueVisitors)}u
+              </Text>
+              <Text size="xs" fw={600} style={{ fontVariantNumeric: 'tabular-nums' }}>
+                {formatExact(loc.totalVisits)}
+              </Text>
+            </Group>
+          </Group>
+        ))}
+        {filtered.length > visible.length && (
+          <Text size="10px" c="dimmed" ta="center" py={2}>
+            Showing the top {LIST_RENDER_LIMIT} of {formatExact(filtered.length)} — search to narrow it down.
+          </Text>
+        )}
+      </Stack>
+    </>
+  );
+});

@@ -449,13 +449,70 @@ describe('aggregate', () => {
     expect(mpls.city).toBe('Minneapolis');
     expect(mpls.totalVisits).toBe(4);
     expect(mpls.uniqueVisitors).toBe(3);
-    // The map total now agrees with the city breakdown.
-    const breakdown = a.cities.find((c) => c.label === 'Minneapolis')!;
+    // The map total now agrees with the city breakdown, which is qualified
+    // by region so same-named places stay distinct.
+    const breakdown = a.cities.find((c) => c.label === 'Minneapolis, Minnesota')!;
     expect(mpls.totalVisits).toBe(breakdown.views);
     expect(mpls.uniqueVisitors).toBe(breakdown.visitors);
     // Marker sits at the visit-weighted centroid of its coordinates.
     expect(mpls.lat).toBeCloseTo((44.9834 * 2 + 44.9764 + 44.9777) / 4, 6);
     expect(mpls.lng).toBeCloseTo((-93.2622 * 2 + -93.224 + -93.265) / 4, 6);
+  });
+
+  it('keeps same-named cities apart in the cities breakdown', () => {
+    // Three real Rochesters — Minnesota, New York, England. Keying the
+    // breakdown on the bare city name merged them into one row carrying
+    // somebody else's traffic.
+    const rochesters: Record<string, GeoInfo> = {
+      '10.3.0.1': { ...GEO['1.1.1.1'], city: 'Rochester', region: 'Minnesota', country_name: 'United States', country_code: 'US', latitude: 44.02, longitude: -92.47 },
+      '10.3.0.2': { ...GEO['1.1.1.1'], city: 'Rochester', region: 'New York', country_name: 'United States', country_code: 'US', latitude: 43.16, longitude: -77.61 },
+      '10.3.0.3': { ...GEO['1.1.1.1'], city: 'Rochester', region: 'England', country_name: 'United Kingdom', country_code: 'GB', latitude: 51.39, longitude: 0.5 },
+    };
+    const a = aggregate({
+      range,
+      geo: rochesters,
+      entries: [
+        view('10.3.0.1', '/', '2026-09-16T17:00:00Z'),
+        view('10.3.0.1', '/notes', '2026-09-16T17:01:00Z'),
+        view('10.3.0.2', '/', '2026-09-16T17:02:00Z'),
+        view('10.3.0.3', '/', '2026-09-16T17:03:00Z'),
+      ],
+    });
+
+    const labels = a.cities.map((c) => c.label).sort();
+    expect(labels).toEqual(['Rochester, England', 'Rochester, Minnesota', 'Rochester, New York']);
+    expect(a.cities.find((c) => c.label === 'Rochester, Minnesota')!.views).toBe(2);
+    expect(a.cities.find((c) => c.label === 'Rochester, New York')!.views).toBe(1);
+    // And three separate map markers, each with its own region.
+    expect(a.locations).toHaveLength(3);
+    expect(a.locations.map((l) => l.region).sort()).toEqual(['England', 'Minnesota', 'New York']);
+  });
+
+  it('drops a region that just repeats the city name', () => {
+    const a = aggregate({
+      range,
+      geo: { '10.4.0.1': { ...GEO['1.1.1.1'], city: 'Singapore', region: 'Singapore', country_name: 'Singapore', country_code: 'SG', latitude: 1.35, longitude: 103.82 } },
+      entries: [view('10.4.0.1', '/', '2026-09-16T17:00:00Z')],
+    });
+    expect(a.cities[0].label).toBe('Singapore');
+  });
+
+  it('treats alternate spellings of a country as one place', () => {
+    // The real provider returns both "Netherlands" and "The Netherlands";
+    // keying on the name split one city into two markers.
+    const a = aggregate({
+      range,
+      geo: {
+        '10.5.0.1': { ...GEO['1.1.1.1'], city: 'Amsterdam', region: 'North Holland', country_name: 'Netherlands', country_code: 'NL', latitude: 52.37, longitude: 4.9 },
+        '10.5.0.2': { ...GEO['1.1.1.1'], city: 'Amsterdam', region: 'North Holland', country_name: 'The Netherlands', country_code: 'NL', latitude: 52.38, longitude: 4.91 },
+      },
+      entries: [
+        view('10.5.0.1', '/', '2026-09-16T17:00:00Z'),
+        view('10.5.0.2', '/', '2026-09-16T17:01:00Z'),
+      ],
+    });
+    expect(a.locations).toHaveLength(1);
+    expect(a.locations[0].totalVisits).toBe(2);
   });
 
   it('keeps same-named cities in different regions apart', () => {

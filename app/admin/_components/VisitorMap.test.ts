@@ -8,7 +8,7 @@ const SCALE = 1536 / 6.6;
 const loc = (
   city: string, lat: number, lng: number, visits: number, visitorIds: number[],
 ): LocationStat => ({
-  id: `${city}||United States`,
+  id: `${city}|${lat},${lng}|US`,
   lat, lng, city, region: '', country: 'United States', countryCode: 'US',
   totalVisits: visits, uniqueVisitors: visitorIds.length, visitorIds,
 });
@@ -145,6 +145,73 @@ describe('clusterLocations', () => {
 
     const ids = clusterLocations([BOSTON, CAMBRIDGE, LONDON, SYDNEY], 400, SCALE).map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('matches a brute-force pairwise clusterer on randomised input', () => {
+    // The spatial grid is an optimisation, not a behaviour change: its output
+    // must be identical to comparing every pair.
+    let seed = 20260908;
+    const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+
+    const bruteForce = (locs: LocationStat[], zoom: number) => {
+      const scale = SCALE;
+      const threshold = CLUSTER_PX / zoom;
+      const project = (lng: number, lat: number) => {
+        const l = Math.max(-85, Math.min(85, lat));
+        return [
+          (scale * lng * Math.PI) / 180,
+          -scale * Math.log(Math.tan(Math.PI / 4 + (l * Math.PI) / 360)),
+        ] as const;
+      };
+      const pts = locs
+        .map((loc) => { const [x, y] = project(loc.lng, loc.lat); return { loc, x, y }; })
+        .sort((a, b) => b.loc.totalVisits - a.loc.totalVisits);
+      const taken = new Array(pts.length).fill(false);
+      const out: { id: string; count: number; visits: number }[] = [];
+      for (let i = 0; i < pts.length; i++) {
+        if (taken[i]) continue;
+        taken[i] = true;
+        const group = [pts[i]];
+        for (let j = i + 1; j < pts.length; j++) {
+          if (taken[j]) continue;
+          if (Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y) <= threshold) {
+            taken[j] = true;
+            group.push(pts[j]);
+          }
+        }
+        out.push({
+          id: pts[i].loc.id,
+          count: group.length,
+          visits: group.reduce((sum, g) => sum + g.loc.totalVisits, 0),
+        });
+      }
+      return out.sort((a, b) => a.id.localeCompare(b.id));
+    };
+
+    for (let trial = 0; trial < 12; trial++) {
+      // Deliberately clumpy, so clusters actually form and straddle cells.
+      const locs: LocationStat[] = [];
+      for (let c = 0; c < 14; c++) {
+        const baseLat = rnd() * 140 - 70;
+        const baseLng = rnd() * 340 - 170;
+        for (let k = 0; k < 1 + Math.floor(rnd() * 7); k++) {
+          locs.push(loc(
+            `c${c}k${k}`,
+            baseLat + (rnd() - 0.5) * 2,
+            baseLng + (rnd() - 0.5) * 2,
+            1 + Math.floor(rnd() * 400),
+            [locs.length],
+          ));
+        }
+      }
+
+      for (const zoom of [1, 3, 12, 60, 250]) {
+        const fast = clusterLocations(locs, zoom, SCALE)
+          .map((c) => ({ id: c.id, count: c.count, visits: c.visits }))
+          .sort((a, b) => a.id.localeCompare(b.id));
+        expect(fast, `trial ${trial} zoom ${zoom}`).toEqual(bruteForce(locs, zoom));
+      }
+    }
   });
 
   it('handles an empty list', () => {

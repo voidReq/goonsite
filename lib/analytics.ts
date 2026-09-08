@@ -502,6 +502,16 @@ export function parseOS(ua?: string): string {
   return 'Other';
 }
 
+/**
+ * Display name for a city, qualified by region so same-named places stay
+ * distinguishable. The region is dropped when it just repeats the city.
+ */
+export function cityLabel(geo: Pick<GeoInfo, 'city' | 'region'>): string {
+  const city = geo.city || 'Unknown';
+  const region = geo.region || '';
+  return region && region !== city ? `${city}, ${region}` : city;
+}
+
 /** Group a referer URL into a display source. Internal referers become "Direct". */
 export function referrerSource(referer: string | null | undefined, selfHosts: string[]): string {
   if (!referer) return 'Direct';
@@ -926,7 +936,10 @@ export function aggregate(opts: AggregateOptions): Analytics {
       continue;
     }
     bump(countries, g.country_name || 'Unknown', v.ip, undefined, g.country_code);
-    bump(cities, g.city || 'Unknown', v.ip, undefined, g.country_code);
+    // Qualify the city with its region: 68 of 1,642 real city names are
+    // ambiguous (three Rochesters, three Portlands), and keying on the bare
+    // name merged them into one row carrying somebody else's traffic.
+    bump(cities, cityLabel(g), v.ip, undefined, g.country_code);
 
     const hasCoords = typeof g.latitude === 'number' && typeof g.longitude === 'number'
       && !(g.latitude === 0 && g.longitude === 0);
@@ -943,7 +956,7 @@ export function aggregate(opts: AggregateOptions): Analytics {
     // Springfields) apart; an unnamed city falls back to its coordinates so
     // unrelated unknowns don't merge into one blob.
     const locKey = g.city
-      ? `${g.city}|${g.region || ''}|${g.country_name || ''}`
+      ? `${g.city}|${g.region || ''}|${g.country_code || g.country_name || ''}`
       : `@${g.latitude},${g.longitude}`;
 
     let loc = locationStats.get(locKey);
