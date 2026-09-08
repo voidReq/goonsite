@@ -39,6 +39,8 @@ import {
   timeAgo,
   type Draft,
 } from './drafts';
+import { VIEWPORT_CENTERED, VIEWPORT_CENTERED_CARD } from '../_components/theme';
+import { useChartTheme } from '../_components/useChartTheme';
 
 interface TreeItem {
   name: string;
@@ -68,6 +70,7 @@ const AUTOSAVE_DEBOUNCE_MS = 1000;
 const AUTOSAVE_INTERVAL_MS = 20_000;
 
 export default function AdminProjectsPage() {
+  const ct = useChartTheme();
   const [password, setPassword] = useState('');
   const [authed, setAuthed] = useState(false);
   const [authError, setAuthError] = useState('');
@@ -362,10 +365,10 @@ export default function AdminProjectsPage() {
 
   if (!authed) {
     return (
-      <Container size="xs" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Paper p="xl" radius="md" withBorder style={{ width: '100%', maxWidth: 400 }}>
+      <Container size="xs" style={VIEWPORT_CENTERED}>
+        <Paper p="xl" radius="md" withBorder style={{ ...VIEWPORT_CENTERED_CARD, width: '100%', maxWidth: 400 }}>
           <Stack align="center" gap="md">
-            <IconLock size={40} color="#7c3aed" />
+            <IconLock size={40} color={ct.series[0]} />
             <Title order={3}>Project Uploader</Title>
             <TextInput
               placeholder="Admin password"
@@ -400,7 +403,7 @@ export default function AdminProjectsPage() {
     <Container size="xl" py="xl">
       <Group justify="space-between" mb="md" wrap="wrap" gap="sm">
         <Group>
-          <IconUpload size={28} color="#7c3aed" />
+          <IconUpload size={28} color={ct.series[0]} />
           <Title order={3}>Project Writeup Uploader</Title>
         </Group>
         <Group gap="xs">
@@ -549,7 +552,7 @@ export default function AdminProjectsPage() {
         {saveSuccess && (
           <Alert color="green" icon={<IconCheck />} style={{ flex: 1 }}>
             Saved.{' '}
-            <a href={saveSuccess.url} target="_blank" rel="noreferrer" style={{ color: '#7c3aed' }}>
+            <a href={saveSuccess.url} target="_blank" rel="noreferrer" style={{ color: ct.series[0] }}>
               View at {saveSuccess.url}
             </a>
           </Alert>
