@@ -5,7 +5,7 @@ import {
   MantineProvider, Container, Paper, Stack, Title, TextInput, Alert, Button,
 } from '@mantine/core';
 import { IconLock, IconAlertCircle } from '@tabler/icons-react';
-import { SURFACE, BORDER, INK, SERIES } from './theme';
+import { SURFACE, BORDER, INK, SERIES, CONTENT_MIN_HEIGHT } from './theme';
 
 interface AdminLoginProps {
   title: string;
@@ -24,7 +24,7 @@ export function AdminLogin({
     <MantineProvider forceColorScheme="dark">
       <Container
         size="xs"
-        style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        style={{ minHeight: CONTENT_MIN_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
         <Paper
           p="xl" radius="md"

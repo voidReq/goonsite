@@ -39,6 +39,7 @@ import {
   timeAgo,
   type Draft,
 } from './drafts';
+import { CONTENT_MIN_HEIGHT } from '../_components/theme';
 
 interface TreeItem {
   name: string;
@@ -362,7 +363,7 @@ export default function AdminProjectsPage() {
 
   if (!authed) {
     return (
-      <Container size="xs" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Container size="xs" style={{ minHeight: CONTENT_MIN_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Paper p="xl" radius="md" withBorder style={{ width: '100%', maxWidth: 400 }}>
           <Stack align="center" gap="md">
             <IconLock size={40} color="#7c3aed" />

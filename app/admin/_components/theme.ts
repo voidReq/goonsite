@@ -13,6 +13,15 @@ export const SURFACE_SUNKEN = '#0f0f0f';
 export const PAGE = '#0a0a0a';
 export const BORDER = '#2a2a2a';
 
+/**
+ * Height of the viewport below the fixed navbar.
+ *
+ * The root layout renders pages inside `<main class="pt-14">`, so a plain
+ * 100vh box starts 56px down the page — it overflows by the navbar's height
+ * and centres its contents that much too low.
+ */
+export const CONTENT_MIN_HEIGHT = 'calc(100dvh - 3.5rem)';
+
 export const INK = '#ededed';
 export const INK_MUTED = '#8a8a8a';
 export const GRID = '#242424';

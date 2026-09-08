@@ -25,7 +25,9 @@ import {
 } from '@tabler/icons-react';
 import type { RangePreset } from '@/lib/analytics';
 import { AdminLogin } from '../_components/AdminLogin';
-import { PAGE, SURFACE, SURFACE_SUNKEN, BORDER, INK, SERIES, formatExact } from '../_components/theme';
+import {
+  PAGE, SURFACE, SURFACE_SUNKEN, BORDER, INK, SERIES, CONTENT_MIN_HEIGHT, formatExact,
+} from '../_components/theme';
 
 interface VisitorEntry {
   type?: string;
@@ -319,7 +321,7 @@ export default function AdminVisitorsPage() {
 
   return (
     <MantineProvider forceColorScheme="dark">
-      <Container size="lg" py="xl" style={{ minHeight: '100vh', backgroundColor: PAGE }}>
+      <Container size="lg" py="xl" style={{ minHeight: CONTENT_MIN_HEIGHT, backgroundColor: PAGE }}>
         <Stack gap="lg">
           <Group justify="space-between" align="center" wrap="wrap">
             <Group>

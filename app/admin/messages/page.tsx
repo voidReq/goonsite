@@ -25,6 +25,7 @@ import {
   IconMessage,
   IconRefresh,
 } from '@tabler/icons-react';
+import { CONTENT_MIN_HEIGHT } from '../_components/theme';
 
 const GAME_LABELS: Record<string, string> = {
   tictactoe: '❌ Tic-Tac-Toe',
@@ -114,7 +115,7 @@ export default function AdminMessagesPage() {
   if (!authed) {
     return (
       <MantineProvider forceColorScheme="dark">
-        <Container size="xs" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Container size="xs" style={{ minHeight: CONTENT_MIN_HEIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Paper p="xl" radius="md" style={{ width: '100%', maxWidth: 400, background: '#141414' }}>
             <Stack align="center" gap="md">
               <IconLock size={40} color="#7c3aed" />

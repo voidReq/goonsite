@@ -16,7 +16,8 @@ import { BarList } from '../_components/BarList';
 import { Heatmap } from '../_components/Heatmap';
 import { VisitorMap } from '../_components/VisitorMap';
 import {
-  PAGE, SURFACE, BORDER, INK, formatCount, formatExact, formatDuration, formatPercent,
+  PAGE, SURFACE, BORDER, INK, CONTENT_MIN_HEIGHT,
+  formatCount, formatExact, formatDuration, formatPercent,
 } from '../_components/theme';
 
 /** Compact date-time for the range bounds, in the reporting timezone. */
@@ -140,7 +141,7 @@ export default function AdminInsightsPage() {
 
   return (
     <MantineProvider forceColorScheme="dark">
-      <Container size="xl" py="xl" style={{ minHeight: '100vh', backgroundColor: PAGE }}>
+      <Container size="xl" py="xl" style={{ minHeight: CONTENT_MIN_HEIGHT, backgroundColor: PAGE }}>
         <Stack gap="md">
           <Group justify="space-between" align="center" wrap="wrap">
             <Group gap="xs">
