@@ -1,17 +1,131 @@
 /**
- * Chart tokens for the admin dashboard.
+ * Chart tokens for the admin dashboard, in both site themes.
  *
- * The categorical order below was validated against the dashboard's own dark
- * surface (#141414): all four slots clear the lightness band, chroma floor,
- * adjacent-pair CVD separation and 3:1 contrast. Only the first THREE clear the
- * all-pairs gates, so forms where every pair can sit side by side (the map,
- * scatter) cap out at three series; past that, fold into "Other".
+ * The values mirror the CSS variables in globals.css (Tokyo Night dark, and
+ * the light counterpart) so the admin pages read as part of the site rather
+ * than a separate grey app. Where a raw hex is needed in JS — luminance
+ * decisions, SVG ramp steps — it is duplicated here; layout colours that can
+ * be CSS should use the variables directly.
+ *
+ * Dark mode is *selected*, not an automatic flip: each mode's series and ramp
+ * steps were validated against that mode's own surface. The site's own dark
+ * accents could not be used as-is — Tokyo Night's pastels sit above the
+ * lightness band (L 0.72-0.80 vs 0.48-0.67) and its green and amber are
+ * indistinguishable under deuteranopia (ΔE 0.8) — so the dark series are
+ * darker steps of the same four hues.
  */
 
-export const SURFACE = '#141414';
-export const SURFACE_SUNKEN = '#0f0f0f';
-export const PAGE = '#0a0a0a';
-export const BORDER = '#2a2a2a';
+export type ThemeMode = 'dark' | 'light';
+
+export interface ChartTheme {
+  mode: ThemeMode;
+  /** Card surface. */
+  surface: string;
+  /** Inset panel inside a card. */
+  surfaceSunken: string;
+  /** Page background. */
+  page: string;
+  border: string;
+  ink: string;
+  inkMuted: string;
+  /** Hairline gridlines. */
+  grid: string;
+  /** Baseline / axis. */
+  axis: string;
+  /** Tooltip surface and its border. */
+  tooltipSurface: string;
+  tooltipBorder: string;
+  /** Track behind a bar-list bar, and a "no data" heatmap cell. */
+  track: string;
+  emptyCell: string;
+  /** Row background for the selected item in a list. */
+  selectedRow: string;
+  /**
+   * Fixed categorical order — assign by slot, never cycle. Slot N is the same
+   * hue in both modes (purple, amber, blue, green), so a series keeps its
+   * identity across a theme switch.
+   */
+  series: readonly [string, string, string, string];
+  /** Single-hue magnitude ramp for the heatmap, low → high. */
+  sequential: readonly string[];
+  /** Magnitude ramp for map markers — every step visible on the map fill. */
+  markerRamp: readonly string[];
+  /** Map geography fills. */
+  map: {
+    land: string;
+    landHover: string;
+    landStroke: string;
+    ocean: string;
+    cityDot: string;
+    cityLabel: string;
+  };
+  /** Reserved for state, never for a series. */
+  status: { good: string; warning: string; serious: string; critical: string };
+}
+
+const DARK: ChartTheme = {
+  mode: 'dark',
+  surface: '#1a1b26',
+  surfaceSunken: '#16161e',
+  page: '#0f0f14',
+  border: 'rgba(255, 255, 255, 0.06)',
+  ink: '#c0caf5',
+  inkMuted: '#7a83a8',
+  grid: 'rgba(192, 202, 245, 0.08)',
+  axis: 'rgba(192, 202, 245, 0.20)',
+  tooltipSurface: '#24283b',
+  tooltipBorder: 'rgba(192, 202, 245, 0.18)',
+  track: '#24283b',
+  emptyCell: '#1e2030',
+  selectedRow: '#2a2545',
+  // Darker steps of the site's purple / amber / blue / green.
+  series: ['#9d7cd8', '#c98500', '#5f87d8', '#4f9d5a'],
+  sequential: ['#342742', '#4a385d', '#614a7a', '#795d98', '#9270b7', '#ab84d7', '#c699f8'],
+  markerRamp: ['#7d4dad', '#976dc5', '#b28cde', '#ceacf7'],
+  map: {
+    land: '#1a1f2e',
+    landHover: '#232940',
+    landStroke: '#2d3548',
+    ocean: '#0d1117',
+    cityDot: '#7d7d7d',
+    cityLabel: '#9a9a9a',
+  },
+  status: { good: '#0ca30c', warning: '#fab219', serious: '#ec835a', critical: '#d03b3b' },
+};
+
+const LIGHT: ChartTheme = {
+  mode: 'light',
+  surface: '#ffffff',
+  surfaceSunken: '#f5f5f7',
+  page: '#f5f5f7',
+  border: 'rgba(0, 0, 0, 0.08)',
+  ink: '#1a1b26',
+  inkMuted: '#6b7280',
+  grid: 'rgba(26, 27, 38, 0.10)',
+  axis: 'rgba(26, 27, 38, 0.28)',
+  tooltipSurface: '#ffffff',
+  tooltipBorder: 'rgba(0, 0, 0, 0.14)',
+  track: '#e8e8ec',
+  emptyCell: '#eeeef1',
+  selectedRow: '#ede9fe',
+  // The site's own light accents, in the same hue order as dark.
+  series: ['#7c3aed', '#d97706', '#2563eb', '#16a34a'],
+  sequential: ['#f3eaff', '#dbcbf0', '#c4ace0', '#ad8ed1', '#9771c0', '#8152b0', '#6c329f'],
+  markerRamp: ['#a975e0', '#8f5ac4', '#763ea9', '#5e218f'],
+  map: {
+    land: '#dcdce3',
+    landHover: '#cfcfd9',
+    landStroke: '#b8b8c4',
+    ocean: '#f0f0f4',
+    cityDot: '#8a8a96',
+    cityLabel: '#5c5c68',
+  },
+  status: { good: '#15803d', warning: '#b45309', serious: '#c2410c', critical: '#b91c1c' },
+};
+
+export function getChartTheme(mode: ThemeMode): ChartTheme {
+  return mode === 'light' ? LIGHT : DARK;
+}
 
 /**
  * Height of the viewport below the fixed navbar.
@@ -43,60 +157,26 @@ export const VIEWPORT_CENTERED = {
 
 export const VIEWPORT_CENTERED_CARD = { margin: 'auto' } as const;
 
-export const INK = '#ededed';
-export const INK_MUTED = '#8a8a8a';
-export const GRID = '#242424';
-export const AXIS = '#333333';
-
-/** Fixed categorical order — assign by slot, never cycle. */
-export const SERIES = ['#9085e9', '#d95926', '#199e70', '#c98500'] as const;
-
-/** Single-hue magnitude ramp, low → high. Validated monotone, 4° hue spread. */
-export const SEQUENTIAL = [
-  '#2a2447', '#3b3168', '#4f4090', '#6455bd', '#7c6cd8', '#9085e9', '#ada2f0',
-] as const;
-
-/** Reserved for state, never for a series. */
-export const STATUS = {
-  good: '#0ca30c',
-  warning: '#fab219',
-  serious: '#ec835a',
-  critical: '#d03b3b',
-} as const;
-
-/**
- * Magnitude ramp for map markers, low → high.
- *
- * A shorter, brighter slice of SEQUENTIAL. The full ramp's dark end is meant to
- * recede toward the surface, which is right for heatmap cells (where "near
- * zero" should fade out) but wrong for a point marker: at 1.13:1 against the
- * map's land fill the quietest cities were effectively invisible. Every step
- * here clears 2:1 against both the land (#1a1f2e) and the ocean (#0d1117).
- */
-export const MARKER_RAMP = ['#6455bd', '#7c6cd8', '#9085e9', '#ada2f0'] as const;
-
-/** Pick a marker ramp step for `value` on a 0..max scale. */
-export function markerColor(value: number, max: number): string {
-  if (max <= 0) return MARKER_RAMP[0];
-  // sqrt keeps the low end distinguishable when the distribution is long-tailed.
-  const t = Math.sqrt(Math.max(0, value) / max);
-  const i = Math.min(MARKER_RAMP.length - 1, Math.max(0, Math.round(t * (MARKER_RAMP.length - 1))));
-  return MARKER_RAMP[i];
-}
-
-/** A "no data" cell, distinct from the ramp's near-zero step. */
-export const EMPTY_CELL = '#1c1c1c';
-
 /**
  * Pick a ramp step for `value` on a 0..max scale.
  * Zero returns the empty-cell colour so "none" never reads as "a little".
  */
-export function rampColor(value: number, max: number): string {
-  if (value <= 0 || max <= 0) return EMPTY_CELL;
+export function rampColor(theme: ChartTheme, value: number, max: number): string {
+  if (value <= 0 || max <= 0) return theme.emptyCell;
   // sqrt keeps the low end readable when the distribution is long-tailed.
   const t = Math.sqrt(value / max);
-  const i = Math.min(SEQUENTIAL.length - 1, Math.max(0, Math.round(t * (SEQUENTIAL.length - 1))));
-  return SEQUENTIAL[i];
+  const steps = theme.sequential;
+  const i = Math.min(steps.length - 1, Math.max(0, Math.round(t * (steps.length - 1))));
+  return steps[i];
+}
+
+/** Pick a marker ramp step for `value` on a 0..max scale. */
+export function markerColor(theme: ChartTheme, value: number, max: number): string {
+  const steps = theme.markerRamp;
+  if (max <= 0) return steps[0];
+  const t = Math.sqrt(Math.max(0, value) / max);
+  const i = Math.min(steps.length - 1, Math.max(0, Math.round(t * (steps.length - 1))));
+  return steps[i];
 }
 
 // ---------------------------------------------------------------------------

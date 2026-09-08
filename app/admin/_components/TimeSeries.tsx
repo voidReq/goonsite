@@ -2,9 +2,8 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import { Group, Text } from '@mantine/core';
-import {
-  SURFACE, GRID, AXIS, INK, INK_MUTED, SERIES, formatCount, formatExact, niceTicks,
-} from './theme';
+import { formatCount, formatExact, niceTicks } from './theme';
+import { useChartTheme } from './useChartTheme';
 import type { Bucket } from '@/lib/analytics';
 
 export interface SeriesPoint {
@@ -86,6 +85,7 @@ function fullLabel(ms: number, bucket: Bucket, timezone: string): string {
 }
 
 export function TimeSeries({ points, bucket, timezone, stale, height = 260 }: TimeSeriesProps) {
+  const t = useChartTheme();
   const wrapRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(880);
   const [hover, setHover] = useState<number | null>(null);
@@ -168,11 +168,11 @@ export function TimeSeries({ points, bucket, timezone, stale, height = 260 }: Ti
             {/* Legend is always present for two series — identity is never colour alone. */}
             <Group gap="md">
               <Group gap={6}>
-                <span style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: SERIES[0], display: 'inline-block' }} />
+                <span style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: t.series[0], display: 'inline-block' }} />
                 <Text size="xs" c="dimmed">Page views</Text>
               </Group>
               <Group gap={6}>
-                <span style={{ width: 12, height: 2, borderRadius: 1, backgroundColor: SERIES[2], display: 'inline-block' }} />
+                <span style={{ width: 12, height: 2, borderRadius: 1, backgroundColor: t.series[2], display: 'inline-block' }} />
                 <Text size="xs" c="dimmed">Unique visitors</Text>
               </Group>
             </Group>
@@ -191,19 +191,19 @@ export function TimeSeries({ points, bucket, timezone, stale, height = 260 }: Ti
             aria-label={`Page views and unique visitors per ${bucket}`}
           >
             {/* Gridlines: hairline, solid, recessive. */}
-            {ticks.map((t) => (
-              <g key={t}>
+            {ticks.map((tick) => (
+              <g key={tick}>
                 <line
                   x1={PAD.left} x2={PAD.left + plotW}
-                  y1={yOf(t)} y2={yOf(t)}
-                  stroke={t === 0 ? AXIS : GRID} strokeWidth={1}
+                  y1={yOf(tick)} y2={yOf(tick)}
+                  stroke={tick === 0 ? t.axis : t.grid} strokeWidth={1}
                 />
                 <text
-                  x={PAD.left - 8} y={yOf(t) + 4}
+                  x={PAD.left - 8} y={yOf(tick) + 4}
                   textAnchor="end"
-                  style={{ fontSize: 10, fill: INK_MUTED, fontVariantNumeric: 'tabular-nums' }}
+                  style={{ fontSize: 10, fill: t.inkMuted, fontVariantNumeric: 'tabular-nums' }}
                 >
-                  {formatCount(t)}
+                  {formatCount(tick)}
                 </text>
               </g>
             ))}
@@ -213,7 +213,7 @@ export function TimeSeries({ points, bucket, timezone, stale, height = 260 }: Ti
               <line
                 x1={xOf(hover)} x2={xOf(hover)}
                 y1={PAD.top} y2={PAD.top + plotH}
-                stroke={INK_MUTED} strokeWidth={1} opacity={0.5}
+                stroke={t.inkMuted} strokeWidth={1} opacity={0.5}
               />
             )}
 
@@ -224,7 +224,7 @@ export function TimeSeries({ points, bucket, timezone, stale, height = 260 }: Ti
                 <path
                   key={p.key}
                   d={columnPath(xOf(i) - barWidth / 2, PAD.top + plotH, barWidth, h, barRadius)}
-                  fill={SERIES[0]}
+                  fill={t.series[0]}
                   fillOpacity={hover === null || hover === i ? 0.9 : 0.55}
                 />
               );
@@ -233,7 +233,7 @@ export function TimeSeries({ points, bucket, timezone, stale, height = 260 }: Ti
             <polyline
               points={visitorLine}
               fill="none"
-              stroke={SERIES[2]}
+              stroke={t.series[2]}
               strokeWidth={2}
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -242,22 +242,22 @@ export function TimeSeries({ points, bucket, timezone, stale, height = 260 }: Ti
             {/* End-dot with a 2px surface ring, plus a direct label for the last value. */}
             {points.length > 0 && (
               <>
-                <circle cx={xOf(points.length - 1)} cy={yOf(points[points.length - 1].visitors)} r={5} fill={SURFACE} />
-                <circle cx={xOf(points.length - 1)} cy={yOf(points[points.length - 1].visitors)} r={3} fill={SERIES[2]} />
+                <circle cx={xOf(points.length - 1)} cy={yOf(points[points.length - 1].visitors)} r={5} fill={t.surface} />
+                <circle cx={xOf(points.length - 1)} cy={yOf(points[points.length - 1].visitors)} r={3} fill={t.series[2]} />
               </>
             )}
 
             {hover !== null && hovered && (
               <>
-                <circle cx={xOf(hover)} cy={yOf(hovered.visitors)} r={5.5} fill={SURFACE} />
-                <circle cx={xOf(hover)} cy={yOf(hovered.visitors)} r={3.5} fill={SERIES[2]} />
+                <circle cx={xOf(hover)} cy={yOf(hovered.visitors)} r={5.5} fill={t.surface} />
+                <circle cx={xOf(hover)} cy={yOf(hovered.visitors)} r={3.5} fill={t.series[2]} />
               </>
             )}
 
             <line
               x1={PAD.left} x2={PAD.left + plotW}
               y1={PAD.top + plotH} y2={PAD.top + plotH}
-              stroke={AXIS} strokeWidth={1}
+              stroke={t.axis} strokeWidth={1}
             />
 
             {tickIndices.map((i) => (
@@ -265,7 +265,7 @@ export function TimeSeries({ points, bucket, timezone, stale, height = 260 }: Ti
                 key={i}
                 x={xOf(i)} y={height - 8}
                 textAnchor="middle"
-                style={{ fontSize: 10, fill: INK_MUTED }}
+                style={{ fontSize: 10, fill: t.inkMuted }}
               >
                 {tickLabel(points[i].start, bucket, timezone)}
               </text>
@@ -280,29 +280,29 @@ export function TimeSeries({ points, bucket, timezone, stale, height = 260 }: Ti
                 top: 24,
                 width: tipWidth,
                 pointerEvents: 'none',
-                backgroundColor: '#1c1c1c',
-                border: '1px solid #383838',
+                backgroundColor: t.tooltipSurface,
+                border: `1px solid ${t.tooltipBorder}`,
                 borderRadius: 6,
                 padding: '8px 10px',
                 boxShadow: '0 6px 18px rgba(0,0,0,0.55)',
                 zIndex: 5,
               }}
             >
-              <div style={{ fontSize: 11, color: INK_MUTED, marginBottom: 6 }}>
+              <div style={{ fontSize: 11, color: t.inkMuted, marginBottom: 6 }}>
                 {fullLabel(hovered.start, bucket, timezone)}
               </div>
               {/* Values lead, labels follow; series keyed by a short stroke. */}
               {([
-                ['Views', hovered.views, SERIES[0]],
-                ['Visitors', hovered.visitors, SERIES[2]],
-                ['Sessions', hovered.sessions, INK_MUTED],
+                ['Views', hovered.views, t.series[0]],
+                ['Visitors', hovered.visitors, t.series[2]],
+                ['Sessions', hovered.sessions, t.inkMuted],
               ] as const).map(([label, value, color]) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                   <span style={{ width: 10, height: 2, backgroundColor: color, borderRadius: 1, flexShrink: 0 }} />
-                  <span style={{ fontSize: 12, color: INK, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+                  <span style={{ fontSize: 12, color: t.ink, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
                     {formatExact(value)}
                   </span>
-                  <span style={{ fontSize: 11, color: INK_MUTED }}>{label}</span>
+                  <span style={{ fontSize: 11, color: t.inkMuted }}>{label}</span>
                 </div>
               ))}
             </div>

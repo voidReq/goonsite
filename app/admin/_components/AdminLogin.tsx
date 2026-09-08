@@ -2,10 +2,11 @@
 
 import React from 'react';
 import {
-  MantineProvider, Container, Paper, Stack, Title, TextInput, Alert, Button,
+  Container, Paper, Stack, Title, TextInput, Alert, Button,
 } from '@mantine/core';
 import { IconLock, IconAlertCircle } from '@tabler/icons-react';
-import { SURFACE, BORDER, INK, SERIES, VIEWPORT_CENTERED, VIEWPORT_CENTERED_CARD } from './theme';
+import { VIEWPORT_CENTERED, VIEWPORT_CENTERED_CARD } from './theme';
+import { useChartTheme } from './useChartTheme';
 
 interface AdminLoginProps {
   title: string;
@@ -20,19 +21,21 @@ interface AdminLoginProps {
 export function AdminLogin({
   title, password, onPasswordChange, onSubmit, error, loading,
 }: AdminLoginProps) {
+  const t = useChartTheme();
+
   return (
-    <MantineProvider forceColorScheme="dark">
+    <>
       <Container
         size="xs"
         style={VIEWPORT_CENTERED}
       >
         <Paper
           p="xl" radius="md"
-          style={{ ...VIEWPORT_CENTERED_CARD, width: '100%', maxWidth: 400, backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}
+          style={{ ...VIEWPORT_CENTERED_CARD, width: '100%', maxWidth: 400, backgroundColor: t.surface, border: `1px solid ${t.border}` }}
         >
           <Stack gap="md" align="center">
-            <IconLock size={48} style={{ color: SERIES[0] }} />
-            <Title order={3} style={{ color: INK }}>{title}</Title>
+            <IconLock size={48} style={{ color: t.series[0] }} />
+            <Title order={3} style={{ color: t.ink }}>{title}</Title>
             <TextInput
               placeholder="Admin password"
               type="password"
@@ -53,6 +56,6 @@ export function AdminLogin({
           </Stack>
         </Paper>
       </Container>
-    </MantineProvider>
+    </>
   );
 }

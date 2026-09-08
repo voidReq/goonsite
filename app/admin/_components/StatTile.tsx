@@ -3,7 +3,8 @@
 import React from 'react';
 import { Paper, Text, Group, Tooltip } from '@mantine/core';
 import { IconArrowUpRight, IconArrowDownRight, IconMinus, IconInfoCircle } from '@tabler/icons-react';
-import { SURFACE, BORDER, INK_MUTED, STATUS, SERIES } from './theme';
+import type { ChartTheme } from './theme';
+import { useChartTheme } from './useChartTheme';
 
 interface StatTileProps {
   label: string;
@@ -21,7 +22,7 @@ interface StatTileProps {
 }
 
 /** Sparkline: de-emphasised line with the latest point picked out in the accent. */
-function Sparkline({ values }: { values: number[] }) {
+function Sparkline({ values, t }: { values: number[]; t: ChartTheme }) {
   const w = 88;
   const h = 26;
   if (values.length < 2) return null;
@@ -37,15 +38,15 @@ function Sparkline({ values }: { values: number[] }) {
       <polyline
         points={points.join(' ')}
         fill="none"
-        stroke={INK_MUTED}
+        stroke={t.inkMuted}
         strokeWidth={1.5}
         strokeLinejoin="round"
         strokeLinecap="round"
         opacity={0.7}
       />
       {/* 2px surface ring keeps the end-dot legible where it crosses the line. */}
-      <circle cx={w} cy={y(last)} r={4} fill={SURFACE} />
-      <circle cx={w} cy={y(last)} r={2.5} fill={SERIES[0]} />
+      <circle cx={w} cy={y(last)} r={4} fill={t.surface} />
+      <circle cx={w} cy={y(last)} r={2.5} fill={t.series[0]} />
     </svg>
   );
 }
@@ -53,30 +54,31 @@ function Sparkline({ values }: { values: number[] }) {
 export function StatTile({
   label, value, exact, delta, higherIsBetter = true, comparisonLabel = 'previous period', hint, spark,
 }: StatTileProps) {
+  const t = useChartTheme();
   const hasDelta = typeof delta === 'number' && Number.isFinite(delta);
   const flat = hasDelta && Math.abs(delta as number) < 0.005;
   const up = hasDelta && (delta as number) > 0;
   const good = up === higherIsBetter;
 
-  const deltaColor = !hasDelta || flat ? INK_MUTED : good ? STATUS.good : STATUS.critical;
+  const deltaColor = !hasDelta || flat ? t.inkMuted : good ? t.status.good : t.status.critical;
   const DeltaIcon = flat ? IconMinus : up ? IconArrowUpRight : IconArrowDownRight;
 
   return (
     <Paper
       p="md"
       radius="md"
-      style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}`, flex: '1 1 160px', minWidth: 160 }}
+      style={{ backgroundColor: t.surface, border: `1px solid ${t.border}`, flex: '1 1 160px', minWidth: 160 }}
     >
       <Group justify="space-between" align="flex-start" gap="xs" wrap="nowrap">
         <Group gap={6} wrap="nowrap">
           <Text size="sm" c="dimmed">{label}</Text>
           {hint && (
             <Tooltip label={hint} multiline maw={280} withArrow>
-              <IconInfoCircle size={13} style={{ color: INK_MUTED, cursor: 'help', flexShrink: 0 }} />
+              <IconInfoCircle size={13} style={{ color: t.inkMuted, cursor: 'help', flexShrink: 0 }} />
             </Tooltip>
           )}
         </Group>
-        {spark && spark.length > 1 && <Sparkline values={spark} />}
+        {spark && spark.length > 1 && <Sparkline values={spark} t={t} />}
       </Group>
 
       <Tooltip label={exact ?? value} disabled={!exact || exact === value} withArrow>

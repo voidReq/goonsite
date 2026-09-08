@@ -4,7 +4,7 @@ import React from 'react';
 import { Group, Select, ActionIcon, Text, Tooltip, Switch, Paper } from '@mantine/core';
 import { IconChevronLeft, IconChevronRight, IconRefresh, IconRobot } from '@tabler/icons-react';
 import type { Bucket, RangePreset } from '@/lib/analytics';
-import { SURFACE, BORDER } from './theme';
+import { useChartTheme } from './useChartTheme';
 
 /** Grouped so the calendar periods the user asked for read as one set. */
 export const RANGE_OPTIONS = [
@@ -66,8 +66,10 @@ export function RangePicker({
   includeBots, onIncludeBotsChange, label, navigable, atLatest, resolvedBucket,
   onRefresh, loading,
 }: RangePickerProps) {
+  const t = useChartTheme();
+
   return (
-    <Paper p="sm" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}>
+    <Paper p="sm" radius="md" style={{ backgroundColor: t.surface, border: `1px solid ${t.border}` }}>
       <Group justify="space-between" gap="md" wrap="wrap">
         <Group gap="xs" wrap="nowrap">
           <Select

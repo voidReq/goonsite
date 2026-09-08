@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import {
-  MantineProvider,
   Text,
   TextInput,
   Button,
@@ -25,9 +24,8 @@ import {
 } from '@tabler/icons-react';
 import type { RangePreset } from '@/lib/analytics';
 import { AdminLogin } from '../_components/AdminLogin';
-import {
-  PAGE, SURFACE, SURFACE_SUNKEN, BORDER, INK, SERIES, CONTENT_MIN_HEIGHT, formatExact,
-} from '../_components/theme';
+import { CONTENT_MIN_HEIGHT, formatExact } from '../_components/theme';
+import { useChartTheme } from '../_components/useChartTheme';
 
 interface VisitorEntry {
   type?: string;
@@ -72,6 +70,7 @@ const formatDuration = (seconds?: number) => {
 };
 
 export default function AdminVisitorsPage() {
+  const t = useChartTheme();
   const [password, setPassword] = useState('');
   const [authed, setAuthed] = useState(false);
   const [authError, setAuthError] = useState('');
@@ -320,12 +319,11 @@ export default function AdminVisitorsPage() {
   const navigable = NAVIGABLE.has(period);
 
   return (
-    <MantineProvider forceColorScheme="dark">
-      <Container size="lg" py="xl" style={{ minHeight: CONTENT_MIN_HEIGHT, backgroundColor: PAGE }}>
+    <Container size="lg" py="xl" style={{ minHeight: CONTENT_MIN_HEIGHT, backgroundColor: t.page }}>
         <Stack gap="lg">
           <Group justify="space-between" align="center" wrap="wrap">
             <Group>
-              <Title order={2} style={{ color: INK }}>Visitor Logs</Title>
+              <Title order={2} style={{ color: t.ink }}>Visitor Logs</Title>
               <Button
                 variant="light" color="violet" size="sm"
                 leftSection={<IconChartHistogram size={16} />}
@@ -408,15 +406,15 @@ export default function AdminVisitorsPage() {
           {/* Stats cards */}
           <Group gap="md">
             {([
-              ['Total Visits', stats.total.toLocaleString('en-US'), IconEye, SERIES[0]],
-              ['Unique IPs', stats.uniqueIps.toLocaleString('en-US'), IconUsers, '#3987e5'],
-              ['Top Path', stats.topPaths[0]?.[0] || '—', IconRoute, SERIES[2]],
-              ['Avg Duration', formatDuration(stats.avgDuration), IconClock, SERIES[3]],
+              ['Total Visits', stats.total.toLocaleString('en-US'), IconEye, t.series[0]],
+              ['Unique IPs', stats.uniqueIps.toLocaleString('en-US'), IconUsers, t.series[2]],
+              ['Top Path', stats.topPaths[0]?.[0] || '—', IconRoute, t.series[3]],
+              ['Avg Duration', formatDuration(stats.avgDuration), IconClock, t.series[1]],
             ] as const).map(([label, value, Icon, color]) => (
               <Paper
                 key={label}
                 p="md" radius="md"
-                style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}`, flex: 1, minWidth: 150 }}
+                style={{ backgroundColor: t.surface, border: `1px solid ${t.border}`, flex: 1, minWidth: 150 }}
               >
                 <Group gap="xs">
                   <Icon size={20} style={{ color }} />
@@ -429,7 +427,7 @@ export default function AdminVisitorsPage() {
 
           {/* Top paths breakdown */}
           {stats.topPaths.length > 0 && (
-            <Paper p="md" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}>
+            <Paper p="md" radius="md" style={{ backgroundColor: t.surface, border: `1px solid ${t.border}` }}>
               <Text fw={600} mb="sm">Top Paths</Text>
               <Group gap="xs" wrap="wrap">
                 {stats.topPaths.map(([path, count]) => (
@@ -442,7 +440,7 @@ export default function AdminVisitorsPage() {
           )}
 
           {/* Filters */}
-          <Paper p="md" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}>
+          <Paper p="md" radius="md" style={{ backgroundColor: t.surface, border: `1px solid ${t.border}` }}>
             <Group grow>
               <TextInput placeholder="Filter by IP..." value={filterIp} onChange={(e) => setFilterIp(e.currentTarget.value)} />
               <TextInput placeholder="Filter by Location..." value={filterLocation} onChange={(e) => setFilterLocation(e.currentTarget.value)} />
@@ -452,7 +450,7 @@ export default function AdminVisitorsPage() {
           </Paper>
 
           {/* Log table */}
-          <Paper p="md" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}>
+          <Paper p="md" radius="md" style={{ backgroundColor: t.surface, border: `1px solid ${t.border}` }}>
             <Group justify="space-between" mb="sm" wrap="wrap">
               <Text size="sm" c="dimmed">
                 {formatExact(displayEntries.length)} row{displayEntries.length === 1 ? '' : 's'}
@@ -527,7 +525,7 @@ export default function AdminVisitorsPage() {
                               {entry.ip && geoCache[entry.ip] ? (
                                 <Tooltip label={`${geoCache[entry.ip].city}, ${geoCache[entry.ip].country_name} • ${geoCache[entry.ip].org}`}>
                                   <Group gap={4} style={{ cursor: 'help' }}>
-                                    <IconMapPin size={12} style={{ color: SERIES[2] }} />
+                                    <IconMapPin size={12} style={{ color: t.series[3] }} />
                                     <Text size="xs">{geoCache[entry.ip].city}, {geoCache[entry.ip].country_code}</Text>
                                   </Group>
                                 </Tooltip>
@@ -560,9 +558,9 @@ export default function AdminVisitorsPage() {
                             </Table.Td>
                           </Table.Tr>
                           {expandedRow === i && (
-                            <Table.Tr style={{ backgroundColor: '#111111' }}>
+                            <Table.Tr style={{ backgroundColor: t.surfaceSunken }}>
                               <Table.Td colSpan={7}>
-                                <Paper p="sm" radius="sm" style={{ backgroundColor: SURFACE_SUNKEN, border: `1px solid ${BORDER}` }}>
+                                <Paper p="sm" radius="sm" style={{ backgroundColor: t.surface, border: `1px solid ${t.border}` }}>
                                   <Group align="flex-start" gap="xl">
                                     <Stack gap="xs" style={{ minWidth: 300 }}>
                                       <Text size="sm" fw={600} c="dimmed">Device Information</Text>
@@ -596,7 +594,6 @@ export default function AdminVisitorsPage() {
             )}
           </Paper>
         </Stack>
-      </Container>
-    </MantineProvider>
+    </Container>
   );
 }

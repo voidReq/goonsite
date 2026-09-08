@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  MantineProvider, Container, Stack, Group, Title, Text, Button, Paper,
+  Container, Stack, Group, Title, Text, Button, Paper,
   Loader, Alert, Divider,
 } from '@mantine/core';
 import { useRouter } from 'next/navigation';
@@ -16,9 +16,9 @@ import { BarList } from '../_components/BarList';
 import { Heatmap } from '../_components/Heatmap';
 import { VisitorMap } from '../_components/VisitorMap';
 import {
-  PAGE, SURFACE, BORDER, INK, CONTENT_MIN_HEIGHT,
-  formatCount, formatExact, formatDuration, formatPercent,
+  CONTENT_MIN_HEIGHT, formatCount, formatExact, formatDuration, formatPercent,
 } from '../_components/theme';
+import { useChartTheme } from '../_components/useChartTheme';
 
 /** Compact date-time for the range bounds, in the reporting timezone. */
 function rangeStamp(iso: string, timezone: string): string {
@@ -37,6 +37,7 @@ function delta(now: number, prev: number | undefined | null): number | null {
 
 export default function AdminInsightsPage() {
   const router = useRouter();
+  const t = useChartTheme();
 
   const [password, setPassword] = useState('');
   const [authed, setAuthed] = useState(false);
@@ -140,8 +141,7 @@ export default function AdminInsightsPage() {
   const stale = loading && !!data;
 
   return (
-    <MantineProvider forceColorScheme="dark">
-      <Container size="xl" py="xl" style={{ minHeight: CONTENT_MIN_HEIGHT, backgroundColor: PAGE }}>
+    <Container size="xl" py="xl" style={{ minHeight: CONTENT_MIN_HEIGHT, backgroundColor: t.page }}>
         <Stack gap="md">
           <Group justify="space-between" align="center" wrap="wrap">
             <Group gap="xs">
@@ -152,7 +152,7 @@ export default function AdminInsightsPage() {
               >
                 Raw logs
               </Button>
-              <Title order={2} style={{ color: INK }}>Insights</Title>
+              <Title order={2} style={{ color: t.ink }}>Insights</Title>
             </Group>
             {data && (
               // The window's own bounds, not a bare clock — for a past period a
@@ -281,7 +281,7 @@ export default function AdminInsightsPage() {
               )}
 
               {/* Traffic over time. */}
-              <Paper p="md" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}` }}>
+              <Paper p="md" radius="md" style={{ backgroundColor: t.surface, border: `1px solid ${t.border}` }}>
                 <Group justify="space-between" mb="xs" wrap="nowrap">
                   <Text fw={600} size="sm">Traffic over time</Text>
                   <Text size="xs" c="dimmed">{data.range.label}</Text>
@@ -374,7 +374,6 @@ export default function AdminInsightsPage() {
             </>
           )}
         </Stack>
-      </Container>
-    </MantineProvider>
+    </Container>
   );
 }

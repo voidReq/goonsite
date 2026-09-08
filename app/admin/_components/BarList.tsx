@@ -4,9 +4,8 @@ import React, { useState } from 'react';
 import { Paper, Text, Group, Stack, Tooltip, ActionIcon, Button } from '@mantine/core';
 import { IconTable, IconChartBar } from '@tabler/icons-react';
 import type { Breakdown } from '@/lib/analytics';
-import {
-  SURFACE, BORDER, INK_MUTED, SERIES, formatExact, formatDuration, formatPercent,
-} from './theme';
+import { formatExact, formatDuration, formatPercent } from './theme';
+import { useChartTheme } from './useChartTheme';
 
 interface BarListProps {
   title: string;
@@ -35,16 +34,17 @@ export function BarList({
   initial = 8, emptyLabel = 'No data in this period.', subAsPrefix = false,
   metricLabel = 'Views',
 }: BarListProps) {
+  const t = useChartTheme();
   const [expanded, setExpanded] = useState(false);
   const [asTable, setAsTable] = useState(false);
 
   const max = Math.max(1, ...items.map((i) => i.views));
   const total = items.reduce((s, i) => s + i.views, 0);
   const shown = expanded ? items : items.slice(0, initial);
-  const color = SERIES[slot];
+  const color = t.series[slot];
 
   return (
-    <Paper p="md" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}`, height: '100%' }}>
+    <Paper p="md" radius="md" style={{ backgroundColor: t.surface, border: `1px solid ${t.border}`, height: '100%' }}>
       <Group justify="space-between" mb="sm" wrap="nowrap">
         <Text fw={600} size="sm">{title}</Text>
         <Tooltip label={asTable ? 'Show bars' : 'Show as table'} withArrow>
@@ -72,8 +72,8 @@ export function BarList({
                       key={i}
                       style={{
                         textAlign: i === 0 ? 'left' : 'right',
-                        color: INK_MUTED, fontWeight: 500, padding: '4px 6px',
-                        borderBottom: `1px solid ${BORDER}`, whiteSpace: 'nowrap',
+                        color: t.inkMuted, fontWeight: 500, padding: '4px 6px',
+                        borderBottom: `1px solid ${t.border}`, whiteSpace: 'nowrap',
                       }}
                     >
                       {h}
@@ -100,7 +100,7 @@ export function BarList({
                       {formatDuration(item.avgSeconds)}
                     </td>
                   )}
-                  <td style={{ padding: '4px 6px', textAlign: 'right', color: INK_MUTED, fontVariantNumeric: 'tabular-nums' }}>
+                  <td style={{ padding: '4px 6px', textAlign: 'right', color: t.inkMuted, fontVariantNumeric: 'tabular-nums' }}>
                     {total > 0 ? formatPercent(item.views / total, 1) : '—'}
                   </td>
                 </tr>
@@ -142,7 +142,7 @@ export function BarList({
                 </Group>
               </Group>
               {/* 6px track, 4px rounded data-end. */}
-              <div style={{ height: 6, borderRadius: 3, backgroundColor: '#1e1e1e', overflow: 'hidden' }}>
+              <div style={{ height: 6, borderRadius: 3, backgroundColor: t.track, overflow: 'hidden' }}>
                 <div
                   style={{
                     height: '100%',

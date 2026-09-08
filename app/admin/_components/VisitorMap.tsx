@@ -8,10 +8,9 @@ import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from 're
 import { IconPlus, IconMinus, IconFocus2, IconMapPin, IconWorld, IconSearch } from '@tabler/icons-react';
 import type { LocationStat } from '@/lib/analytics';
 import { REFERENCE_CITIES } from './map-cities';
-import {
-  SURFACE, BORDER, INK, INK_MUTED, MARKER_RAMP, SERIES,
-  markerColor, formatExact, formatPercent,
-} from './theme';
+import type { ChartTheme } from './theme';
+import { markerColor, formatExact, formatPercent } from './theme';
+import { useChartTheme } from './useChartTheme';
 
 const WORLD_URL = '/countries-110m.json';
 const US_STATES_URL = '/us-states-10m.json';
@@ -30,11 +29,6 @@ export const CLUSTER_PX = 26;
 /** Smallest marker radius in screen px, so a one-visit city stays visible. */
 const MIN_MARKER_PX = 4;
 const MAX_MARKER_PX = 16;
-
-const LAND = '#1a1f2e';
-const LAND_HOVER = '#232940';
-const LAND_STROKE = '#2d3548';
-const OCEAN = '#0d1117';
 
 type Metric = 'visits' | 'visitors';
 
@@ -195,6 +189,7 @@ export function clusterLocations(locations: LocationStat[], zoom: number, scale:
 }
 
 export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale }: VisitorMapProps) {
+  const t = useChartTheme();
   const wrapRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 900, height: 480 });
   const [view, setView] = useState<{ coordinates: [number, number]; zoom: number }>({
@@ -367,11 +362,11 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
   return (
     <Paper
       p="md" radius="md"
-      style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}`, height: '100%' }}
+      style={{ backgroundColor: t.surface, border: `1px solid ${t.border}`, height: '100%' }}
     >
       <Group justify="space-between" mb="sm" wrap="nowrap" align="center">
         <Group gap="xs" wrap="nowrap">
-          <IconWorld size={16} style={{ color: SERIES[0] }} />
+          <IconWorld size={16} style={{ color: t.series[0] }} />
           <Text fw={600} size="sm">Where visitors are</Text>
         </Group>
         <Group gap="xs" wrap="nowrap">
@@ -409,7 +404,7 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
           width: '100%',
           borderRadius: 8,
           overflow: 'hidden',
-          border: `1px solid ${BORDER}`,
+          border: `1px solid ${t.border}`,
           opacity: stale ? 0.5 : 1,
           transition: 'opacity 120ms',
           cursor: 'grab',
@@ -420,12 +415,12 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
           height={size.height}
           projection="geoMercator"
           projectionConfig={{ scale: projectionScale, center: [0, 22] }}
-          style={{ backgroundColor: OCEAN, display: 'block', width: '100%', height: 'auto' }}
+          style={{ backgroundColor: t.map.ocean, display: 'block', width: '100%', height: 'auto' }}
         >
           <defs>
             <radialGradient id="markerGlow">
-              <stop offset="0%" stopColor={SERIES[0]} stopOpacity={0.45} />
-              <stop offset="100%" stopColor={SERIES[0]} stopOpacity={0} />
+              <stop offset="0%" stopColor={t.series[0]} stopOpacity={0.45} />
+              <stop offset="100%" stopColor={t.series[0]} stopOpacity={0} />
             </radialGradient>
           </defs>
 
@@ -442,13 +437,13 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    fill={LAND}
-                    stroke={LAND_STROKE}
+                    fill={t.map.land}
+                    stroke={t.map.landStroke}
                     strokeWidth={0.5 / view.zoom}
                     style={{
                       default: { outline: 'none' },
-                      hover: { fill: LAND_HOVER, outline: 'none' },
-                      pressed: { fill: LAND_HOVER, outline: 'none' },
+                      hover: { fill: t.map.landHover, outline: 'none' },
+                      pressed: { fill: t.map.landHover, outline: 'none' },
                     }}
                   />
                 ))
@@ -464,7 +459,7 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
                       key={geo.rsmKey}
                       geography={geo}
                       fill="none"
-                      stroke={LAND_STROKE}
+                      stroke={t.map.landStroke}
                       strokeWidth={0.3 / view.zoom}
                       style={{ default: { outline: 'none' }, hover: { outline: 'none' }, pressed: { outline: 'none' } }}
                     />
@@ -479,18 +474,18 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
               const s = view.zoom;
               return (
                 <Marker key={city.name} coordinates={[city.lng, city.lat]}>
-                  <circle r={1.5 / s} fill="#7d7d7d" />
+                  <circle r={1.5 / s} fill={t.map.cityDot} />
                   <text
                     textAnchor="middle"
                     y={-4.5 / s}
                     style={{
                       fontSize: `${9 / s}px`,
-                      fill: '#9a9a9a',
+                      fill: t.map.cityLabel,
                       fontFamily: 'system-ui, sans-serif',
                       pointerEvents: 'none',
                       userSelect: 'none',
                       paintOrder: 'stroke',
-                      stroke: OCEAN,
+                      stroke: t.map.ocean,
                       strokeWidth: 3 / s,
                       strokeLinejoin: 'round',
                     }}
@@ -551,9 +546,9 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
                     <circle r={r * 2.4} fill="url(#markerGlow)" />
                     <circle
                       r={r}
-                      fill={markerColor(value, maxMetric)}
+                      fill={markerColor(t, value, maxMetric)}
                       fillOpacity={0.92}
-                      stroke={isActive ? INK : '#c084fc'}
+                      stroke={isActive ? t.ink : t.markerRamp[t.markerRamp.length - 1]}
                       strokeWidth={(isActive ? 1.6 : 0.6) / view.zoom}
                     />
                     {/* A second ring reads as "there is more inside this one". */}
@@ -561,7 +556,7 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
                       <circle
                         r={r * 1.5}
                         fill="none"
-                        stroke={markerColor(value, maxMetric)}
+                        stroke={markerColor(t, value, maxMetric)}
                         strokeOpacity={0.55}
                         strokeWidth={0.8 / view.zoom}
                       />
@@ -572,13 +567,13 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
                         y={r * 1.5 + labelPx * 1.5}
                         style={{
                           fontSize: `${labelPx}px`,
-                          fill: INK,
+                          fill: t.ink,
                           fontFamily: 'system-ui, sans-serif',
                           fontWeight: 600,
                           pointerEvents: 'none',
                           userSelect: 'none',
                           paintOrder: 'stroke',
-                          stroke: OCEAN,
+                          stroke: t.map.ocean,
                           strokeWidth: labelPx * 0.4,
                           strokeLinejoin: 'round',
                         }}
@@ -601,29 +596,29 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
               top: tipAbove ? hover.y - 96 : hover.y + 24,
               width: tipWidth,
               pointerEvents: 'none',
-              backgroundColor: '#1c1c1c',
-              border: '1px solid #383838',
+              backgroundColor: t.tooltipSurface,
+              border: `1px solid ${t.tooltipBorder}`,
               borderRadius: 6,
               padding: '8px 10px',
               boxShadow: '0 6px 18px rgba(0,0,0,0.55)',
               zIndex: 5,
             }}
           >
-            <div style={{ fontSize: 12, color: INK, fontWeight: 600 }}>{hover.cluster.label}</div>
+            <div style={{ fontSize: 12, color: t.ink, fontWeight: 600 }}>{hover.cluster.label}</div>
             {hover.cluster.sub && (
-              <div style={{ fontSize: 10, color: INK_MUTED, marginBottom: 6 }}>{hover.cluster.sub}</div>
+              <div style={{ fontSize: 10, color: t.inkMuted, marginBottom: 6 }}>{hover.cluster.sub}</div>
             )}
             {/* Values lead, labels follow. */}
-            <div style={{ fontSize: 12, color: INK, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+            <div style={{ fontSize: 12, color: t.ink, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
               {formatExact(hover.cluster.visits)}{' '}
-              <span style={{ color: INK_MUTED, fontWeight: 400 }}>views</span>
+              <span style={{ color: t.inkMuted, fontWeight: 400 }}>views</span>
             </div>
-            <div style={{ fontSize: 12, color: INK, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+            <div style={{ fontSize: 12, color: t.ink, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
               {formatExact(hover.cluster.visitors)}{' '}
-              <span style={{ color: INK_MUTED, fontWeight: 400 }}>unique visitors</span>
+              <span style={{ color: t.inkMuted, fontWeight: 400 }}>unique visitors</span>
             </div>
             {geoViews > 0 && (
-              <div style={{ fontSize: 10, color: INK_MUTED, marginTop: 4 }}>
+              <div style={{ fontSize: 10, color: t.inkMuted, marginTop: 4 }}>
                 {formatPercent(hover.cluster.visits / geoViews, 1)} of located traffic
               </div>
             )}
@@ -635,7 +630,7 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
             style={{
               position: 'absolute', inset: 0, display: 'flex',
               alignItems: 'center', justifyContent: 'center',
-              backgroundColor: 'rgba(10,10,10,0.55)',
+              backgroundColor: t.mode === 'light' ? 'rgba(245,245,247,0.7)' : 'rgba(10,10,10,0.55)',
             }}
           >
             <Text size="sm" c="dimmed">No geolocated visitors in this period.</Text>
@@ -646,7 +641,7 @@ export function VisitorMap({ locations, ungeolocatedVisitors, totalViews, stale 
       <Group justify="space-between" mt="sm" wrap="nowrap" align="center">
         <Group gap="xs" wrap="nowrap">
           <Text size="10px" c="dimmed">Fewer</Text>
-          {MARKER_RAMP.map((c) => (
+          {t.markerRamp.map((c) => (
             <span key={c} style={{ width: 12, height: 8, borderRadius: 2, backgroundColor: c }} />
           ))}
           <Text size="10px" c="dimmed">
@@ -705,6 +700,7 @@ const LIST_RENDER_LIMIT = 60;
 const LocationList = React.memo(function LocationList({
   locations, selectedId, onSelect,
 }: LocationListProps) {
+  const t = useChartTheme();
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
@@ -748,11 +744,11 @@ const LocationList = React.memo(function LocationList({
             onClick={() => onSelect(loc)}
             style={{
               cursor: 'pointer', padding: '3px 6px', borderRadius: 4,
-              backgroundColor: selectedId === loc.id ? '#1f1b33' : 'transparent',
+              backgroundColor: selectedId === loc.id ? t.selectedRow : 'transparent',
             }}
           >
             <Group gap={6} wrap="nowrap" style={{ minWidth: 0 }}>
-              <IconMapPin size={12} style={{ color: SERIES[0], flexShrink: 0 }} />
+              <IconMapPin size={12} style={{ color: t.series[0], flexShrink: 0 }} />
               <Text size="xs" truncate>{loc.city}</Text>
               {/* Region disambiguates same-named places — three Rochesters,
                   three Portlands — which read identically without it. */}

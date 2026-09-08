@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import {
-  MantineProvider,
   TextInput,
   Button,
   Text,
@@ -26,6 +25,7 @@ import {
   IconRefresh,
 } from '@tabler/icons-react';
 import { VIEWPORT_CENTERED, VIEWPORT_CENTERED_CARD } from '../_components/theme';
+import { useChartTheme } from '../_components/useChartTheme';
 
 const GAME_LABELS: Record<string, string> = {
   tictactoe: '❌ Tic-Tac-Toe',
@@ -43,6 +43,7 @@ interface PendingMessage {
 }
 
 export default function AdminMessagesPage() {
+  const t = useChartTheme();
   const [password, setPassword] = useState('');
   const [authed, setAuthed] = useState(false);
   const [authError, setAuthError] = useState('');
@@ -114,11 +115,10 @@ export default function AdminMessagesPage() {
 
   if (!authed) {
     return (
-      <MantineProvider forceColorScheme="dark">
-        <Container size="xs" style={VIEWPORT_CENTERED}>
-          <Paper p="xl" radius="md" style={{ ...VIEWPORT_CENTERED_CARD, width: '100%', maxWidth: 400, background: '#141414' }}>
+      <Container size="xs" style={VIEWPORT_CENTERED}>
+          <Paper p="xl" radius="md" withBorder style={{ ...VIEWPORT_CENTERED_CARD, width: '100%', maxWidth: 400, background: t.surface }}>
             <Stack align="center" gap="md">
-              <IconLock size={40} color="#7c3aed" />
+              <IconLock size={40} color={t.series[0]} />
               <Title order={3}>Message Moderation</Title>
               <TextInput
                 placeholder="Admin password"
@@ -143,15 +143,13 @@ export default function AdminMessagesPage() {
                 Login
               </Button>
             </Stack>
-          </Paper>
-        </Container>
-      </MantineProvider>
+      </Paper>
+      </Container>
     );
   }
 
   return (
-    <MantineProvider forceColorScheme="dark">
-      <Container size="md" py="xl">
+    <Container size="md" py="xl">
         <Group justify="space-between" mb="xl" wrap="wrap" gap="sm">
           <Group wrap="wrap" gap="sm">
             <IconMessage size={28} color="#7c3aed" />
@@ -176,7 +174,7 @@ export default function AdminMessagesPage() {
             <Loader color="violet" />
           </Stack>
         ) : messages.length === 0 ? (
-          <Paper p="xl" radius="md" style={{ background: '#141414', textAlign: 'center' }}>
+          <Paper p="xl" radius="md" withBorder style={{ background: t.surface, textAlign: 'center' }}>
             <Text c="dimmed" size="lg">
               No pending messages. All clear!
             </Text>
@@ -189,13 +187,13 @@ export default function AdminMessagesPage() {
                 p="lg"
                 radius="md"
                 style={{
-                  background: '#141414',
+                  background: t.surface,
                   border: '1px solid #2a2a2a',
                 }}
               >
                 <Group justify="space-between" mb="xs">
                   <Group>
-                    <Text fw={600} style={{ color: '#e2e8f0' }}>
+                    <Text fw={600} style={{ color: t.ink }}>
                       {msg.author}
                     </Text>
                     <Badge variant="light" color="gray" size="sm">
@@ -215,11 +213,11 @@ export default function AdminMessagesPage() {
                 <Text
                   size="sm"
                   style={{
-                    color: '#cbd5e1',
+                    color: t.ink,
                     lineHeight: 1.6,
                     marginBottom: '16px',
                     padding: '12px',
-                    background: '#1a1a2e',
+                    background: t.surfaceSunken,
                     borderRadius: '8px',
                     wordBreak: 'break-word',
                   }}
@@ -252,7 +250,6 @@ export default function AdminMessagesPage() {
             ))}
           </Stack>
         )}
-      </Container>
-    </MantineProvider>
+    </Container>
   );
 }

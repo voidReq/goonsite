@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { Paper, Text, Group } from '@mantine/core';
-import { SURFACE, BORDER, INK, INK_MUTED, SEQUENTIAL, EMPTY_CELL, rampColor, formatExact } from './theme';
+import { rampColor, formatExact } from './theme';
+import { useChartTheme } from './useChartTheme';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -15,6 +16,7 @@ interface HeatmapProps {
 
 /** When traffic actually arrives: day of week × hour of day. */
 export function Heatmap({ grid, timezone, stale }: HeatmapProps) {
+  const t = useChartTheme();
   const [hover, setHover] = useState<{ d: number; h: number } | null>(null);
 
   const max = Math.max(0, ...grid.flat());
@@ -28,14 +30,14 @@ export function Heatmap({ grid, timezone, stale }: HeatmapProps) {
   const tz = timezone.split('/').pop()?.replace(/_/g, ' ') ?? timezone;
 
   return (
-    <Paper p="md" radius="md" style={{ backgroundColor: SURFACE, border: `1px solid ${BORDER}`, height: '100%' }}>
+    <Paper p="md" radius="md" style={{ backgroundColor: t.surface, border: `1px solid ${t.border}`, height: '100%' }}>
       <Group justify="space-between" mb={2} wrap="nowrap">
         <Text fw={600} size="sm">When visitors arrive</Text>
         <Text size="10px" c="dimmed">{tz} time</Text>
       </Group>
       <Text size="xs" c="dimmed" mb="sm">
         {total > 0
-          ? <>Busiest: <strong style={{ color: INK }}>{DAYS[peak.d]} {hourLabel(peak.h)}</strong> · {formatExact(peak.v)} views</>
+          ? <>Busiest: <strong style={{ color: t.ink }}>{DAYS[peak.d]} {hourLabel(peak.h)}</strong> · {formatExact(peak.v)} views</>
           : 'No traffic in this period.'}
       </Text>
 
@@ -70,12 +72,12 @@ export function Heatmap({ grid, timezone, stale }: HeatmapProps) {
                       style={{
                         height: 16,
                         borderRadius: 2,
-                        backgroundColor: rampColor(v, max),
+                        backgroundColor: rampColor(t, v, max),
                         // The hovered cell lifts; the peak stays marked so the
                         // "busiest" callout is findable without hovering.
                         outline: isHovered
-                          ? `1px solid ${INK}`
-                          : isPeak ? `1px solid ${INK_MUTED}` : 'none',
+                          ? `1px solid ${t.ink}`
+                          : isPeak ? `1px solid ${t.inkMuted}` : 'none',
                         outlineOffset: 1,
                         cursor: v > 0 ? 'help' : 'default',
                       }}
@@ -95,15 +97,15 @@ export function Heatmap({ grid, timezone, stale }: HeatmapProps) {
           </Text>
           <Group gap={6} wrap="nowrap" align="center">
             <Group gap={3} wrap="nowrap" align="center">
-              <span style={{ width: 11, height: 9, borderRadius: 2, backgroundColor: EMPTY_CELL, border: `1px solid ${BORDER}` }} />
+              <span style={{ width: 11, height: 9, borderRadius: 2, backgroundColor: t.emptyCell, border: `1px solid ${t.border}` }} />
               <Text size="9px" c="dimmed">none</Text>
             </Group>
             <Group gap={2} wrap="nowrap" align="center">
               <Text size="9px" c="dimmed">1</Text>
-              {SEQUENTIAL.map((c) => (
+              {t.sequential.map((c) => (
                 <span key={c} style={{ width: 11, height: 9, borderRadius: 2, backgroundColor: c }} />
               ))}
-              <Text size="9px" style={{ color: INK_MUTED }}>{formatExact(max)}</Text>
+              <Text size="9px" style={{ color: t.inkMuted }}>{formatExact(max)}</Text>
             </Group>
           </Group>
         </Group>
