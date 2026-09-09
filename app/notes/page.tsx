@@ -1,12 +1,11 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { IconNotes, IconBrain, IconListCheck, IconSparkles } from '@tabler/icons-react';
+import { IconNotes, IconBrain, IconSparkles } from '@tabler/icons-react';
 
 const STATS = [
   { label: 'Self-taught', icon: IconBrain, color: '#bb9af7' },
   { label: 'Self-written', icon: IconSparkles, color: '#9ece6a' },
-  { label: 'No AI slop', icon: IconListCheck, color: '#f7768e' },
 ];
 
 const PLANNED = [

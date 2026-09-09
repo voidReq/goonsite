@@ -104,12 +104,43 @@ export default function ProjectsSidebar({ tree }: { tree: ProjectTreeItem[] }) {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Desktop sidebar — outer div stretches full page height, inner div is sticky */}
+      <div
+        className="hidden md:block w-64 shrink-0"
+        style={{
+          backgroundColor: 'var(--goon-surface-dark)',
+          borderRight: '1px solid var(--goon-border)',
+        }}
+      >
+        <div
+          className="overflow-y-auto p-4 sticky top-0"
+          style={{ height: 'calc(100vh - 3.5rem)' }}
+        >
+          <div className="mb-4 pb-4" style={{ borderBottom: '1px solid var(--goon-border)' }}>
+            <Link
+              href="/projects"
+              className="text-lg font-bold transition-colors"
+              style={{ color: 'var(--goon-text)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = '#7dcfff'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--goon-text)'; }}
+            >
+              Projects & Writeups
+            </Link>
+          </div>
+          <div className="space-y-0.5">
+            {tree.map((item, index) => (
+              <TreeNode key={index} item={item} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile sidebar — fixed overlay */}
       <div className={`
-        w-64 overflow-y-auto p-4
-        fixed md:sticky top-14 md:top-0 z-40
+        md:hidden w-64 overflow-y-auto p-4
+        fixed top-14 z-40
         transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}
         style={{
           backgroundColor: 'var(--goon-surface-dark)',
@@ -117,7 +148,7 @@ export default function ProjectsSidebar({ tree }: { tree: ProjectTreeItem[] }) {
           height: 'calc(100vh - 3.5rem)',
         }}
       >
-        <div className="mb-4 pb-4 mt-2 md:mt-0" style={{ borderBottom: '1px solid var(--goon-border)' }}>
+        <div className="mb-4 pb-4 mt-2" style={{ borderBottom: '1px solid var(--goon-border)' }}>
           <Link
             href="/projects"
             className="text-lg font-bold transition-colors"

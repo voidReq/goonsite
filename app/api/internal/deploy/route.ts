@@ -10,6 +10,9 @@ export async function POST(request: NextRequest) {
       headers: {
         'content-type': request.headers.get('content-type') || 'application/json',
         'x-hub-signature-256': signature,
+        // The listener only acts on push events and ignores everything else,
+        // so dropping this header here silently disabled every deploy.
+        'x-github-event': request.headers.get('x-github-event') || '',
       },
       body,
     });
