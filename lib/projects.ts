@@ -97,9 +97,14 @@ export function buildProjectTree(): ProjectTreeItem[] {
       if (stat.isDirectory()) {
         if (file === '.git' || file === '.obsidian') continue;
         
+        const slugPath = itemRelativePath
+          .split('/')
+          .map(p => p.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, ''))
+          .join('/');
+
         items.push({
           name: file,
-          path: itemRelativePath,
+          path: slugPath,
           type: 'directory',
           children: buildTree(filePath, itemRelativePath),
         });
