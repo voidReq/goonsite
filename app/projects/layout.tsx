@@ -15,7 +15,7 @@ export default function ProjectsLayout({ children }: { children: React.ReactNode
       <div className="absolute inset-0 mesh-gradient-purple pointer-events-none" />
       <div className="absolute inset-0 grid-bg pointer-events-none" />
       <ProjectsSidebar tree={tree} />
-      <main className="relative z-10 flex-1">
+      <main className="relative z-10 flex-1 min-w-0">
         {children}
       </main>
     </div>
