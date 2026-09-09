@@ -661,7 +661,7 @@ export default function MessageBoardPage() {
                 Want to leave a message?
               </Text>
               <Text size="xs" c="dimmed" ta="center" mb={selectedGame ? 'md' : 'lg'}>
-                You&apos;ll have to earn it first. Pick your challenge.
+                Earn it, beat our expert bots. If you can.
               </Text>
 
               {/* Game selector */}
@@ -772,7 +772,7 @@ export default function MessageBoardPage() {
               transition={{ duration: 0.5, type: 'spring', stiffness: 100 }}
               style={{
                 maxWidth: '600px',
-                margin: isMobile ? '0 auto' : '0 auto',
+                margin: isMobile ? '24px auto' : '40px auto',
                 padding: isMobile ? '0 16px 40px' : '0 20px 60px',
               }}
             >
