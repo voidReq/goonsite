@@ -17,8 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/turtle',
     ...(SITE.clean ? [] : ['/message-board', '/goon-sploit']),
     '/fim',
-    '/tools/jwt',
-    '/tools/headers',
     '/tools/encode',
   ].map((route) => {
     let priority = 0.5;

@@ -160,7 +160,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
           <NavCard href="/projects" accent="#7dcfff" icon={<IconCode size={18} />} title="Projects" desc="Vuln writeups & builds" delay={0.15} />
           <NavCard href={SITE.sitemapPath} accent="#9ece6a" icon={<IconMap size={18} />} title="Sitemap" desc="Everything, mapped" delay={0.2} />
           {CLEAN ? (
-            <NavCard href="/tools/jwt" accent="#e0af68" icon={<IconTools size={18} />} title="Tools" desc="JWT, headers & hashing" delay={0.25} />
+            <NavCard href="/tools/encode" accent="#e0af68" icon={<IconTools size={18} />} title="Tools" desc="Encoding & hashing" delay={0.25} />
           ) : (
             <NavCard href="/message-board" accent="#e0af68" icon={<IconMessageCircle size={18} />} title="Messages" desc="Leave your mark" delay={0.25} />
           )}
