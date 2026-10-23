@@ -26,16 +26,13 @@ const GOON_WORDS = [
   'Gooning session active.',
 ]
 
+// Commands that work in the sitemap terminal this opens, so they double as a hint
 const CLEAN_WORDS = [
-  'whoami',
-  'james',
-  'ls ~',
-  'notes/  projects/  tools/',
-  'cat README.md',
-  'Security notes, vulnerability writeups & projects.',
-  'Running diagnostics...',
-  'System check complete.',
-  'Welcome.',
+  'cd projects  # writeups & builds',
+  'cd notes  # networking, databases, security',
+  'tree  # map of the whole site',
+  'help',
+  'click to explore ▸',
 ]
 
 export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
@@ -53,6 +50,7 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
           title="Maximize"
         />
         <span className="ml-3 text-xs font-mono" style={{ color: 'var(--site-text-dim)' }}>{SITE.prompt}: ~</span>
+        <span className="ml-auto text-[10px] font-mono uppercase tracking-wider" style={{ color: 'var(--site-text-dim)' }}>sitemap</span>
       </div>
       <div className="p-5" style={{ color: '#a9b1d6' }}>
         <div style={{ marginBottom: '10px' }}>

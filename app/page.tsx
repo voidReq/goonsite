@@ -14,7 +14,7 @@ const STATIC_NODES: SiteNode[] = [
   { href: '/projects', label: 'Projects', color: '#7dcfff' },
   { href: SITE.sitemapPath, label: 'Sitemap', color: '#9ece6a' },
   ...(SITE.clean ? [] : [{ href: '/message-board', label: 'Message Board', color: '#e0af68' }]),
-  { href: '/tools/encode', label: 'Encode / Hash', color: '#9ece6a' },
+  SITE.clean ? { href: '/about', label: 'About', color: '#e0af68' } : { href: '/tools/encode', label: 'Encode / Hash', color: '#9ece6a' },
   { href: '/macbook', label: 'Macbook', color: '#bb9af7' },
   { href: '/revolutions', label: 'Revolutions', color: '#ff9e64' },
   ...(SITE.clean ? [] : [{ href: '/goon-sploit', label: 'Goon-sploit', color: '#f7768e' }]),

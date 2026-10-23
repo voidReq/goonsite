@@ -14,19 +14,21 @@ const CLEAN_BLOCKED = [
   '/a.png',
   '/b.png',
   '/IMG_9856.png',
+  // 6A68 has an About page in place of the tools
+  '/tools',
 ];
+
+// The other way round: pages only the clean build has.
+const GOONSITE_BLOCKED = ['/site-map', '/about'];
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   turbopack: {},
   async rewrites() {
-    if (process.env.NEXT_PUBLIC_SITE_VARIANT !== 'clean') {
-      // The clean build's sitemap page has no reason to exist on goonsite.
-      return { beforeFiles: [{ source: '/site-map', destination: '/404' }] };
-    }
+    const blocked = process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean' ? CLEAN_BLOCKED : GOONSITE_BLOCKED;
     return {
-      beforeFiles: CLEAN_BLOCKED.flatMap((path) => [
+      beforeFiles: blocked.flatMap((path) => [
         { source: path, destination: '/404' },
         { source: `${path}/:rest*`, destination: '/404' },
       ]),

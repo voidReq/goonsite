@@ -27,7 +27,12 @@ const siteTree: TreeEntry[] = [
   ...(CLEAN ? [] : [{ href: '/message-board', name: 'message-board', color: '#e0af68' }]),
   { href: '/notes', name: 'notes/', color: '#bb9af7' },
   { href: '/projects', name: 'projects/', color: '#7dcfff' },
-  {
+  CLEAN ? {
+    href: '/about', name: 'about/', color: '#e0af68',
+    children: [
+      { href: NUAUTO_URL, name: 'nuauto', color: '#bb9af7' },
+    ],
+  } : {
     href: '/tools/encode', name: 'tools/', color: '#f7768e',
     children: [
       { href: '/tools/encode', name: 'encode-hash', color: '#9ece6a' },
