@@ -11,7 +11,7 @@ export default function NotesLayout({ children }: { children: React.ReactNode })
   const tree = buildNoteTree();
 
   return (
-    <div className="relative flex" style={{ color: 'var(--goon-text)', minHeight: 'calc(100dvh - 3.5rem)' }}>
+    <div className="relative flex" style={{ color: 'var(--site-text)', minHeight: 'calc(100dvh - 3.5rem)' }}>
       <div className="absolute inset-0 mesh-gradient-purple pointer-events-none" />
       <div className="absolute inset-0 grid-bg pointer-events-none" />
       <NotesSidebar tree={tree} />

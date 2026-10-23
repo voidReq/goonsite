@@ -9,6 +9,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { useLoader } from "@react-three/fiber";
 import * as THREE from "three";
+import { SITE } from '@/lib/site';
 
 function LeBronModel({ onLoaded }: { onLoaded?: () => void }) {
   const originalObj = useLoader(OBJLoader, "/lebron.obj");
@@ -61,7 +62,7 @@ function LeBronModel({ onLoaded }: { onLoaded?: () => void }) {
 
 function LoadingScreen({ progress }: { progress: number }) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center z-20 gap-4 px-10" style={{ backgroundColor: 'var(--goon-bg)' }}>
+    <div className="absolute inset-0 flex flex-col items-center justify-center z-20 gap-4 px-10" style={{ backgroundColor: 'var(--site-bg)' }}>
       <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
         Loading your experience...
       </span>
@@ -73,7 +74,7 @@ function LoadingScreen({ progress }: { progress: number }) {
         className="w-full max-w-xs"
         animated
       />
-      <span className="text-xs font-mono" style={{ color: 'var(--goon-text-dim)' }}>{Math.round(progress)}%</span>
+      <span className="text-xs font-mono" style={{ color: 'var(--site-text-dim)' }}>{Math.round(progress)}%</span>
     </div>
   );
 }
@@ -95,7 +96,7 @@ function MobileView() {
   }, [loaded]);
 
   return (
-    <div className="h-dvh flex flex-col items-center justify-center relative" style={{ backgroundColor: 'var(--goon-bg)' }}>
+    <div className="h-dvh flex flex-col items-center justify-center relative" style={{ backgroundColor: 'var(--site-bg)' }}>
       {!loaded && <LoadingScreen progress={progress} />}
 
       <div className="w-full h-full">
@@ -118,13 +119,13 @@ function MobileView() {
 
       {/* Overlay text */}
       <span className="absolute top-12 text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500 text-center z-10 pointer-events-none">
-        Welcome to Goonsite
+        Welcome to {SITE.clean ? SITE.brand : 'Goonsite'}
       </span>
 
       <Link
         href="/"
         className="absolute bottom-8 transition-colors text-sm z-10"
-        style={{ color: 'var(--goon-text-dim)' }}
+        style={{ color: 'var(--site-text-dim)' }}
       >
         &larr; Back home
       </Link>
@@ -144,11 +145,11 @@ export default function MacbookScrollDemo() {
   }
 
   return (
-    <div className="overflow-hidden w-full min-h-screen flex items-start justify-center" style={{ backgroundColor: 'var(--goon-bg)' }}>
+    <div className="overflow-hidden w-full min-h-screen flex items-start justify-center" style={{ backgroundColor: 'var(--site-bg)' }}>
       <MacbookScroll
         title={
           <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-            Welcome to Goonsite
+            Welcome to {SITE.clean ? SITE.brand : 'Goonsite'}
           </span>
         }
         badge={

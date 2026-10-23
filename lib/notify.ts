@@ -1,5 +1,6 @@
 import { createHmac } from 'crypto';
 import { getGeoForIp } from './geo-cache';
+import { SITE } from './site';
 
 /**
  * Generate an HMAC-SHA256 signature for one-click message actions.
@@ -50,7 +51,7 @@ export async function sendAdminAlert({
         { name: 'Path', value: path, inline: true },
         { name: 'Time', value: new Date().toISOString(), inline: true },
       ],
-      footer: { text: userAgent ? `User Agent: ${userAgent}` : 'goonsite-admin-monitor' }
+      footer: { text: userAgent ? `User Agent: ${userAgent}` : `${SITE.id}-admin-monitor` }
     };
 
     await fetch(webhookUrl, {

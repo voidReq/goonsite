@@ -6,37 +6,40 @@ import { ColorSchemeScript } from '@mantine/core';
 import { Providers } from './components/Providers';
 import NavBar from './components/ui/NavBar';
 import { VisitorBeacon } from './components/VisitorBeacon';
+import { SITE } from '@/lib/site';
+
+const TITLE = `${SITE.name} — Security Notes, Projects & Vulnerability Writeups`;
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://goonsite.org"),
+  metadataBase: new URL(SITE.url),
   title: {
-    default: "goonsite.org — Security Notes, Projects & Vulnerability Writeups",
-    template: "%s | goonsite.org",
+    default: TITLE,
+    template: `%s | ${SITE.name}`,
   },
   description: "Security research notes, vulnerability writeups, and personal projects. Covering web security, penetration testing, and exploit development.",
-  keywords: ["security notes", "vulnerability writeups", "penetration testing", "web security", "exploit development", "goonsite"],
+  keywords: ["security notes", "vulnerability writeups", "penetration testing", "web security", "exploit development", SITE.id],
   authors: [{ name: "James" }],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://goonsite.org",
-    siteName: "goonsite.org",
-    title: "goonsite.org — Security Notes, Projects & Vulnerability Writeups",
+    url: SITE.url,
+    siteName: SITE.name,
+    title: TITLE,
     description: "Security research notes, vulnerability writeups, and personal projects. Covering web security, penetration testing, and exploit development.",
     images: [
       {
-        url: "/og-image.png",
+        url: SITE.ogImage,
         width: 1200,
         height: 630,
-        alt: "goonsite.org",
+        alt: SITE.name,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "goonsite.org — Security Notes, Projects & Vulnerability Writeups",
+    title: TITLE,
     description: "Security research notes, vulnerability writeups, and personal projects.",
-    images: ["/og-image.png"],
+    images: [SITE.ogImage],
   },
   robots: {
     index: true,
@@ -63,16 +66,16 @@ export default function RootLayout({
     <html lang="en" className={`${GeistSans.className} dark`} suppressHydrationWarning>
       <head>
         <ColorSchemeScript defaultColorScheme="dark" />
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('goon-theme');if(t==='light'){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light')}}catch(e){}})()` }} />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('${SITE.themeKey}');if(t==='light'){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light')}}catch(e){}})()` }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'WebSite',
-            name: 'goonsite.org',
-            url: 'https://goonsite.org',
+            name: SITE.name,
+            url: SITE.url,
             description: 'Security research notes, vulnerability writeups, and personal projects.',
-            author: { '@type': 'Person', name: 'James', url: 'https://goonsite.org' },
+            author: { '@type': 'Person', name: 'James', url: SITE.url },
           }) }}
         />
       </head>

@@ -44,11 +44,11 @@ export default function NotesIndexPage() {
             <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(187, 154, 247, 0.1)', border: '1px solid rgba(187, 154, 247, 0.2)' }}>
               <IconNotes size={22} style={{ color: '#bb9af7' }} />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold font-mono" style={{ color: 'var(--goon-text)' }}>
+            <h1 className="text-2xl md:text-3xl font-bold font-mono" style={{ color: 'var(--site-text)' }}>
               Notes
             </h1>
           </div>
-          <p className="text-sm font-mono" style={{ color: 'var(--goon-text-dim)' }}>
+          <p className="text-sm font-mono" style={{ color: 'var(--site-text-dim)' }}>
             Security research notes &middot; Continuously updated
           </p>
         </motion.div>
@@ -101,26 +101,26 @@ export default function NotesIndexPage() {
                 style={{
                   opacity: 0,
                   animation: `planned-slide-in 0.4s ease ${0.35 + i * 0.08}s forwards`,
-                  backgroundColor: 'var(--goon-surface)',
-                  border: '1px solid var(--goon-border)',
+                  backgroundColor: 'var(--site-surface)',
+                  border: '1px solid var(--site-border)',
                   backdropFilter: 'blur(8px)',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = `${item.color}30`;
-                  e.currentTarget.style.backgroundColor = 'var(--goon-surface-hover)';
+                  e.currentTarget.style.backgroundColor = 'var(--site-surface-hover)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--goon-border)';
-                  e.currentTarget.style.backgroundColor = 'var(--goon-surface)';
+                  e.currentTarget.style.borderColor = 'var(--site-border)';
+                  e.currentTarget.style.backgroundColor = 'var(--site-surface)';
                 }}
               >
                 <div className="flex items-start gap-3">
                   <div className="w-1 h-8 rounded-full mt-0.5" style={{ backgroundColor: item.color }} />
                   <div>
-                    <span className="font-mono text-sm font-semibold" style={{ color: 'var(--goon-text)' }}>
+                    <span className="font-mono text-sm font-semibold" style={{ color: 'var(--site-text)' }}>
                       {item.name}
                     </span>
-                    <p className="text-xs mt-0.5" style={{ color: 'var(--goon-text-dim)' }}>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--site-text-dim)' }}>
                       {item.desc}
                     </p>
                   </div>
@@ -137,7 +137,7 @@ export default function NotesIndexPage() {
           transition={{ delay: 0.6, duration: 0.5 }}
           className="mt-8 text-center"
         >
-          <p className="text-xs font-mono" style={{ color: 'var(--goon-text-dim)' }}>
+          <p className="text-xs font-mono" style={{ color: 'var(--site-text-dim)' }}>
             <span style={{ color: '#bb9af7' }}></span> Select a note from the sidebar
           </p>
         </motion.div>

@@ -29,10 +29,10 @@ function TreeNode({
               paddingLeft: `${level * 1.25 + 0.5}rem`,
               backgroundColor: 'transparent',
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--goon-border)'; }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--site-border)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
           >
-            <span className="mr-1.5" style={{ color: 'var(--goon-text-dim)' }}>
+            <span className="mr-1.5" style={{ color: 'var(--site-text-dim)' }}>
               {isOpen ? <IconChevronDown size={12} /> : <IconChevronRight size={12} />}
             </span>
             <span className="mr-1.5" style={{ color: '#bb9af7' }}>
@@ -54,20 +54,20 @@ function TreeNode({
           className="flex items-center py-1.5 px-2 rounded-lg transition-colors duration-150"
           style={{
             paddingLeft: `${level * 1.25 + 0.5}rem`,
-            color: 'var(--goon-text)',
+            color: 'var(--site-text)',
             backgroundColor: 'transparent',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--goon-border)';
+            e.currentTarget.style.backgroundColor = 'var(--site-border)';
             e.currentTarget.style.color = '#7dcfff';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = 'var(--goon-text)';
+            e.currentTarget.style.color = 'var(--site-text)';
           }}
           onClick={onNoteClick}
         >
-          <span className="mr-1.5" style={{ color: 'var(--goon-text-dim)' }}><IconFile size={13} /></span>
+          <span className="mr-1.5" style={{ color: 'var(--site-text-dim)' }}><IconFile size={13} /></span>
           <span className="text-sm">{item.name}</span>
         </Link>
       )}
@@ -87,9 +87,9 @@ export default function NotesSidebar({ tree }: { tree: NoteTreeItem[] }) {
         onClick={() => setIsOpen(!isOpen)}
         className="md:hidden fixed top-[4.25rem] right-4 z-30 p-2 rounded-lg transition-colors"
         style={{
-          backgroundColor: 'var(--goon-surface)',
-          border: '1px solid var(--goon-border)',
-          color: 'var(--goon-text)',
+          backgroundColor: 'var(--site-surface)',
+          border: '1px solid var(--site-border)',
+          color: 'var(--site-text)',
         }}
         aria-label="Toggle navigation"
       >
@@ -108,21 +108,21 @@ export default function NotesSidebar({ tree }: { tree: NoteTreeItem[] }) {
       <div
         className="hidden md:block w-64 shrink-0"
         style={{
-          backgroundColor: 'var(--goon-surface-dark)',
-          borderRight: '1px solid var(--goon-border)',
+          backgroundColor: 'var(--site-surface-dark)',
+          borderRight: '1px solid var(--site-border)',
         }}
       >
         <div
           className="overflow-y-auto p-4 sticky top-0"
           style={{ height: 'calc(100vh - 3.5rem)' }}
         >
-          <div className="mb-4 pb-4" style={{ borderBottom: '1px solid var(--goon-border)' }}>
+          <div className="mb-4 pb-4" style={{ borderBottom: '1px solid var(--site-border)' }}>
             <Link
               href="/notes"
               className="text-lg font-bold transition-colors"
-              style={{ color: 'var(--goon-text)' }}
+              style={{ color: 'var(--site-text)' }}
               onMouseEnter={(e) => { e.currentTarget.style.color = '#7dcfff'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--goon-text)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--site-text)'; }}
             >
               Security Notes
             </Link>
@@ -143,18 +143,18 @@ export default function NotesSidebar({ tree }: { tree: NoteTreeItem[] }) {
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}
         style={{
-          backgroundColor: 'var(--goon-surface-dark)',
-          borderRight: '1px solid var(--goon-border)',
+          backgroundColor: 'var(--site-surface-dark)',
+          borderRight: '1px solid var(--site-border)',
           height: 'calc(100vh - 3.5rem)',
         }}
       >
-        <div className="mb-4 pb-4 mt-2" style={{ borderBottom: '1px solid var(--goon-border)' }}>
+        <div className="mb-4 pb-4 mt-2" style={{ borderBottom: '1px solid var(--site-border)' }}>
           <Link
             href="/notes"
             className="text-lg font-bold transition-colors"
-            style={{ color: 'var(--goon-text)' }}
+            style={{ color: 'var(--site-text)' }}
             onMouseEnter={(e) => { e.currentTarget.style.color = '#7dcfff'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--goon-text)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--site-text)'; }}
             onClick={closeSidebar}
           >
             Security Notes

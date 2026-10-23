@@ -6,6 +6,7 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
+import { SITE } from './site';
 
 const CACHE_DIR = join(process.cwd(), 'data', 'visitors');
 const CACHE_FILE = join(CACHE_DIR, '_geo_cache.json');
@@ -106,7 +107,7 @@ export async function getGeoForIp(ip: string): Promise<GeoInfo | null> {
   // Fetch from ip-api.com (ipapi.co blocks Vercel IPs with Cloudflare)
   try {
     const res = await fetch(`http://ip-api.com/json/${ip}`, {
-      headers: { 'User-Agent': 'goonsite-visitor-log/1.0' },
+      headers: { 'User-Agent': `${SITE.id}-visitor-log/1.0` },
       cache: 'no-store',
     });
 

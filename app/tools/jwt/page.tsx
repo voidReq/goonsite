@@ -25,6 +25,7 @@ import {
   Switch,
 } from "@mantine/core";
 import PageShell from "../../components/ui/PageShell";
+import { SITE } from '@/lib/site';
 import {
   IconShieldCheck,
   IconAlertTriangle,
@@ -189,7 +190,7 @@ const SAMPLE_TOKENS = {
     desc: "A well-formed token with standard claims",
     token: buildFakeJwt(
       { alg: "HS256", typ: "JWT" },
-      { sub: "1234567890", name: "John Doe", iat: 1516239022, exp: Math.floor(Date.now() / 1000) + 3600, iss: "goonsite.org", aud: "api.goonsite.org" },
+      { sub: "1234567890", name: "John Doe", iat: 1516239022, exp: Math.floor(Date.now() / 1000) + 3600, iss: SITE.name, aud: `api.${SITE.name}` },
       "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
     ),
   },

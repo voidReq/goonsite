@@ -562,14 +562,14 @@ export default function NodeSphere({ className = '', style, nodes }: NodeSphereP
           <div
             className="font-mono text-xs px-2.5 py-1.5 rounded-lg whitespace-nowrap"
             style={{
-              backgroundColor: 'var(--goon-surface)',
+              backgroundColor: 'var(--site-surface)',
               border: `1px solid ${hoveredNode.color}40`,
               color: hoveredNode.color,
               boxShadow: `0 4px 16px rgba(0,0,0,0.2), 0 0 8px ${hoveredNode.color}15`,
             }}
           >
             {hoveredNode.label}
-            <span className="ml-1.5" style={{ color: 'var(--goon-text-dim)' }}>{hoveredNode.href}</span>
+            <span className="ml-1.5" style={{ color: 'var(--site-text-dim)' }}>{hoveredNode.href}</span>
           </div>
         </div>
       )}

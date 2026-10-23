@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { SITE } from '@/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -54,6 +55,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/James', '/james', '/Jerry', '/jerry'],
       },
     ],
-    sitemap: 'https://goonsite.org/sitemap.xml',
+    sitemap: `${SITE.url}/sitemap.xml`,
   };
 }

@@ -74,7 +74,7 @@ export const MacbookScroll = ({
         style={{
           translateY: textTransform,
           opacity: textOpacity,
-          color: 'var(--goon-text)',
+          color: 'var(--site-text)',
         }}
         className="text-3xl font-bold mb-20 text-center"
       >
@@ -112,7 +112,7 @@ export const MacbookScroll = ({
         <Trackpad />
         <div className="h-2 w-20 mx-auto inset-x-0 absolute bottom-0 bg-gradient-to-t from-[#272729] to-[#050505] rounded-tr-3xl rounded-tl-3xl" />
         {showGradient && (
-          <div className="h-40 w-full absolute bottom-0 inset-x-0 z-50" style={{ background: 'linear-gradient(to top, var(--goon-bg), var(--goon-bg), transparent)' }}></div>
+          <div className="h-40 w-full absolute bottom-0 inset-x-0 z-50" style={{ background: 'linear-gradient(to top, var(--site-bg), var(--site-bg), transparent)' }}></div>
         )}
         {badge && <div className="absolute bottom-4 left-4">{badge}</div>}
       </div>
