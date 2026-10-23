@@ -9,14 +9,17 @@ import {
   IconMenu2, IconX, IconSun, IconMoon
 } from '@tabler/icons-react';
 import { useTheme } from '../../../src/context/ThemeContext';
-import { SITE, isListed } from '@/lib/site';
+import { SITE } from '@/lib/site';
+
+// Inlined per module so the clean build's JS drops the goon-only branches; see lib/site.ts
+const CLEAN = process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean';
 
 const NAV_ITEMS = [
   { href: '/notes', label: 'Notes', icon: IconNotes, color: '#bb9af7' },
   { href: '/projects', label: 'Projects', icon: IconCode, color: '#7dcfff' },
   { href: SITE.sitemapPath, label: 'Sitemap', icon: IconMap, color: '#9ece6a' },
-  { href: '/message-board', label: 'Messages', icon: IconMessageCircle, color: '#e0af68' },
-].filter(item => isListed(item.href));
+  ...(CLEAN ? [] : [{ href: '/message-board', label: 'Messages', icon: IconMessageCircle, color: '#e0af68' }]),
+];
 
 const TOOL_ITEMS = [
   { href: '/tools/encode', label: 'Encode/Hash', color: '#9ece6a' },

@@ -3,6 +3,9 @@ import { useRouter } from 'next/navigation'
 import { Typewriter } from 'react-simple-typewriter'
 import { SITE } from '@/lib/site'
 
+// Inlined per module so the clean build's JS drops the goon-only branches; see lib/site.ts
+const CLEAN = process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean'
+
 const GOON_WORDS = [
   'npm install goon-package',
   'npm start',
@@ -60,7 +63,7 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
         </div>
         <div>
           <Typewriter
-            words={SITE.clean ? CLEAN_WORDS : GOON_WORDS}
+            words={CLEAN ? CLEAN_WORDS : GOON_WORDS}
             loop={1}
             cursor
             cursorStyle='_'

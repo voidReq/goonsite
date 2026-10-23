@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getAllProjects } from '@/lib/projects';
 import { getAllNotes } from '@/lib/notes';
-import { SITE, isListed } from '@/lib/site';
+import { SITE } from '@/lib/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = SITE.url;
@@ -15,13 +15,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/macbook',
     '/revolutions',
     '/turtle',
-    '/message-board',
-    '/goon-sploit',
+    ...(SITE.clean ? [] : ['/message-board', '/goon-sploit']),
     '/fim',
     '/tools/jwt',
     '/tools/headers',
     '/tools/encode',
-  ].filter(isListed).map((route) => {
+  ].map((route) => {
     let priority = 0.5;
     if (route === '') priority = 1.0;
     else if (route === '/projects') priority = 0.9;

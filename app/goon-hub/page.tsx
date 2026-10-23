@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState, useRef, useEffect, useCallback, KeyboardEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import PageShell from '../components/ui/PageShell';
-import { SITE, isListed } from '@/lib/site';
+import { SITE } from '@/lib/site';
 
 interface TreeEntry {
   href: string;
@@ -13,16 +13,19 @@ interface TreeEntry {
   children?: TreeEntry[];
 }
 
-const fullTree: TreeEntry[] = [
+// Inlined per module so the clean build's JS drops the goon-only entries; see lib/site.ts
+const CLEAN = process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean';
+
+const siteTree: TreeEntry[] = [
   { href: '/', name: 'home', color: '#9ece6a' },
-  {
+  ...(CLEAN ? [] : [{
     href: '/goon-hub', name: 'goon-hub/', color: '#bb9af7',
     children: [
       { href: '/goon-sploit', name: 'goon-sploit', color: '#f7768e' },
     ],
-  },
+  }]),
   { href: '/macbook', name: 'macbook', color: '#7dcfff' },
-  { href: '/message-board', name: 'message-board', color: '#e0af68' },
+  ...(CLEAN ? [] : [{ href: '/message-board', name: 'message-board', color: '#e0af68' }]),
   { href: '/notes', name: 'notes/', color: '#bb9af7' },
   { href: '/projects', name: 'projects/', color: '#7dcfff' },
   {
@@ -35,15 +38,6 @@ const fullTree: TreeEntry[] = [
   },
   { href: '/revolutions', name: 'revolutions', color: '#ff9e64' },
 ];
-
-// Drop entries this site doesn't serve (the goon pages on the clean build)
-function listedOnly(entries: TreeEntry[]): TreeEntry[] {
-  return entries
-    .filter(e => isListed(e.href))
-    .map(e => (e.children ? { ...e, children: listedOnly(e.children) } : e));
-}
-
-const siteTree = listedOnly(fullTree);
 
 // Flatten tree into lookups — supports both bare names and parent/child paths
 function flattenTree(entries: TreeEntry[], parentPath = ''): { name: string; path: string; href: string }[] {

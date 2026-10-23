@@ -2,7 +2,7 @@ import { getAllNotes } from '@/lib/notes';
 import { getAllProjects } from '@/lib/projects';
 import HomeContent from './components/HomeContent';
 import type { SiteNode } from './components/ui/NodeSphere';
-import { SITE, isListed } from '@/lib/site';
+import { SITE } from '@/lib/site';
 
 // Color palette for dynamic content nodes
 const NOTE_COLORS = ['#bb9af7', '#9ece6a', '#7dcfff', '#f7768e', '#e0af68', '#9d7cd8', '#7aa2f7', '#ff9e64'];
@@ -13,14 +13,14 @@ const STATIC_NODES: SiteNode[] = [
   { href: '/notes', label: 'Notes', color: '#bb9af7' },
   { href: '/projects', label: 'Projects', color: '#7dcfff' },
   { href: SITE.sitemapPath, label: 'Sitemap', color: '#9ece6a' },
-  { href: '/message-board', label: 'Message Board', color: '#e0af68' },
+  ...(SITE.clean ? [] : [{ href: '/message-board', label: 'Message Board', color: '#e0af68' }]),
   { href: '/tools/jwt', label: 'JWT Debugger', color: '#f7768e' },
   { href: '/tools/headers', label: 'Header Analyzer', color: '#7dcfff' },
   { href: '/tools/encode', label: 'Encode / Hash', color: '#9ece6a' },
   { href: '/macbook', label: 'Macbook', color: '#bb9af7' },
   { href: '/revolutions', label: 'Revolutions', color: '#ff9e64' },
-  { href: '/goon-sploit', label: 'Goon-sploit', color: '#f7768e' },
-].filter(node => isListed(node.href));
+  ...(SITE.clean ? [] : [{ href: '/goon-sploit', label: 'Goon-sploit', color: '#f7768e' }]),
+];
 
 export default function Home() {
   // Build dynamic nodes from content at build/render time
