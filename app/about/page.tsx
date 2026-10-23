@@ -8,7 +8,7 @@ import AboutClient, { type AboutItem } from './AboutClient';
 
 export const metadata: Metadata = {
   title: 'About',
-  description: `Who's behind ${SITE.name}: projects, vulnerability writeups, notes and links.`,
+  description: `Who's behind ${SITE.name}: interactive resume, projects, vulnerability writeups, notes and links.`,
 };
 
 // Read the projects folder per request, like /projects, so admin edits show up
