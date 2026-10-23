@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from 'next/navigation'
-import { Typewriter } from 'react-simple-typewriter'
+import { useTypewriter, Cursor } from 'react-simple-typewriter'
 import { SITE } from '@/lib/site'
 
 // Inlined per module so the clean build's JS drops the goon-only branches; see lib/site.ts
@@ -28,15 +28,27 @@ const GOON_WORDS = [
 
 // Commands that work in the sitemap terminal this opens, so they double as a hint
 const CLEAN_WORDS = [
-  'cd projects  # writeups & builds',
-  'cd notes  # networking, databases, security',
-  'tree  # map of the whole site',
-  'help',
-  'click to explore ▸',
+  'cd projects # writeups & builds',
+  'cd notes # networking, databases, security',
+  'tree # map of the whole site',
+  'help # list available commands',
+  '# click to explore ▸',
 ]
 
 export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
   const router = useRouter()
+  const [text] = useTypewriter({
+    words: CLEAN ? CLEAN_WORDS : GOON_WORDS,
+    loop: 1,
+    typeSpeed: 70,
+    deleteSpeed: 50,
+    delaySpeed: 1000,
+  })
+
+  const hasHash = text.includes('#')
+  const hashIndex = text.indexOf('#')
+  const command = hasHash ? text.slice(0, hashIndex).trimEnd() : text
+  const comment = hasHash ? text.slice(hashIndex + 1) : ''
 
   return (
     <div style={{ width: '100%', height: '100%', maxWidth: fullWidth ? 'none' : '600px' }}>
@@ -52,23 +64,33 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
         <span className="ml-3 text-xs font-mono" style={{ color: 'var(--site-text-dim)' }}>{SITE.prompt}: ~</span>
         <span className="ml-auto text-[10px] font-mono uppercase tracking-wider" style={{ color: 'var(--site-text-dim)' }}>sitemap</span>
       </div>
-      <div className="p-5" style={{ color: '#a9b1d6' }}>
-        <div style={{ marginBottom: '10px' }}>
-          <span style={{ color: 'var(--site-purple)' }}>{SITE.prompt}</span>
-          <span style={{ color: 'var(--site-cyan)' }}>:</span>
-          <span style={{ color: 'var(--site-text)' }}>~</span>
-          <span style={{ color: 'var(--site-cyan)' }}>$</span>
+      <div className="p-4 sm:p-5 font-mono">
+        {/* Command on the prompt line */}
+        <div className="text-xs sm:text-sm flex items-center" style={{ color: 'var(--site-text)' }}>
+          <span className="shrink-0 select-none mr-2">
+            <span style={{ color: 'var(--site-purple)' }}>{SITE.prompt}</span>
+            <span style={{ color: 'var(--site-cyan)' }}>:</span>
+            <span style={{ color: 'var(--site-text)' }}>~</span>
+            <span style={{ color: 'var(--site-cyan)' }}>$</span>
+          </span>
+          {command && (
+            <span style={{ color: 'var(--site-text)' }}>
+              {command}
+            </span>
+          )}
+          {!hasHash && <Cursor cursorStyle="_" />}
         </div>
-        <div>
-          <Typewriter
-            words={CLEAN ? CLEAN_WORDS : GOON_WORDS}
-            loop={1}
-            cursor
-            cursorStyle='_'
-            typeSpeed={70}
-            deleteSpeed={50}
-            delaySpeed={1000}
-          />
+
+        {/* Comment line below */}
+        <div className="text-xs mt-1.5 min-h-[1.25rem] flex items-center" style={{ color: 'var(--site-text-dim)' }}>
+          {hasHash ? (
+            <span>
+              #{comment}
+              <Cursor cursorStyle="_" />
+            </span>
+          ) : (
+            <span className="invisible select-none">&nbsp;</span>
+          )}
         </div>
       </div>
     </div>
