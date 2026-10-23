@@ -10,22 +10,6 @@ site runs on a Raspberry Pi with limited server resources.
 
 ## Tier 1: High-Impact Tools (SEO magnets)
 
-### JWT Debugger & Security Analyzer
-- Paste a JWT, get it decoded with color-coded header/payload/signature
-- Flag common security issues: none algorithm, weak HMAC keys, expired tokens
-- Interactive walkthrough of algorithm confusion (RS256 → HS256)
-- Why it works: jwt.io is the only real competitor and it's bare-bones on 
-  security analysis. Your JWT research gives you real authority here.
-- Target queries: "JWT decoder", "JWT security checker", "JWT algorithm confusion"
-
-### HTTP Security Header Analyzer
-- Paste response headers OR enter a URL (client-side fetch where CORS allows, 
-  or just paste mode to keep it Pi-friendly)
-- Grade each header: HSTS, CSP, X-Frame-Options, CORS, etc.
-- Explain what's missing and why it matters, with exploit scenarios
-- Link to relevant notes pages for deeper reading
-- Target queries: "security headers check", "CSP analyzer", "CORS checker"
-
 ### Encoding/Hashing Multitool
 - Base64, URL encode/decode, hex, HTML entities, Unicode
 - Hash generators: MD5, SHA1, SHA256, SHA512, bcrypt

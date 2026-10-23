@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   IconNotes, IconCode, IconMap, IconMessageCircle, IconTools,
-  IconMenu2, IconX, IconSun, IconMoon
+  IconMenu2, IconX, IconSun, IconMoon, IconExternalLink
 } from '@tabler/icons-react';
 import { useTheme } from '../../../src/context/ThemeContext';
 import { SITE } from '@/lib/site';
@@ -23,9 +23,10 @@ const NAV_ITEMS = [
 
 const TOOL_ITEMS = [
   { href: '/tools/encode', label: 'Encode/Hash', color: '#9ece6a' },
-  { href: '/tools/jwt', label: 'JWT Debugger', color: '#bb9af7' },
-  { href: '/tools/headers', label: 'Header Analyzer', color: '#7dcfff' },
+  { href: 'https://github.com/voidReq/NUauto/blob/main/README.md', label: 'NUauto', color: '#bb9af7', external: true },
 ];
+
+const externalProps = { target: '_blank', rel: 'noopener noreferrer' };
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -188,8 +189,10 @@ export default function NavBar() {
                             onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--site-border)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = isActive(tool.href) ? `${tool.color}10` : 'transparent'; }}
                             onClick={() => setToolsOpen(false)}
+                            {...(tool.external && externalProps)}
                           >
                             {tool.label}
+                            {tool.external && <IconExternalLink size={13} className="ml-1.5 opacity-60" />}
                           </Link>
                         ))}
                       </div>
@@ -304,8 +307,10 @@ export default function NavBar() {
                       color: isActive(tool.href) ? tool.color : 'var(--site-text)',
                       backgroundColor: isActive(tool.href) ? `${tool.color}10` : 'transparent',
                     }}
+                    {...(tool.external && externalProps)}
                   >
                     {tool.label}
+                    {tool.external && <IconExternalLink size={14} className="-ml-1.5 opacity-60" />}
                   </Link>
                 ))}
               </div>

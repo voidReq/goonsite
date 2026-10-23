@@ -29,10 +29,8 @@ const siteTree: TreeEntry[] = [
   { href: '/notes', name: 'notes/', color: '#bb9af7' },
   { href: '/projects', name: 'projects/', color: '#7dcfff' },
   {
-    href: '/tools/jwt', name: 'tools/', color: '#f7768e',
+    href: '/tools/encode', name: 'tools/', color: '#f7768e',
     children: [
-      { href: '/tools/jwt', name: 'jwt-debugger', color: '#f7768e' },
-      { href: '/tools/headers', name: 'header-analyzer', color: '#7dcfff' },
       { href: '/tools/encode', name: 'encode-hash', color: '#9ece6a' },
     ],
   },
@@ -138,7 +136,7 @@ export default function GoonHub() {
     if (cdMatch) {
       const partial = cdMatch[1].replace(/^\//, '').toLowerCase();
       if (partial.length > 0) {
-        // Try path match first (e.g. "tools/jw" → "tools/jwt-debugger"), then bare name
+        // Try path match first (e.g. "tools/enc" → "tools/encode-hash"), then bare name
         const match = allPages.find(p => p.path.toLowerCase().startsWith(partial) && p.path.toLowerCase() !== partial)
           || allPages.find(p => p.name.toLowerCase().startsWith(partial) && p.name.toLowerCase() !== partial);
         if (match) {
@@ -158,7 +156,7 @@ export default function GoonHub() {
     updateGhost(value);
   };
 
-  // Resolve cd target — supports bare names (e.g. "notes") and paths (e.g. "tools/jwt-debugger", "goon-hub/goon-sploit")
+  // Resolve cd target — supports bare names (e.g. "notes") and paths (e.g. "tools/encode-hash", "goon-hub/goon-sploit")
   const resolveTarget = (arg: string): { href: string; name: string } | null => {
     const clean = arg.replace(/^\//, '').replace(/\/$/, '').toLowerCase();
     // Match full path first, then bare name
