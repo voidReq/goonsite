@@ -623,9 +623,38 @@ export default function AboutClient({
             isOpen={openSections.interests}
             onToggle={() => toggleSection('interests')}
           >
-            <p className="text-xs md:text-sm leading-relaxed" style={{ color: 'var(--site-text)' }}>
-              AR/VR, cooking (part-time sous chef), computer architecture, travel, 3D printing/CAD.
-            </p>
+            <div className="space-y-2.5 text-xs md:text-sm leading-relaxed" style={{ color: 'var(--site-text)' }}>
+              <div>
+                <span className="font-mono font-semibold" style={{ color: 'var(--site-text-dim)' }}>AR/VR: </span>
+                <span>
+                  I&apos;ve been interested in AR ever since I saw the Focals by North, which still amaze me. I&apos;ve been monitoring AR since then, and I recently acquired a pair of Even G2&apos;s&mdash;which are sick! I hope to work on some related personal projects soon; I&apos;ve spent a bit of time reverse engineering the G2/R1 BLE protocols.
+                </span>
+              </div>
+              <div>
+                <span className="font-mono font-semibold" style={{ color: 'var(--site-text-dim)' }}>Cooking: </span>
+                <span>
+                  I&apos;ve been a part-time sous chef the past few summers, but I&apos;ve cooked all my life. I started young, baking with my siblings and helping my dad cook dinner.
+                </span>
+              </div>
+              <div>
+                <span className="font-mono font-semibold" style={{ color: 'var(--site-text-dim)' }}>Computer architecture: </span>
+                <span>
+                  Pairing with my interests in security, I&apos;ve long had an interest in computer architecture. I&apos;ve been reading some excellent books in similar fields, including one on RTOS&apos;s with C, and another on 1990&apos;s Intel Assembly.
+                </span>
+              </div>
+              <div>
+                <span className="font-mono font-semibold" style={{ color: 'var(--site-text-dim)' }}>Travel: </span>
+                <span>
+                  I love to travel, and I believe I&apos;ve visited over 20 countries. I love sampling new food and talking to new people, and travelling is one of those things that always makes me happy.
+                </span>
+              </div>
+              <div>
+                <span className="font-mono font-semibold" style={{ color: 'var(--site-text-dim)' }}>3D Printing/CAD: </span>
+                <span>
+                  I&apos;m mostly a hobbyist when it comes to printing and CAD, but I greatly enjoy them. At home I have an Ender 3 V3, but I&apos;ve used a variety of printers, including ones from Bambu Labs, Prusa, and Ultimaker. I have a habit of making printer octopi of people I meet, using Blender to combine a LiDAR scan of their heads with an octopus body.
+                </span>
+              </div>
+            </div>
           </FoldableSection>
         </div>
       </div>
