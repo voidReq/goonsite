@@ -51,10 +51,7 @@ function FoldableSection({
         >
           {title}
         </span>
-        <div
-          className="flex-1 h-[2px] mx-4 rounded-full transition-colors group-hover:bg-white/40"
-          style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
-        />
+        <div className="flex-1 h-[2px] mx-4 rounded-full bg-neutral-900/30 dark:bg-white/30 transition-colors group-hover:bg-neutral-900/60 dark:group-hover:bg-white/60" />
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.15 }}
@@ -154,7 +151,7 @@ export default function AboutClient({
       {/* Main Content Column */}
       <div className="relative z-10 p-4 md:p-8 mx-auto" style={{ maxWidth: '52rem' }}>
         {/* Intro & Header */}
-        <div className="mb-6 pb-6 border-b-[2px]" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
+        <div className="mb-6 pb-6 border-b" style={{ borderColor: 'var(--site-border)' }}>
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold font-mono tracking-tight" style={{ color: 'var(--site-text)' }}>
@@ -172,9 +169,8 @@ export default function AboutClient({
             <div className="grid grid-cols-2 gap-2 text-xs font-mono shrink-0 w-full sm:w-auto">
               {/* Boston, MA */}
               <div
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-black/[0.02] dark:bg-white/[0.03]"
                 style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
                   border: '1px solid var(--site-border)',
                   color: 'var(--site-text-dim)',
                 }}
@@ -187,9 +183,8 @@ export default function AboutClient({
               <a
                 href="https://linkedin.com/in/james-hanstedt/"
                 {...externalProps}
-                className="flex items-center justify-between gap-1.5 px-3 py-2 rounded-lg transition-colors hover:border-[var(--site-border-hover)]"
+                className="flex items-center justify-between gap-1.5 px-3 py-2 rounded-lg bg-black/[0.02] dark:bg-white/[0.03] transition-colors hover:border-[var(--site-border-hover)]"
                 style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
                   border: '1px solid var(--site-border)',
                   color: 'var(--site-text)',
                   textDecoration: 'none',
@@ -205,9 +200,8 @@ export default function AboutClient({
               {/* 6A68.dev */}
               <Link
                 href="/"
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors hover:border-[var(--site-border-hover)]"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-black/[0.02] dark:bg-white/[0.03] transition-colors hover:border-[var(--site-border-hover)]"
                 style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
                   border: '1px solid var(--site-border)',
                   color: 'var(--site-text)',
                   textDecoration: 'none',
@@ -221,9 +215,8 @@ export default function AboutClient({
               <a
                 href="https://github.com/voidReq"
                 {...externalProps}
-                className="flex items-center justify-between gap-1.5 px-3 py-2 rounded-lg transition-colors hover:border-[var(--site-border-hover)]"
+                className="flex items-center justify-between gap-1.5 px-3 py-2 rounded-lg bg-black/[0.02] dark:bg-white/[0.03] transition-colors hover:border-[var(--site-border-hover)]"
                 style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.03)',
                   border: '1px solid var(--site-border)',
                   color: 'var(--site-text)',
                   textDecoration: 'none',
@@ -589,7 +582,7 @@ export default function AboutClient({
           {/* NOTES & DIGITAL GARDEN */}
           <FoldableSection
             id="notes"
-            title="Notes &amp; Garden"
+            title="Notes"
             isOpen={openSections.notes}
             onToggle={() => toggleSection('notes')}
           >
