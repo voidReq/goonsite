@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from 'react';
-import { Switch, Rating, Text, Tooltip, Notification, Alert, Button } from '@mantine/core';
+import { Switch, Rating, Text, Tooltip, Notification, Alert, Button, Modal } from '@mantine/core';
 import { IconArrowRight, IconInfoCircle, IconHeart, IconNotes, IconCode, IconMap, IconMessageCircle, IconChevronRight, IconTools } from '@tabler/icons-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic';
 import { Terminal } from './ui/Terminal';
 import PageShell from './ui/PageShell';
 import GlowCard from './ui/GlowCard';
+import SiteMapTerminal from './SiteMapTerminal';
 import type { SiteNode } from './ui/NodeSphere';
 import { SITE } from '@/lib/site';
 
@@ -80,6 +81,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
   const [mounted, setMounted] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [showOrbitHint, setShowOrbitHint] = useState(true);
+  const [sitemapOpen, setSitemapOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -149,14 +151,27 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="terminal-window h-full pointer-events-auto" style={{
-              boxShadow: '0 20px 60px rgba(0,0,0,0.3), 0 0 40px rgba(187,154,247,0.04)',
-            }}>
-              <Terminal fullWidth />
+            {/* Opens the sitemap terminal as a popup */}
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label="Open the sitemap terminal"
+              className="h-full pointer-events-auto"
+              onClick={() => setSitemapOpen(true)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSitemapOpen(true);
+                }
+              }}
+            >
+              <GlowCard className="h-full" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.3), 0 0 40px rgba(187,154,247,0.04)' }}>
+                <Terminal fullWidth />
+              </GlowCard>
             </div>
           </motion.div>
 
-          <NavCard href="/notes" accent="#bb9af7" icon={<IconNotes size={18} />} title="Notes" desc="Personal brain dump" delay={0.1} />
+          <NavCard href="/notes" accent="#bb9af7" icon={<IconNotes size={18} />} title="Notes" desc="Various topics" delay={0.1} />
           <NavCard href="/projects" accent="#7dcfff" icon={<IconCode size={18} />} title="Projects" desc="Vuln writeups & builds" delay={0.15} />
           <NavCard href={SITE.sitemapPath} accent="#9ece6a" icon={<IconMap size={18} />} title="Sitemap" desc="Everything, mapped" delay={0.2} />
           {CLEAN ? (
@@ -258,6 +273,20 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
           )}
         </div>
       </div>
+
+      <Modal
+        opened={sitemapOpen}
+        onClose={() => setSitemapOpen(false)}
+        withCloseButton={false}
+        centered
+        size="64rem"
+        padding={0}
+        overlayProps={{ backgroundOpacity: 0.6, blur: 4 }}
+        transitionProps={{ transition: 'pop', duration: 150 }}
+        styles={{ content: { background: 'transparent', boxShadow: 'none' } }}
+      >
+        <SiteMapTerminal popup onClose={() => setSitemapOpen(false)} />
+      </Modal>
     </PageShell>
   );
 }

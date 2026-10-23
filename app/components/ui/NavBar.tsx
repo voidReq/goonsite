@@ -9,7 +9,7 @@ import {
   IconMenu2, IconX, IconSun, IconMoon, IconExternalLink
 } from '@tabler/icons-react';
 import { useTheme } from '../../../src/context/ThemeContext';
-import { SITE } from '@/lib/site';
+import { SITE, NUAUTO_URL } from '@/lib/site';
 
 // Inlined per module so the clean build's JS drops the goon-only branches; see lib/site.ts
 const CLEAN = process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean';
@@ -23,7 +23,7 @@ const NAV_ITEMS = [
 
 const TOOL_ITEMS = [
   { href: '/tools/encode', label: 'Encode/Hash', color: '#9ece6a' },
-  { href: 'https://github.com/voidReq/NUauto/blob/main/README.md', label: 'NUauto', color: '#bb9af7', external: true },
+  { href: NUAUTO_URL, label: 'NUauto', color: '#bb9af7', external: true },
 ];
 
 const externalProps = { target: '_blank', rel: 'noopener noreferrer' };
