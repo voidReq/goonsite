@@ -37,7 +37,7 @@ function FoldableSection({
   children,
 }: FoldableSectionProps) {
   return (
-    <div className="border-b pb-4" style={{ borderColor: 'var(--site-border)' }}>
+    <div className="pb-2">
       <button
         type="button"
         onClick={onToggle}
@@ -46,12 +46,15 @@ function FoldableSection({
         className="w-full text-left py-2 flex items-center justify-between group cursor-pointer select-none"
       >
         <span
-          className="font-mono text-xs md:text-sm font-bold tracking-wider uppercase"
+          className="font-mono text-xs md:text-sm font-bold tracking-wider uppercase shrink-0"
           style={{ color: 'var(--site-text)' }}
         >
           {title}
         </span>
-        <div className="flex-1 h-px mx-4" style={{ backgroundColor: 'var(--site-border)' }} />
+        <div
+          className="flex-1 h-[2px] mx-4 rounded-full transition-colors group-hover:bg-white/40"
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+        />
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.15 }}
@@ -151,7 +154,7 @@ export default function AboutClient({
       {/* Main Content Column */}
       <div className="relative z-10 p-4 md:p-8 mx-auto" style={{ maxWidth: '52rem' }}>
         {/* Intro & Header */}
-        <div className="mb-6 pb-6 border-b" style={{ borderColor: 'var(--site-border)' }}>
+        <div className="mb-6 pb-6 border-b-[2px]" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}>
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold font-mono tracking-tight" style={{ color: 'var(--site-text)' }}>
@@ -247,7 +250,7 @@ export default function AboutClient({
         </div>
 
         {/* Resume Sections */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {/* EDUCATION */}
           <FoldableSection
             id="education"
