@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, ReactNode } from 'react';
+import { useState, useRef, ReactNode, CSSProperties } from 'react';
 import { motion } from 'framer-motion';
 
 interface GlowCardProps {
@@ -8,9 +8,10 @@ interface GlowCardProps {
   color?: string;
   className?: string;
   onClick?: () => void;
+  style?: CSSProperties;
 }
 
-export default function GlowCard({ children, color = '#bb9af7', className = '', onClick }: GlowCardProps) {
+export default function GlowCard({ children, color = '#bb9af7', className = '', onClick, style }: GlowCardProps) {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -38,6 +39,7 @@ export default function GlowCard({ children, color = '#bb9af7', className = '', 
       style={{
         border: '1px solid var(--site-border)',
         backgroundColor: 'var(--site-surface)',
+        ...style,
       }}
     >
       {/* Glow effect following mouse */}

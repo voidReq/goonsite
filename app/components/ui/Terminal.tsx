@@ -49,7 +49,7 @@ export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
         <span
           className="terminal-dot terminal-dot-green"
           style={{ backgroundColor: 'var(--site-green)' }}
-          onClick={() => router.push(SITE.sitemapPath)}
+          onClick={(e) => { e.stopPropagation(); router.push(SITE.sitemapPath) }}
           title="Maximize"
         />
         <span className="ml-3 text-xs font-mono" style={{ color: 'var(--site-text-dim)' }}>{SITE.prompt}: ~</span>
