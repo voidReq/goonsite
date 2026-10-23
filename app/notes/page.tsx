@@ -1,12 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { IconNotes, IconBrain, IconSparkles } from '@tabler/icons-react';
-
-const STATS = [
-  { label: 'Self-taught', icon: IconBrain, color: '#bb9af7' },
-  { label: 'Self-written', icon: IconSparkles, color: '#9ece6a' },
-];
+import { IconNotes } from '@tabler/icons-react';
 
 const PLANNED = [
   { name: 'Web vulnerabilities', desc: 'Expanded XSS, SSRF, SQLi deep dives', color: '#f7768e' },
@@ -51,33 +46,6 @@ export default function NotesIndexPage() {
           <p className="text-sm font-mono" style={{ color: 'var(--site-text-dim)' }}>
             Security research notes &middot; Continuously updated
           </p>
-        </motion.div>
-
-        {/* Status badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.5 }}
-          className="flex flex-wrap gap-3 mb-8"
-        >
-          {STATS.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 + i * 0.08, duration: 0.3 }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg"
-              style={{
-                backgroundColor: `${stat.color}08`,
-                border: `1px solid ${stat.color}20`,
-              }}
-            >
-              <stat.icon size={14} style={{ color: stat.color }} />
-              <span className="text-xs font-mono font-medium" style={{ color: stat.color }}>
-                {stat.label}
-              </span>
-            </motion.div>
-          ))}
         </motion.div>
 
         {/* Planned additions */}

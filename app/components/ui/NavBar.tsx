@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  IconNotes, IconCode, IconMap, IconMessageCircle, IconTools,
+  IconNotes, IconCode, IconMap, IconMessageCircle, IconTools, IconUser,
   IconMenu2, IconX, IconSun, IconMoon, IconExternalLink
 } from '@tabler/icons-react';
 import { useTheme } from '../../../src/context/ThemeContext';
@@ -15,13 +15,16 @@ import { SITE, NUAUTO_URL } from '@/lib/site';
 const CLEAN = process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean';
 
 const NAV_ITEMS = [
-  { href: '/notes', label: 'Notes', icon: IconNotes, color: '#bb9af7' },
+  ...(CLEAN
+    ? [{ href: '/about', label: 'About', icon: IconUser, color: '#e0af68' }]
+    : [{ href: '/message-board', label: 'Messages', icon: IconMessageCircle, color: '#e0af68' }]),
   { href: '/projects', label: 'Projects', icon: IconCode, color: '#7dcfff' },
+  { href: '/notes', label: 'Notes', icon: IconNotes, color: '#bb9af7' },
   { href: SITE.sitemapPath, label: 'Sitemap', icon: IconMap, color: '#9ece6a' },
-  ...(CLEAN ? [] : [{ href: '/message-board', label: 'Messages', icon: IconMessageCircle, color: '#e0af68' }]),
 ];
 
-const TOOL_ITEMS = [
+// Goonsite only: 6A68 has an About page instead
+const TOOL_ITEMS = CLEAN ? [] : [
   { href: '/tools/encode', label: 'Encode/Hash', color: '#9ece6a' },
   { href: NUAUTO_URL, label: 'NUauto', color: '#bb9af7', external: true },
 ];
@@ -115,91 +118,93 @@ export default function NavBar() {
               ))}
 
               {/* Tools Dropdown */}
-              <div
-                ref={toolsBtnRef}
-                className="relative"
-                onMouseEnter={() => {
-                  if (toolsBtnRef.current) {
-                    const rect = toolsBtnRef.current.getBoundingClientRect();
-                    setDropdownPos({ top: rect.bottom + 4, left: rect.right - 208 });
-                  }
-                  setToolsOpen(true);
-                }}
-                onMouseLeave={() => setToolsOpen(false)}
-              >
-                <Link
-                  href="/tools/encode"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
-                  style={{
-                    color: isToolsActive ? '#f7768e' : 'var(--site-text-dim)',
-                    backgroundColor: isToolsActive ? 'rgba(247,118,142,0.06)' : 'transparent',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isToolsActive) {
-                      e.currentTarget.style.color = 'var(--site-text)';
-                      e.currentTarget.style.backgroundColor = 'var(--site-border)';
+              {!CLEAN && (
+                <div
+                  ref={toolsBtnRef}
+                  className="relative"
+                  onMouseEnter={() => {
+                    if (toolsBtnRef.current) {
+                      const rect = toolsBtnRef.current.getBoundingClientRect();
+                      setDropdownPos({ top: rect.bottom + 4, left: rect.right - 208 });
                     }
+                    setToolsOpen(true);
                   }}
-                  onMouseLeave={(e) => {
-                    if (!isToolsActive) {
-                      e.currentTarget.style.color = 'var(--site-text-dim)';
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }
-                  }}
-                  onClick={(e) => { e.preventDefault(); setToolsOpen(!toolsOpen); }}
+                  onMouseLeave={() => setToolsOpen(false)}
                 >
-                  <IconTools size={15} />
-                  <span>Tools</span>
-                </Link>
+                  <Link
+                    href="/tools/encode"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
+                    style={{
+                      color: isToolsActive ? '#f7768e' : 'var(--site-text-dim)',
+                      backgroundColor: isToolsActive ? 'rgba(247,118,142,0.06)' : 'transparent',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isToolsActive) {
+                        e.currentTarget.style.color = 'var(--site-text)';
+                        e.currentTarget.style.backgroundColor = 'var(--site-border)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isToolsActive) {
+                        e.currentTarget.style.color = 'var(--site-text-dim)';
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }
+                    }}
+                    onClick={(e) => { e.preventDefault(); setToolsOpen(!toolsOpen); }}
+                  >
+                    <IconTools size={15} />
+                    <span>Tools</span>
+                  </Link>
 
-                <AnimatePresence>
-                  {toolsOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 4 }}
-                      transition={{ duration: 0.12 }}
-                      className="dropdown-portal"
-                      style={{
-                        position: 'fixed',
-                        top: `${dropdownPos.top}px`,
-                        left: `${Math.max(8, dropdownPos.left)}px`,
-                        zIndex: 9999,
-                        width: '13rem',
-                        borderRadius: '12px',
-                        overflow: 'visible',
-                        backgroundColor: 'var(--site-surface)',
-                        backdropFilter: 'blur(20px)',
-                        border: '1px solid var(--site-border)',
-                        boxShadow: '0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px var(--site-border)',
-                        maxWidth: 'none',
-                      }}
-                    >
-                      <div className="py-1">
-                        {TOOL_ITEMS.map(tool => (
-                          <Link
-                            key={tool.href}
-                            href={tool.href}
-                            className="flex items-center px-4 py-2.5 text-sm transition-colors"
-                            style={{
-                              color: isActive(tool.href) ? tool.color : 'var(--site-text)',
-                              backgroundColor: isActive(tool.href) ? `${tool.color}10` : 'transparent',
-                              maxWidth: 'none',
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--site-border)'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = isActive(tool.href) ? `${tool.color}10` : 'transparent'; }}
-                            onClick={() => setToolsOpen(false)}
-                            {...(tool.external && externalProps)}
-                          >
-                            {tool.label}
-                            {tool.external && <IconExternalLink size={13} className="ml-1.5 opacity-60" />}
-                          </Link>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                  <AnimatePresence>
+                    {toolsOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 4 }}
+                        transition={{ duration: 0.12 }}
+                        className="dropdown-portal"
+                        style={{
+                          position: 'fixed',
+                          top: `${dropdownPos.top}px`,
+                          left: `${Math.max(8, dropdownPos.left)}px`,
+                          zIndex: 9999,
+                          width: '13rem',
+                          borderRadius: '12px',
+                          overflow: 'visible',
+                          backgroundColor: 'var(--site-surface)',
+                          backdropFilter: 'blur(20px)',
+                          border: '1px solid var(--site-border)',
+                          boxShadow: '0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px var(--site-border)',
+                          maxWidth: 'none',
+                        }}
+                      >
+                        <div className="py-1">
+                          {TOOL_ITEMS.map(tool => (
+                            <Link
+                              key={tool.href}
+                              href={tool.href}
+                              className="flex items-center px-4 py-2.5 text-sm transition-colors"
+                              style={{
+                                color: isActive(tool.href) ? tool.color : 'var(--site-text)',
+                                backgroundColor: isActive(tool.href) ? `${tool.color}10` : 'transparent',
+                                maxWidth: 'none',
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--site-border)'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = isActive(tool.href) ? `${tool.color}10` : 'transparent'; }}
+                              onClick={() => setToolsOpen(false)}
+                              {...(tool.external && externalProps)}
+                            >
+                              {tool.label}
+                              {tool.external && <IconExternalLink size={13} className="ml-1.5 opacity-60" />}
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
             </div>
 
             {/* Theme toggle */}
@@ -295,24 +300,28 @@ export default function NavBar() {
                   </Link>
                 ))}
 
-                <div className="pt-2 pb-1 px-4">
-                  <span className="text-xs font-mono text-[#565f89] uppercase tracking-wider">Tools</span>
-                </div>
-                {TOOL_ITEMS.map(tool => (
-                  <Link
-                    key={tool.href}
-                    href={tool.href}
-                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-colors pl-8"
-                    style={{
-                      color: isActive(tool.href) ? tool.color : 'var(--site-text)',
-                      backgroundColor: isActive(tool.href) ? `${tool.color}10` : 'transparent',
-                    }}
-                    {...(tool.external && externalProps)}
-                  >
-                    {tool.label}
-                    {tool.external && <IconExternalLink size={14} className="-ml-1.5 opacity-60" />}
-                  </Link>
-                ))}
+                {!CLEAN && (
+                  <>
+                    <div className="pt-2 pb-1 px-4">
+                      <span className="text-xs font-mono text-[#565f89] uppercase tracking-wider">Tools</span>
+                    </div>
+                    {TOOL_ITEMS.map(tool => (
+                      <Link
+                        key={tool.href}
+                        href={tool.href}
+                        className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-colors pl-8"
+                        style={{
+                          color: isActive(tool.href) ? tool.color : 'var(--site-text)',
+                          backgroundColor: isActive(tool.href) ? `${tool.color}10` : 'transparent',
+                        }}
+                        {...(tool.external && externalProps)}
+                      >
+                        {tool.label}
+                        {tool.external && <IconExternalLink size={14} className="-ml-1.5 opacity-60" />}
+                      </Link>
+                    ))}
+                  </>
+                )}
               </div>
             </motion.div>
           </>

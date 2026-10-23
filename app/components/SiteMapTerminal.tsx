@@ -27,7 +27,12 @@ const siteTree: TreeEntry[] = [
   ...(CLEAN ? [] : [{ href: '/message-board', name: 'message-board', color: '#e0af68' }]),
   { href: '/notes', name: 'notes/', color: '#bb9af7' },
   { href: '/projects', name: 'projects/', color: '#7dcfff' },
-  {
+  CLEAN ? {
+    href: '/about', name: 'about/', color: '#e0af68',
+    children: [
+      { href: NUAUTO_URL, name: 'nuauto', color: '#bb9af7' },
+    ],
+  } : {
     href: '/tools/encode', name: 'tools/', color: '#f7768e',
     children: [
       { href: '/tools/encode', name: 'encode-hash', color: '#9ece6a' },
@@ -304,11 +309,10 @@ export default function SiteMapTerminal({ popup = false, onClose }: { popup?: bo
         <div ref={termBodyRef} className={`font-mono flex-1 min-h-0 overflow-y-auto ${popup ? 'p-4 md:p-6 text-sm md:text-base' : 'p-4 md:p-6 lg:p-8 text-sm md:text-base lg:text-lg'}`}>
 
           {/* Initial tree output */}
-          <div className="mb-1">
+          <div className="mb-2">
             <Prompt />
             <span style={{ color: 'var(--site-text)' }}>tree --sitemap</span>
           </div>
-          <div className="mt-3 mb-1 text-[var(--site-text-dim)]">.</div>
           <TreeLines entries={siteTree} onNavigate={onClose} />
           <div className="mt-3 mb-1 text-[var(--site-text-dim)] text-xs md:text-sm">
             {siteTree.length} directories, {siteTree.reduce((acc, e) => acc + (e.children?.length || 0), 0)} subdirectories
@@ -325,8 +329,7 @@ export default function SiteMapTerminal({ popup = false, onClose }: { popup?: bo
               ) : line.type === 'error' ? (
                 <div style={{ color: '#f7768e' }} className="whitespace-pre-wrap">{line.text}</div>
               ) : line.text === '__tree__' ? (
-                <div className="mt-1">
-                  <div className="mb-1 text-[var(--site-text-dim)]">.</div>
+                <div className="mt-2">
                   <TreeLines entries={siteTree} onNavigate={onClose} />
                   <div className="mt-1 text-[var(--site-text-dim)] text-xs md:text-sm">
                     {siteTree.length} directories, {siteTree.reduce((acc, e) => acc + (e.children?.length || 0), 0)} subdirectories

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { Switch, Rating, Text, Tooltip, Notification, Alert, Button, Modal } from '@mantine/core';
-import { IconArrowRight, IconInfoCircle, IconHeart, IconNotes, IconCode, IconMap, IconMessageCircle, IconChevronRight, IconTools } from '@tabler/icons-react';
+import { IconArrowRight, IconInfoCircle, IconHeart, IconNotes, IconCode, IconMessageCircle, IconChevronRight, IconUser } from '@tabler/icons-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
@@ -11,7 +11,6 @@ import PageShell from './ui/PageShell';
 import GlowCard from './ui/GlowCard';
 import SiteMapTerminal from './SiteMapTerminal';
 import type { SiteNode } from './ui/NodeSphere';
-import { SITE } from '@/lib/site';
 
 // Inlined per module so the clean build's JS drops the goon-only branches; see lib/site.ts
 const CLEAN = process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean';
@@ -46,11 +45,13 @@ interface NavCardProps {
   title: string;
   desc: string;
   delay: number;
+  className?: string;
 }
 
-function NavCard({ href, accent, icon, title, desc, delay }: NavCardProps) {
+function NavCard({ href, accent, icon, title, desc, delay, className }: NavCardProps) {
   return (
     <motion.div
+      className={className}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5, ease: 'easeOut' }}
@@ -146,7 +147,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
         <div className="relative z-10 grid grid-cols-2 md:grid-cols-3 gap-3 pointer-events-none" style={{ width: '100%', maxWidth: '810px' }}>
 
           <motion.div
-            className="col-span-2"
+            className="col-span-2 md:col-span-3"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -173,11 +174,11 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
 
           <NavCard href="/notes" accent="#bb9af7" icon={<IconNotes size={18} />} title="Notes" desc="Various topics" delay={0.1} />
           <NavCard href="/projects" accent="#7dcfff" icon={<IconCode size={18} />} title="Projects" desc="Vuln writeups & builds" delay={0.15} />
-          <NavCard href={SITE.sitemapPath} accent="#9ece6a" icon={<IconMap size={18} />} title="Sitemap" desc="Everything, mapped" delay={0.2} />
+          {/* Spans both columns on mobile so the row of three doesn't leave a gap */}
           {CLEAN ? (
-            <NavCard href="/tools/encode" accent="#e0af68" icon={<IconTools size={18} />} title="Tools" desc="Encoding & hashing" delay={0.25} />
+            <NavCard href="/about" accent="#e0af68" icon={<IconUser size={18} />} title="About" desc="Background & links" delay={0.2} className="col-span-2 md:col-span-1" />
           ) : (
-            <NavCard href="/message-board" accent="#e0af68" icon={<IconMessageCircle size={18} />} title="Messages" desc="Leave your mark" delay={0.25} />
+            <NavCard href="/message-board" accent="#e0af68" icon={<IconMessageCircle size={18} />} title="Messages" desc="Leave your mark" delay={0.2} className="col-span-2 md:col-span-1" />
           )}
 
           {!CLEAN && <div className="col-span-2 md:col-span-3 flex justify-center pt-1 pointer-events-auto">
