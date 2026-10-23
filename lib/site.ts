@@ -35,3 +35,6 @@ export const SITE = clean
       ogImage: '/og-image.png',
       themeKey: 'goon-theme',
     };
+
+/** NUauto's README, linked from the Tools menu and the sitemap. */
+export const NUAUTO_URL = 'https://github.com/voidReq/NUauto/blob/main/README.md';

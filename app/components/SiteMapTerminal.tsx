@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useRef, useEffect, useCallback, KeyboardEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { SITE } from '@/lib/site';
+import { SITE, NUAUTO_URL } from '@/lib/site';
 
 interface TreeEntry {
   href: string;
@@ -31,10 +31,13 @@ const siteTree: TreeEntry[] = [
     href: '/tools/encode', name: 'tools/', color: '#f7768e',
     children: [
       { href: '/tools/encode', name: 'encode-hash', color: '#9ece6a' },
+      { href: NUAUTO_URL, name: 'nuauto', color: '#bb9af7' },
     ],
   },
   { href: '/revolutions', name: 'revolutions', color: '#ff9e64' },
 ];
+
+const isExternal = (href: string) => /^https?:\/\//.test(href);
 
 // Flatten tree into lookups — supports both bare names and parent/child paths
 function flattenTree(entries: TreeEntry[], parentPath = ''): { name: string; path: string; href: string }[] {
@@ -71,9 +74,11 @@ function TreeLines({ entries, depth = 0, parentPrefixes = [], onNavigate }: { en
                 className="hover:underline transition-colors"
                 style={{ color: entry.color || 'var(--site-text)' }}
                 onClick={onNavigate}
+                {...(isExternal(entry.href) && { target: '_blank', rel: 'noopener noreferrer' })}
               >
                 {entry.name}
               </Link>
+              {isExternal(entry.href) && <span className="text-[var(--site-text-dim)] select-none"> ↗</span>}
             </div>
             {entry.children && (
               <TreeLines entries={entry.children} depth={depth + 1} parentPrefixes={[...parentPrefixes, continuation]} onNavigate={onNavigate} />
@@ -173,7 +178,8 @@ export default function SiteMapTerminal({ popup = false, onClose }: { popup?: bo
   const go = (href: string) => {
     setTimeout(() => {
       onClose?.();
-      router.push(href);
+      if (isExternal(href)) window.open(href, '_blank', 'noopener,noreferrer');
+      else router.push(href);
     }, 400);
   };
 
