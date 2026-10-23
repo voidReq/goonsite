@@ -69,7 +69,7 @@ export async function generateMetadata(
       siteName: SITE.name,
       images: [
         {
-          url: '/og-image.png',
+          url: SITE.ogImage,
           width: 1200,
           height: 630,
           alt: project.title,
@@ -80,7 +80,7 @@ export async function generateMetadata(
       card: 'summary_large_image',
       title: project.title,
       description,
-      images: ['/og-image.png'],
+      images: [SITE.ogImage],
     },
   };
 }

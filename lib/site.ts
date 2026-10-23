@@ -1,7 +1,13 @@
 // Which site this build serves. goonsite.org is the default; building with
-// NEXT_PUBLIC_SITE_VARIANT=clean produces the resume-safe 6a68.dev copy, which
+// NEXT_PUBLIC_SITE_VARIANT=clean produces the resume-safe 6A68.dev copy, which
 // drops the goon pages and the message board. next.config.js 404s those routes
-// in the clean build; keep GOON_ONLY_PAGES in step with CLEAN_BLOCKED there.
+// in the clean build.
+//
+// Client components holding goon-only content test the variant themselves with
+// `process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean'` instead of SITE.clean.
+// That comparison is inlined into each module at build time, so the minifier
+// strips the goon branch from the clean build's JS; SITE.clean, read from
+// another module, can't be folded away like that.
 const clean = process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean';
 
 export const SITE = clean
@@ -29,11 +35,3 @@ export const SITE = clean
       ogImage: '/og-image.png',
       themeKey: 'goon-theme',
     };
-
-const GOON_ONLY_PAGES = ['/goon-hub', '/goon-sploit', '/message-board'];
-
-/** Whether a link to `href` belongs on this site. */
-export function isListed(href: string): boolean {
-  if (!SITE.clean) return href !== '/site-map';
-  return !GOON_ONLY_PAGES.some((p) => href === p || href.startsWith(`${p}/`));
-}

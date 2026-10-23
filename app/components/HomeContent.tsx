@@ -12,6 +12,9 @@ import GlowCard from './ui/GlowCard';
 import type { SiteNode } from './ui/NodeSphere';
 import { SITE } from '@/lib/site';
 
+// Inlined per module so the clean build's JS drops the goon-only branches; see lib/site.ts
+const CLEAN = process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean';
+
 const NodeSphere = dynamic(() => import('./ui/NodeSphere'), { ssr: false });
 
 const CODE_FRAGMENTS = [
@@ -156,13 +159,13 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
           <NavCard href="/notes" accent="#bb9af7" icon={<IconNotes size={18} />} title="Notes" desc="Personal brain dump" delay={0.1} />
           <NavCard href="/projects" accent="#7dcfff" icon={<IconCode size={18} />} title="Projects" desc="Vuln writeups & builds" delay={0.15} />
           <NavCard href={SITE.sitemapPath} accent="#9ece6a" icon={<IconMap size={18} />} title="Sitemap" desc="Everything, mapped" delay={0.2} />
-          {SITE.clean ? (
+          {CLEAN ? (
             <NavCard href="/tools/jwt" accent="#e0af68" icon={<IconTools size={18} />} title="Tools" desc="JWT, headers & hashing" delay={0.25} />
           ) : (
             <NavCard href="/message-board" accent="#e0af68" icon={<IconMessageCircle size={18} />} title="Messages" desc="Leave your mark" delay={0.25} />
           )}
 
-          {!SITE.clean && <div className="col-span-2 md:col-span-3 flex justify-center pt-1 pointer-events-auto">
+          {!CLEAN && <div className="col-span-2 md:col-span-3 flex justify-center pt-1 pointer-events-auto">
             <Switch
               label="I am locked in."
               size="sm"
@@ -177,7 +180,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
             />
           </div>}
 
-          {isGooning && (
+          {!CLEAN && isGooning && (
             <motion.div
               className="col-span-2 md:col-span-3 pointer-events-auto"
               initial={{ opacity: 0, height: 0 }}
@@ -215,7 +218,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
 
         {/* Notifications — below the grid so they don't overlap on mobile */}
         <div className="relative z-10 pointer-events-auto mt-4" style={{ width: '100%', maxWidth: '810px' }}>
-          {goodGooner && (
+          {!CLEAN && goodGooner && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -237,7 +240,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
             </motion.div>
           )}
 
-          {notificationVisible && (
+          {!CLEAN && notificationVisible && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

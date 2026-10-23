@@ -11,6 +11,9 @@ import { useLoader } from "@react-three/fiber";
 import * as THREE from "three";
 import { SITE } from '@/lib/site';
 
+// Inlined per module so the clean build's JS drops the goon-only branches; see lib/site.ts
+const CLEAN = process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean';
+
 function LeBronModel({ onLoaded }: { onLoaded?: () => void }) {
   const originalObj = useLoader(OBJLoader, "/lebron.obj");
   const ref = useRef<THREE.Group>(null);
@@ -119,7 +122,7 @@ function MobileView() {
 
       {/* Overlay text */}
       <span className="absolute top-12 text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500 text-center z-10 pointer-events-none">
-        Welcome to {SITE.clean ? SITE.brand : 'Goonsite'}
+        Welcome to {CLEAN ? SITE.brand : 'Goonsite'}
       </span>
 
       <Link
@@ -149,7 +152,7 @@ export default function MacbookScrollDemo() {
       <MacbookScroll
         title={
           <span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-            Welcome to {SITE.clean ? SITE.brand : 'Goonsite'}
+            Welcome to {CLEAN ? SITE.brand : 'Goonsite'}
           </span>
         }
         badge={

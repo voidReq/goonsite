@@ -1,6 +1,5 @@
-// Paths the clean (6a68.dev) build must not serve: the goon pages, the message
-// board with its API and admin page, and the joke files in public/. The pages
-// here are also unlisted from navigation by isListed() in lib/site.ts.
+// Paths the clean (6A68.dev) build must not serve: the goon pages, the message
+// board with its API and admin page, and the goonsite-only files in public/.
 const CLEAN_BLOCKED = [
   '/goon-hub',
   '/goon-sploit',
@@ -11,6 +10,10 @@ const CLEAN_BLOCKED = [
   '/goon.exe',
   '/anti-goonware.c',
   '/og-image-generator.html',
+  '/og-image.png',
+  '/a.png',
+  '/b.png',
+  '/IMG_9856.png',
 ];
 
 /** @type {import('next').NextConfig} */
