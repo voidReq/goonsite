@@ -15,12 +15,12 @@ import { SITE, NUAUTO_URL } from '@/lib/site';
 const CLEAN = process.env.NEXT_PUBLIC_SITE_VARIANT === 'clean';
 
 const NAV_ITEMS = [
-  { href: '/notes', label: 'Notes', icon: IconNotes, color: '#bb9af7' },
-  { href: '/projects', label: 'Projects', icon: IconCode, color: '#7dcfff' },
-  { href: SITE.sitemapPath, label: 'Sitemap', icon: IconMap, color: '#9ece6a' },
   ...(CLEAN
     ? [{ href: '/about', label: 'About', icon: IconUser, color: '#e0af68' }]
     : [{ href: '/message-board', label: 'Messages', icon: IconMessageCircle, color: '#e0af68' }]),
+  { href: '/projects', label: 'Projects', icon: IconCode, color: '#7dcfff' },
+  { href: '/notes', label: 'Notes', icon: IconNotes, color: '#bb9af7' },
+  { href: SITE.sitemapPath, label: 'Sitemap', icon: IconMap, color: '#9ece6a' },
 ];
 
 // Goonsite only: 6A68 has an About page instead

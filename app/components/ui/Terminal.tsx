@@ -32,7 +32,7 @@ const CLEAN_WORDS = [
   'cd notes # networking, databases, security',
   'tree # map of the whole site',
   'help # list available commands',
-  '# click to explore ▸',
+  '# click to explore...',
 ]
 
 export function Terminal({ fullWidth = false }: { fullWidth?: boolean }) {
