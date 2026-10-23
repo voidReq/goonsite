@@ -1,7 +1,34 @@
+// Paths the clean (6a68.dev) build must not serve: the goon pages, the message
+// board with its API and admin page, and the joke files in public/. The pages
+// here are also unlisted from navigation by isListed() in lib/site.ts.
+const CLEAN_BLOCKED = [
+  '/goon-hub',
+  '/goon-sploit',
+  '/message-board',
+  '/api/messages',
+  '/admin/messages',
+  '/api/admin/messages',
+  '/goon.exe',
+  '/anti-goonware.c',
+  '/og-image-generator.html',
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   turbopack: {},
+  async rewrites() {
+    if (process.env.NEXT_PUBLIC_SITE_VARIANT !== 'clean') {
+      // The clean build's sitemap page has no reason to exist on goonsite.
+      return { beforeFiles: [{ source: '/site-map', destination: '/404' }] };
+    }
+    return {
+      beforeFiles: CLEAN_BLOCKED.flatMap((path) => [
+        { source: path, destination: '/404' },
+        { source: `${path}/:rest*`, destination: '/404' },
+      ]),
+    };
+  },
   webpack: (config, { isServer }) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,

@@ -36,8 +36,8 @@ export default function GlowCard({ children, color = '#bb9af7', className = '', 
       whileTap={{ scale: 0.995 }}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       style={{
-        border: '1px solid var(--goon-border)',
-        backgroundColor: 'var(--goon-surface)',
+        border: '1px solid var(--site-border)',
+        backgroundColor: 'var(--site-surface)',
       }}
     >
       {/* Glow effect following mouse */}

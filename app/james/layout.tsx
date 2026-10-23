@@ -6,9 +6,10 @@ import '@mantine/core/styles.css'; // Mantine core styles
 
 import { MyProvider } from '../../src/context/MyContext';
 import { MantineProvider, ColorSchemeScript } from '@mantine/core'; // Import ColorSchemeScript
+import { SITE } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: "The Goonsite",
+  title: SITE.clean ? "James" : "The Goonsite",
   description: "Personal projects, security notes, and more!",
   robots: {
     index: false,

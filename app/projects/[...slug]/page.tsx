@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getProjectBySlug, getAllProjects } from '@/lib/projects';
 import MarkdownRenderer from '@/app/components/MarkdownRenderer';
+import { SITE } from '@/lib/site';
 
 export const dynamicParams = true;
 export const revalidate = 0;
@@ -52,7 +53,7 @@ export async function generateMetadata(
   }
   
   const description = project.description || extractDescription(project.content);
-  const url = `https://goonsite.org/projects/${decodedSlug.join('/')}`;
+  const url = `${SITE.url}/projects/${decodedSlug.join('/')}`;
   
   return {
     title: project.title,
@@ -65,7 +66,7 @@ export async function generateMetadata(
       description,
       type: 'article',
       url,
-      siteName: 'goonsite.org',
+      siteName: SITE.name,
       images: [
         {
           url: '/og-image.png',
@@ -94,7 +95,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
     notFound();
   }
   
-  const projectUrl = `https://goonsite.org/projects/${decodedSlug.join('/')}`;
+  const projectUrl = `${SITE.url}/projects/${decodedSlug.join('/')}`;
   const projectDescription = project.description || extractDescription(project.content);
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -102,8 +103,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
     headline: project.title,
     description: projectDescription,
     url: projectUrl,
-    author: { '@type': 'Person', name: 'James', url: 'https://goonsite.org' },
-    publisher: { '@type': 'Organization', name: 'goonsite.org' },
+    author: { '@type': 'Person', name: 'James', url: SITE.url },
+    publisher: { '@type': 'Organization', name: SITE.name },
   };
 
   return (

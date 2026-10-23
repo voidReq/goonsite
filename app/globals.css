@@ -3,24 +3,24 @@
 @tailwind utilities;
 
 :root, html.dark {
-  --goon-bg: #0f0f14;
-  --goon-surface: #1a1b26;
-  --goon-surface-dark: #16161e;
-  --goon-surface-hover: #1e2030;
-  --goon-surface-bright: #24283b;
-  --goon-border: rgba(255, 255, 255, 0.06);
-  --goon-border-hover: rgba(255, 255, 255, 0.12);
-  --goon-purple: #bb9af7;
-  --goon-cyan: #7dcfff;
-  --goon-green: #9ece6a;
-  --goon-red: #f7768e;
-  --goon-amber: #e0af68;
-  --goon-blue: #7aa2f7;
-  --goon-text: #c0caf5;
-  --goon-text-dim: #565f89;
-  --goon-overlay: rgba(0, 0, 0, 0.6);
-  --goon-nav-bg: rgba(15, 15, 20, 0.85);
-  --goon-nav-bg-scrolled: rgba(15, 15, 20, 0.95);
+  --site-bg: #0f0f14;
+  --site-surface: #1a1b26;
+  --site-surface-dark: #16161e;
+  --site-surface-hover: #1e2030;
+  --site-surface-bright: #24283b;
+  --site-border: rgba(255, 255, 255, 0.06);
+  --site-border-hover: rgba(255, 255, 255, 0.12);
+  --site-purple: #bb9af7;
+  --site-cyan: #7dcfff;
+  --site-green: #9ece6a;
+  --site-red: #f7768e;
+  --site-amber: #e0af68;
+  --site-blue: #7aa2f7;
+  --site-text: #c0caf5;
+  --site-text-dim: #565f89;
+  --site-overlay: rgba(0, 0, 0, 0.6);
+  --site-nav-bg: rgba(15, 15, 20, 0.85);
+  --site-nav-bg-scrolled: rgba(15, 15, 20, 0.95);
   --background: #0f0f14;
   --foreground: #ededed;
   color-scheme: dark;
@@ -42,24 +42,24 @@
 }
 
 html.light {
-  --goon-bg: #f5f5f7;
-  --goon-surface: #ffffff;
-  --goon-surface-dark: #e8e8ec;
-  --goon-surface-hover: #ededf0;
-  --goon-surface-bright: #d8d8de;
-  --goon-border: rgba(0, 0, 0, 0.08);
-  --goon-border-hover: rgba(0, 0, 0, 0.15);
-  --goon-purple: #7c3aed;
-  --goon-cyan: #0891b2;
-  --goon-green: #16a34a;
-  --goon-red: #dc2626;
-  --goon-amber: #d97706;
-  --goon-blue: #2563eb;
-  --goon-text: #1a1b26;
-  --goon-text-dim: #6b7280;
-  --goon-overlay: rgba(0, 0, 0, 0.3);
-  --goon-nav-bg: rgba(245, 245, 247, 0.85);
-  --goon-nav-bg-scrolled: rgba(245, 245, 247, 0.95);
+  --site-bg: #f5f5f7;
+  --site-surface: #ffffff;
+  --site-surface-dark: #e8e8ec;
+  --site-surface-hover: #ededf0;
+  --site-surface-bright: #d8d8de;
+  --site-border: rgba(0, 0, 0, 0.08);
+  --site-border-hover: rgba(0, 0, 0, 0.15);
+  --site-purple: #7c3aed;
+  --site-cyan: #0891b2;
+  --site-green: #16a34a;
+  --site-red: #dc2626;
+  --site-amber: #d97706;
+  --site-blue: #2563eb;
+  --site-text: #1a1b26;
+  --site-text-dim: #6b7280;
+  --site-overlay: rgba(0, 0, 0, 0.3);
+  --site-nav-bg: rgba(245, 245, 247, 0.85);
+  --site-nav-bg-scrolled: rgba(245, 245, 247, 0.95);
   --background: #f5f5f7;
   --foreground: #1a1b26;
   color-scheme: light;
@@ -209,7 +209,7 @@ nav *, [class*="z-50"] *, [class*="z-40"] *, .glass-panel *, [role="menu"] * {
   background: rgba(26, 27, 38, 0.6);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid var(--goon-border);
+  border: 1px solid var(--site-border);
   border-radius: 12px;
 }
 
@@ -218,15 +218,15 @@ html.light .glass-panel {
 }
 
 .glass-panel-solid {
-  background: var(--goon-surface);
-  border: 1px solid var(--goon-border);
+  background: var(--site-surface);
+  border: 1px solid var(--site-border);
   border-radius: 12px;
 }
 
 /* ─── Terminal styling ─── */
 .terminal-window {
-  background: var(--goon-surface);
-  border: 1px solid var(--goon-border);
+  background: var(--site-surface);
+  border: 1px solid var(--site-border);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -236,8 +236,8 @@ html.light .glass-panel {
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--goon-border);
-  background: var(--goon-surface-dark);
+  border-bottom: 1px solid var(--site-border);
+  background: var(--site-surface-dark);
 }
 
 .terminal-dot {
@@ -324,7 +324,7 @@ html.light .glass-panel {
 }
 
 .prose a {
-  color: var(--goon-blue) !important;
+  color: var(--site-blue) !important;
   text-decoration: underline !important;
   text-decoration-color: rgba(122, 162, 247, 0.3) !important;
   text-underline-offset: 2px !important;
@@ -333,23 +333,23 @@ html.light .glass-panel {
 }
 
 .prose a:hover {
-  color: var(--goon-cyan) !important;
-  text-decoration-color: var(--goon-cyan) !important;
+  color: var(--site-cyan) !important;
+  text-decoration-color: var(--site-cyan) !important;
 }
 
 .prose pre {
-  background-color: var(--goon-surface-dark) !important;
-  border: 1px solid var(--goon-border) !important;
+  background-color: var(--site-surface-dark) !important;
+  border: 1px solid var(--site-border) !important;
   overflow-x: auto !important;
   max-width: 100% !important;
 }
 
 .prose code {
-  background-color: var(--goon-surface) !important;
+  background-color: var(--site-surface) !important;
   padding: 0.15em 0.4em !important;
   border-radius: 4px !important;
   font-size: 0.88em !important;
-  color: var(--goon-purple) !important;
+  color: var(--site-purple) !important;
   word-break: break-word !important;
   overflow-wrap: break-word !important;
 }
@@ -357,7 +357,7 @@ html.light .glass-panel {
 .prose pre code {
   background-color: transparent !important;
   padding: 0 !important;
-  color: var(--goon-text) !important;
+  color: var(--site-text) !important;
   word-break: normal !important;
   overflow-wrap: normal !important;
 }
@@ -407,7 +407,7 @@ html.light .glass-panel {
   margin-top: 1.5em !important;
   margin-bottom: 0.75em !important;
   line-height: 1.2 !important;
-  color: var(--goon-text) !important;
+  color: var(--site-text) !important;
 }
 
 .prose h1 {
@@ -418,7 +418,7 @@ html.light .glass-panel {
 .prose h2 {
   font-size: 1.875em !important;
   font-weight: 700 !important;
-  border-bottom: 1px solid var(--goon-border) !important;
+  border-bottom: 1px solid var(--site-border) !important;
   padding-bottom: 0.3em !important;
 }
 
@@ -444,8 +444,8 @@ html.light .glass-panel {
 
 /* Prism syntax highlighting */
 .prose pre[class*="language-"] {
-  background-color: var(--goon-surface-dark) !important;
-  border: 1px solid var(--goon-border) !important;
+  background-color: var(--site-surface-dark) !important;
+  border: 1px solid var(--site-border) !important;
   border-radius: 0.75rem !important;
   padding: 1rem !important;
   overflow-x: auto !important;
@@ -456,7 +456,7 @@ html.light .glass-panel {
 }
 
 .prose code[class*="language-"] {
-  background-color: var(--goon-surface-dark) !important;
+  background-color: var(--site-surface-dark) !important;
   padding: 0 !important;
   font-size: 0.88em !important;
   line-height: 1.6 !important;
@@ -467,9 +467,9 @@ html.light .glass-panel {
 }
 
 .prose pre[class*="language-"] code {
-  color: var(--goon-text) !important;
+  color: var(--site-text) !important;
   font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace !important;
-  background-color: var(--goon-surface-dark) !important;
+  background-color: var(--site-surface-dark) !important;
 }
 
 .prose pre[class*="language-"] *,
@@ -482,7 +482,7 @@ html.light .glass-panel {
 
 .prose pre[class*="language-"],
 .prose pre[class*="language-"] code {
-  background: var(--goon-surface-dark) !important;
+  background: var(--site-surface-dark) !important;
 }
 
 .prose p,
@@ -500,15 +500,15 @@ html.light .glass-panel {
   height: auto !important;
   border-radius: 0.75rem !important;
   margin: 1.5em 0 !important;
-  border: 1px solid var(--goon-border) !important;
+  border: 1px solid var(--site-border) !important;
 }
 
 /* Blockquotes */
 .prose blockquote {
-  border-left: 3px solid var(--goon-purple) !important;
+  border-left: 3px solid var(--site-purple) !important;
   padding-left: 1em !important;
   margin-left: 0 !important;
-  color: var(--goon-text-dim) !important;
+  color: var(--site-text-dim) !important;
   font-style: italic !important;
 }
 
@@ -522,18 +522,18 @@ html.light .glass-panel {
 
 .prose th,
 .prose td {
-  border: 1px solid var(--goon-border) !important;
+  border: 1px solid var(--site-border) !important;
   padding: 0.5em 0.75em !important;
 }
 
 .prose th {
-  background-color: var(--goon-surface) !important;
+  background-color: var(--site-surface) !important;
   font-weight: 600 !important;
-  color: var(--goon-text) !important;
+  color: var(--site-text) !important;
 }
 
 .prose hr {
-  border-color: var(--goon-border) !important;
+  border-color: var(--site-border) !important;
   margin: 2em 0 !important;
 }
 

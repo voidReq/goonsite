@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getNoteBySlug, getAllNotes, convertWikiLinks } from '@/lib/notes';
 import MarkdownRenderer from '@/app/components/MarkdownRenderer';
+import { SITE } from '@/lib/site';
 
 export async function generateStaticParams() {
   const notes = getAllNotes();
@@ -62,7 +63,7 @@ export async function generateMetadata(
   
   const description = extractDescription(note.content);
   // Slugs are natively URL-safe now
-  const url = `https://goonsite.org/notes/${decodedSlug.join('/')}`;
+  const url = `${SITE.url}/notes/${decodedSlug.join('/')}`;
   
   return {
     title: note.title,
@@ -75,7 +76,7 @@ export async function generateMetadata(
       description,
       type: 'article',
       url,
-      siteName: 'goonsite.org',
+      siteName: SITE.name,
       images: [
         {
           url: '/og-image.png',
@@ -109,7 +110,7 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
   const allNotes = getAllNotes();
   const contentWithLinks = convertWikiLinks(note.content, allNotes);
   
-  const noteUrl = `https://goonsite.org/notes/${decodedSlug.join('/')}`;
+  const noteUrl = `${SITE.url}/notes/${decodedSlug.join('/')}`;
   const noteDescription = extractDescription(note.content);
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -117,8 +118,8 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
     headline: note.title,
     description: noteDescription,
     url: noteUrl,
-    author: { '@type': 'Person', name: 'James', url: 'https://goonsite.org' },
-    publisher: { '@type': 'Organization', name: 'goonsite.org' },
+    author: { '@type': 'Person', name: 'James', url: SITE.url },
+    publisher: { '@type': 'Organization', name: SITE.name },
   };
 
   return (

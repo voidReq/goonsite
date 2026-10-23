@@ -1,3 +1,5 @@
+import { SITE } from '@/lib/site';
+
 export interface Draft {
   id: string;
   dir: string;
@@ -9,7 +11,7 @@ export interface Draft {
   updatedAt: number;
 }
 
-const STORAGE_KEY = 'goonsite:projects-drafts:v1';
+const STORAGE_KEY = `${SITE.id}:projects-drafts:v1`;
 const MAX_DRAFTS = 50;
 
 function readStore(): Record<string, Draft> {

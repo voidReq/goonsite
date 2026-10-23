@@ -47,11 +47,11 @@ export default function ProjectsListClient({ sections }: { sections: ProjectsSec
             <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(125, 207, 255, 0.1)', border: '1px solid rgba(125, 207, 255, 0.2)' }}>
               <IconCode size={22} style={{ color: '#7dcfff' }} />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold font-mono" style={{ color: 'var(--goon-text)' }}>
+            <h1 className="text-2xl md:text-3xl font-bold font-mono" style={{ color: 'var(--site-text)' }}>
               Projects & Writeups
             </h1>
           </div>
-          <p className="text-sm font-mono" style={{ color: 'var(--goon-text-dim)' }}>
+          <p className="text-sm font-mono" style={{ color: 'var(--site-text-dim)' }}>
             Cybersecurity tools, IoT smartgrids, and vulnerability disclosures
           </p>
         </motion.div>
@@ -90,12 +90,12 @@ export default function ProjectsListClient({ sections }: { sections: ProjectsSec
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="font-mono text-sm font-semibold" style={{ color: 'var(--goon-text)' }}>
+                                <span className="font-mono text-sm font-semibold" style={{ color: 'var(--site-text)' }}>
                                   {item.name}
                                 </span>
                               </div>
                             </div>
-                            <IconChevronRight size={14} style={{ color: 'var(--goon-text-dim)', marginTop: 4, flexShrink: 0 }} />
+                            <IconChevronRight size={14} style={{ color: 'var(--site-text-dim)', marginTop: 4, flexShrink: 0 }} />
                           </div>
                         </GlowCard>
                       </Link>
@@ -113,7 +113,7 @@ export default function ProjectsListClient({ sections }: { sections: ProjectsSec
           transition={{ delay: 0.6, duration: 0.5 }}
           className="mt-8 text-center"
         >
-          <p className="text-xs font-mono" style={{ color: 'var(--goon-text-dim)' }}>
+          <p className="text-xs font-mono" style={{ color: 'var(--site-text-dim)' }}>
             <span style={{ color: '#7dcfff' }}></span> or browse the tree in the sidebar
           </p>
         </motion.div>

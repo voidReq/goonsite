@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { Switch, Rating, Text, Tooltip, Notification, Alert, Button } from '@mantine/core';
-import { IconArrowRight, IconInfoCircle, IconHeart, IconNotes, IconCode, IconMap, IconMessageCircle, IconChevronRight } from '@tabler/icons-react';
+import { IconArrowRight, IconInfoCircle, IconHeart, IconNotes, IconCode, IconMap, IconMessageCircle, IconChevronRight, IconTools } from '@tabler/icons-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
@@ -10,6 +10,7 @@ import { Terminal } from './ui/Terminal';
 import PageShell from './ui/PageShell';
 import GlowCard from './ui/GlowCard';
 import type { SiteNode } from './ui/NodeSphere';
+import { SITE } from '@/lib/site';
 
 const NodeSphere = dynamic(() => import('./ui/NodeSphere'), { ssr: false });
 
@@ -56,8 +57,8 @@ function NavCard({ href, accent, icon, title, desc, delay }: NavCardProps) {
             <div className="flex flex-col h-full justify-between gap-2" style={{ minHeight: '80px' }}>
               <div>
                 <div style={{ color: accent }} className="mb-2">{icon}</div>
-                <div className="font-mono font-bold text-base leading-tight" style={{ color: 'var(--goon-text)' }}>{title}</div>
-                <div className="text-xs mt-1" style={{ color: 'var(--goon-text-dim)' }}>{desc}</div>
+                <div className="font-mono font-bold text-base leading-tight" style={{ color: 'var(--site-text)' }}>{title}</div>
+                <div className="text-xs mt-1" style={{ color: 'var(--site-text-dim)' }}>{desc}</div>
               </div>
               <IconChevronRight size={13} className="text-white/20 group-hover:text-white/50 transition-colors" />
             </div>
@@ -107,9 +108,9 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
             <div
               className="font-mono text-xs px-3 py-1.5 rounded-full"
               style={{
-                backgroundColor: 'var(--goon-surface)',
-                border: '1px solid var(--goon-border)',
-                color: 'var(--goon-text-dim)',
+                backgroundColor: 'var(--site-surface)',
+                border: '1px solid var(--site-border)',
+                color: 'var(--site-text-dim)',
               }}
             >
               drag to orbit · click a node to visit
@@ -154,10 +155,14 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
 
           <NavCard href="/notes" accent="#bb9af7" icon={<IconNotes size={18} />} title="Notes" desc="Personal brain dump" delay={0.1} />
           <NavCard href="/projects" accent="#7dcfff" icon={<IconCode size={18} />} title="Projects" desc="Vuln writeups & builds" delay={0.15} />
-          <NavCard href="/goon-hub" accent="#9ece6a" icon={<IconMap size={18} />} title="Sitemap" desc="Everything, mapped" delay={0.2} />
-          <NavCard href="/message-board" accent="#e0af68" icon={<IconMessageCircle size={18} />} title="Messages" desc="Leave your mark" delay={0.25} />
+          <NavCard href={SITE.sitemapPath} accent="#9ece6a" icon={<IconMap size={18} />} title="Sitemap" desc="Everything, mapped" delay={0.2} />
+          {SITE.clean ? (
+            <NavCard href="/tools/jwt" accent="#e0af68" icon={<IconTools size={18} />} title="Tools" desc="JWT, headers & hashing" delay={0.25} />
+          ) : (
+            <NavCard href="/message-board" accent="#e0af68" icon={<IconMessageCircle size={18} />} title="Messages" desc="Leave your mark" delay={0.25} />
+          )}
 
-          <div className="col-span-2 md:col-span-3 flex justify-center pt-1 pointer-events-auto">
+          {!SITE.clean && <div className="col-span-2 md:col-span-3 flex justify-center pt-1 pointer-events-auto">
             <Switch
               label="I am locked in."
               size="sm"
@@ -170,7 +175,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
                 }
               }}
             />
-          </div>
+          </div>}
 
           {isGooning && (
             <motion.div
@@ -180,7 +185,7 @@ export default function HomeContent({ siteNodes }: { siteNodes: SiteNode[] }) {
               exit={{ opacity: 0, height: 0 }}
             >
               <div className="rounded-xl p-4" style={{ border: '1px solid rgba(187, 154, 247, 0.2)', backgroundColor: 'rgba(187, 154, 247, 0.05)' }}>
-                <Text size="md" fw={700} mb={8} style={{ color: 'var(--goon-text)' }}>Hello, Goon.</Text>
+                <Text size="md" fw={700} mb={8} style={{ color: 'var(--site-text)' }}>Hello, Goon.</Text>
                 <div className="flex items-center gap-3">
                   <Text size="sm" c="dimmed">How locked in?</Text>
                   <Tooltip
